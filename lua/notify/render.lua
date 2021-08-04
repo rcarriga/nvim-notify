@@ -130,7 +130,11 @@ function NotificationRenderer:advance_stage(win)
   elseif cur_stage == WinStage.OPEN then
     self.win_stages[win] = WinStage.CLOSING
   else
-    api.nvim_win_close(win, true)
+    local success = pcall(api.nvim_win_close, win, true)
+    if not success then
+      self:remove_win_state(win)
+      return
+    end
     local notif = self.notifications[win]
     self:remove_win_state(win)
     if notif.on_close then
@@ -154,11 +158,12 @@ end
 function NotificationRenderer:update_states(time)
   local updated_states = {}
   for win, _ in pairs(self.win_stages) do
-    updated_states[win] = vim.tbl_map(function(state)
-      return animate.spring(time, state)
-    end, self:stage_state(
-      win
-    ))
+    local states = self:stage_state(win)
+    if states then
+      updated_states[win] = vim.tbl_map(function(state)
+        return animate.spring(time, state)
+      end, states)
+    end
   end
   self.win_states = updated_states
 end
