@@ -19,10 +19,10 @@ end
 
 function M.get_win_config(win)
   local success, conf = pcall(vim.api.nvim_win_get_config, win)
-  if not success then
-    return success, conf
+  if not success or not conf.row then
+    return false, conf
   end
-  for _, field in pairs({ "row", "column" }) do
+  for _, field in pairs({ "row", "col" }) do
     if type(conf[field]) == "table" then
       conf[field] = conf[field][false]
     end

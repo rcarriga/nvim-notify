@@ -43,25 +43,46 @@ function NotificationRenderer:step(time)
   return true
 end
 
+function NotificationRenderer:window_intervals()
+  local win_intervals = {}
+  for _, w in pairs(self.win_order) do
+    local exists, existing_conf = util.get_win_config(w)
+    if exists then
+      win_intervals[#win_intervals + 1] = {
+        existing_conf.row,
+        existing_conf.row + existing_conf.height + 2,
+      }
+    end
+  end
+  table.sort(win_intervals, function(a, b)
+    return a[1] < b[1]
+  end)
+  return win_intervals
+end
+
 function NotificationRenderer:push_pending()
   if self.pending:is_empty() then
     return
   end
   while not self.pending:is_empty() do
     local next_notif = self.pending:peek()
-    if #self.win_order > 0 then
-      local exists, final_win_conf = util.get_win_config(self.win_order[#self.win_order])
-      if not exists or not final_win_conf.row then
-        return
-      end
-      if
-        final_win_conf.row + final_win_conf.height + #next_notif.message + 3
-        >= vim.opt.lines:get()
-      then
-        return
+    local next_height = #next_notif.message + 3 -- Title and borders
+
+    local next_row = 0
+    for _, interval in pairs(self:window_intervals()) do
+      local next_bottom = next_row + next_height
+      if interval[1] <= next_bottom then
+        next_row = interval[2]
+      else
+        break
       end
     end
-    self:add_window(next_notif)
+
+    if next_row + next_height >= vim.opt.lines:get() then
+      return
+    end
+
+    self:add_window(next_notif, next_row)
     self.pending:pop()
   end
 end
@@ -170,14 +191,18 @@ function NotificationRenderer:stage_goals(win)
     [WinStage.OPENING] = function()
       return {
         width = self.win_width[win],
+        col = vim.opt.columns:get(),
       }
     end,
     [WinStage.OPEN] = function()
-      return {}
+      return {
+        col = vim.opt.columns:get(),
+      }
     end,
     [WinStage.CLOSING] = function()
       return {
         width = 1,
+        col = vim.opt.columns:get(),
       }
     end,
   })[self.win_stages[win]]
@@ -200,7 +225,7 @@ function NotificationRenderer:render_windows()
 end
 
 ---@param notif Notification
-function NotificationRenderer:add_window(notif)
+function NotificationRenderer:add_window(notif, row)
   local buf = vim.api.nvim_create_buf(false, true)
   local message_line = 0
   local right_title = vim.fn.strftime("%H:%M", notif.time)
@@ -224,20 +249,13 @@ function NotificationRenderer:add_window(notif)
   vim.api.nvim_buf_set_lines(buf, message_line, message_line + #notif.message, false, notif.message)
   vim.api.nvim_buf_set_option(buf, "modifiable", false)
 
-  local available_row = 0
-  for _, w in ipairs(self.win_order) do
-    local exists, other_conf = util.get_win_config(w)
-    if exists then
-      available_row = available_row + other_conf.height + 2
-    end
-  end
   local win_opts = {
     relative = "editor",
     anchor = "NE",
     width = 1,
     height = message_line + #notif.message,
     col = vim.opt.columns:get(),
-    row = available_row,
+    row = row,
     border = "rounded",
     style = "minimal",
   }
