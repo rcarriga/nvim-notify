@@ -243,7 +243,8 @@ function NotificationRenderer:add_window(notif)
   }
 
   local win = vim.api.nvim_open_win(buf, false, win_opts)
-  vim.fn.setwinvar(win, "&winhl", "Normal:Normal,FloatBorder:Notify" .. notif.level)
+  vim.wo[win].winhl = "Normal:Normal,FloatBorder:Notify" .. notif.level
+  vim.wo[win].wrap = false
 
   self.win_order[#self.win_order + 1] = win
   self.win_stages[win] = WinStage.OPENING
