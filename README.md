@@ -6,6 +6,8 @@ A fancy, configurable, notification manager for NeoVim
 
 ![notify](https://user-images.githubusercontent.com/24252670/128085627-d1c0d929-5a98-4743-9cf0-5c1bc3367f0a.gif)
 
+Credit to [sunjon](https://github.com/sunjon) for [the design](https://neovim.discourse.group/t/wip-animated-notifications-plugin/448) that inspired the appearance of this plugin.
+
 ## Usage
 
 Simply call the module with a message!
