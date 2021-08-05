@@ -13,7 +13,6 @@ local WinStage = {
 ---@field pending FIFOQueue
 ---@field win_states table<number, table<string, SpringState>>
 ---@field win_stages table<number, string>
----@field win_order number[]
 ---@field win_width table<number, number>
 ---@field notifications table<number, Notification>
 local NotificationRenderer = {}
@@ -22,7 +21,6 @@ function NotificationRenderer:new()
   local sender = {
     win_stages = {},
     win_states = {},
-    win_order = {},
     pending = util.FIFOQueue(),
     win_width = {},
     notifications = {},
@@ -45,7 +43,7 @@ end
 
 function NotificationRenderer:window_intervals()
   local win_intervals = {}
-  for _, w in pairs(self.win_order) do
+  for w, _ in pairs(self.win_stages) do
     local exists, existing_conf = util.get_win_config(w)
     if exists then
       win_intervals[#win_intervals + 1] = {
@@ -147,12 +145,6 @@ function NotificationRenderer:remove_win_state(win)
   self.win_stages[win] = nil
   self.win_states[win] = nil
   self.notifications[win] = nil
-  for i, w in pairs(self.win_order) do
-    if w == win then
-      table.remove(self.win_order, i)
-      break
-    end
-  end
 end
 
 function NotificationRenderer:update_states(time)
@@ -269,7 +261,6 @@ function NotificationRenderer:add_window(notif, row)
   vim.wo[win].winhl = "Normal:Normal,FloatBorder:Notify" .. notif.level
   vim.wo[win].wrap = false
 
-  self.win_order[#self.win_order + 1] = win
   self.win_stages[win] = WinStage.OPENING
   self.win_width[win] = win_width
   self.notifications[win] = notif
