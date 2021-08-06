@@ -66,7 +66,7 @@ function NotificationRenderer:push_pending()
     local next_notif = self.pending:peek()
     local next_height = #next_notif.message + 3 -- Title and borders
 
-    local next_row = 0
+    local next_row = vim.opt.tabline:get() == "" and 0 or 1
     for _, interval in pairs(self:window_intervals()) do
       local next_bottom = next_row + next_height
       if interval[1] <= next_bottom then
