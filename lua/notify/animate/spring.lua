@@ -7,8 +7,8 @@ local cos = math.cos
 local sqrt = math.sqrt
 
 ---@class SpringState
----@field position number
----@field goal number
+---@field position number | string
+---@field goal number | string
 ---@field velocity number | nil
 ---@field damping number
 ---@field frequency number
@@ -16,9 +16,10 @@ local sqrt = math.sqrt
 ---@param dt number @Step in time
 ---@param state SpringState
 ---@return SpringState
-return function(dt, state)
-  local damping = state.damping
-  local angular_freq = state.frequency * 2 * pi
+return function(dt, state, settings)
+  local damping = settings.damping
+  local angular_freq = settings.frequency * 2 * pi
+
   local cur_os = state.position
   local cur_vel = state.velocity or 0
   local goal = state.goal

@@ -3,6 +3,7 @@ local M = {}
 require("notify.config.highlights")
 
 local default_config = {
+  stages = "slide",
   icons = {
     ERROR = "",
     WARN = "",
@@ -22,6 +23,10 @@ end
 
 function M.icons()
   return user_config.icons
+end
+
+function M.stages()
+  return user_config.stages
 end
 
 return M
