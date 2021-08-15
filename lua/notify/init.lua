@@ -7,8 +7,8 @@ local running = false
 
 local function run()
   running = true
-  local succees, ran = pcall(renderer.step, renderer, 30 / 1000)
-  if not succees then
+  local success, ran = pcall(renderer.step, renderer, 30 / 1000)
+  if not success then
     print("Error running notification service: " .. ran)
     running = false
     return
