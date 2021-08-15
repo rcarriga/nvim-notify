@@ -1,10 +1,40 @@
-vim.cmd("hi default NotifyERROR guifg=#8A1F1F")
-vim.cmd("hi default NotifyWARN guifg=#79491D")
-vim.cmd("hi default NotifyINFO guifg=#4F6752")
-vim.cmd("hi default NotifyDEBUG guifg=#8B8B8B")
-vim.cmd("hi default NotifyTRACE guifg=#4F3552")
-vim.cmd("hi default NotifyERRORTitle guifg=#F70067")
-vim.cmd("hi default NotifyWARNTitle guifg=#F79000")
-vim.cmd("hi default NotifyINFOTitle guifg=#A9FF68")
-vim.cmd("hi default NotifyDEBUGTitle guifg=#8B8B8B")
-vim.cmd("hi default NotifyTRACETitle guifg=#D484FF")
+local M = {}
+
+M.groups = {'border', 'title'}
+
+-- Example of levels:
+-- {
+--   [0] = {  -- An integer, alternative to 'name'
+--     name = "trace",  -- minimal required field
+--     icon = "✎",
+--     border = {fg = "#7A1F1F"},  -- border highlight group
+--     title = {fg = "#CC0000"}  -- title hightligth group
+--   }
+-- }
+function M.setup(levels, default)
+  -- If 'default' is set, we set the lighlight as overwritable
+  default = default or false
+
+  -- Example of an expected command:
+  -- "hi default NotifyTRACETitle guifg=#D484FF"
+  for level, config in pairs(levels) do
+    for _, group in pairs(M.groups) do
+      -- The command starts by 'hi default? Notify' ..
+      local hlcommand = "hi " .. (default and "default" or "") .. " Notify"
+
+      -- Then the level, to upper (ERROR, TRACE, ...)
+      hlcommand = hlcommand .. string.upper(config.name)
+
+      -- Then we add the group, capitalized (Border, Title)
+      hlcommand = hlcommand .. (group:gsub("^%l", string.upper))
+
+      -- Then we add 'guibg=..', 'guifg=..' if they're given
+      for key, val in pairs(config[group]) do
+          hlcommand = string.format("%s gui%s=%s", hlcommand, key, val)
+      end
+      vim.cmd(hlcommand)
+    end
+  end
+end
+
+return M

@@ -1,6 +1,7 @@
 local api = vim.api
 local namespace = api.nvim_create_namespace("nvim-notify")
 local animate = require("notify.animate")
+local config = require("notify.config")
 local util = require("notify.util")
 
 local WinStage = {
@@ -239,9 +240,15 @@ function NotificationRenderer:add_window(notif, row)
     local title_line = left_title
       .. string.rep(" ", win_width - vim.fn.strchars(left_title .. right_title))
       .. right_title
-    vim.api.nvim_buf_set_lines(buf, 0, 1, false, { title_line, string.rep("━", win_width) })
-    vim.api.nvim_buf_add_highlight(buf, namespace, "Notify" .. notif.level .. "Title", 0, 0, -1)
-    vim.api.nvim_buf_add_highlight(buf, namespace, "Notify" .. notif.level, 1, 0, -1)
+    vim.api.nvim_buf_set_lines(buf, 0, 1, false, {
+        title_line, string.rep("━", win_width)
+    })
+    vim.api.nvim_buf_add_highlight(
+        buf, namespace, "Notify" .. notif.level_name .. "Title", 0, 0, -1
+    )
+    vim.api.nvim_buf_add_highlight(
+        buf, namespace, "Notify" .. notif.level_name .. "Border", 1, 0, -1
+    )
   end
   vim.api.nvim_buf_set_lines(buf, message_line, message_line + #notif.message, false, notif.message)
   vim.api.nvim_buf_set_option(buf, "modifiable", false)
@@ -258,7 +265,7 @@ function NotificationRenderer:add_window(notif, row)
   }
 
   local win = vim.api.nvim_open_win(buf, false, win_opts)
-  vim.wo[win].winhl = "Normal:Normal,FloatBorder:Notify" .. notif.level
+  vim.wo[win].winhl = "Normal:Normal,FloatBorder:Notify"..notif.level_name.."Border"
   vim.wo[win].wrap = false
 
   self.win_stages[win] = WinStage.OPENING

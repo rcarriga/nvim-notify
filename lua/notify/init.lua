@@ -1,5 +1,6 @@
 local NotificationRenderer = require("notify.render")
 local config = require("notify.config")
+local util = require("notify.util")
 
 local renderer = NotificationRenderer()
 
@@ -23,7 +24,8 @@ end
 local notifications = {}
 
 ---@class Notification
----@field level string
+---@field level number
+---@field level_name string
 ---@field message string
 ---@field timeout number
 ---@field title string
@@ -35,20 +37,20 @@ local notifications = {}
 local Notification = {}
 
 function Notification:new(message, level, opts)
-  if type(level) == "number" then
-    level = vim.lsp.log_levels[level]
-  end
   if type(message) == "string" then
     message = vim.split(message, "\n")
   end
-  level = vim.fn.toupper(level or "info")
+  -- Convert level names to number (or default)
+  level = util.to_level(level)
   local notif = {
     message = message,
     title = opts.title or "",
-    icon = opts.icon or config.icons()[level] or config.icons().INFO,
+    icon = opts.icon or config.levels()[level].icon or 
+        config.levels()[config.default_level()].icon,
     time = vim.fn.localtime(),
     timeout = opts.timeout or 5000,
     level = level,
+    level_name = string.upper(config.levels()[level].name),
     on_open = opts.on_open,
     on_close = opts.on_close,
   }

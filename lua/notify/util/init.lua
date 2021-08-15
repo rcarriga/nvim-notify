@@ -1,5 +1,7 @@
 local M = {}
 
+local config = require("notify.config")
+
 function M.round(num, decimals)
   if decimals then
     return tonumber(string.format("%." .. decimals .. "f", num))
@@ -35,6 +37,17 @@ function M.set_win_config(win, conf)
     conf[field] = math.max(M.round(conf[field]), 1)
   end
   return (pcall(vim.api.nvim_win_set_config, win, conf))
+end
+
+-- Converts a level name (or number) to a level number.
+-- returns the default number on invalid input
+function M.to_level(level_name)
+  for level, level_config in pairs(config.levels()) do
+    if level == level_name or level_config.name == level_name then
+      return level
+    end
+  end
+  return config.default_level()
 end
 
 M.FIFOQueue = require("notify.util.queue")
