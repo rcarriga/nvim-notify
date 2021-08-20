@@ -3,7 +3,8 @@ local M = {}
 require("notify.config.highlights")
 
 local default_config = {
-  stages = "slide",
+  stages = "fade_in_slide_out",
+  background_highlight = "#121212",
   icons = {
     ERROR = "",
     WARN = "",
@@ -19,6 +20,10 @@ function M.setup(config)
   local filled = vim.tbl_deep_extend("keep", config or {}, default_config)
   user_config = filled
   require("dapui.config.highlights").setup()
+end
+
+function M.background_highlight()
+  return user_config.background_highlight
 end
 
 function M.icons()

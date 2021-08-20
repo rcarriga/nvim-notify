@@ -1,7 +1,10 @@
 local api = vim.api
 local namespace = api.nvim_create_namespace("nvim-notify")
 
+local NotifyBufHighlights = require("notify.service.buffer.highlights")
+
 ---@class NotificationBuf
+---@field highlights NotifyBufHighlights
 ---@field _notif Notification
 ---@field _state "open" | "closed"
 ---@field _buffer number
@@ -21,6 +24,7 @@ function NotificationBuf:new(kwargs)
     _state = BufState.CLOSED,
     _width = 0,
     _height = 0,
+    highlights = NotifyBufHighlights(kwargs.notif.level, kwargs.buffer),
   }
   setmetatable(notif_buf, self)
   self.__index = self
@@ -77,30 +81,30 @@ function NotificationBuf:render()
     vim.fn.strchars(left_title .. right_title),
     50
   )
-  local title_highlight = "Notify" .. notif.level .. "Title"
   api.nvim_buf_set_lines(buf, 0, 1, false, { "", "" })
   api.nvim_buf_set_extmark(buf, namespace, 0, 0, {
-    virt_text = { { left_title, title_highlight } },
+    virt_text = { { left_title, self.highlights.title } },
     virt_text_win_col = 0,
     priority = max_width,
   })
   api.nvim_buf_set_extmark(buf, namespace, 0, 0, {
-    virt_text = { { right_title, title_highlight } },
+    virt_text = { { right_title, self.highlights.title } },
     virt_text_pos = "right_align",
     priority = max_width,
   })
   api.nvim_buf_set_extmark(buf, namespace, 1, 0, {
-    virt_text = { { string.rep("━", max_width), "Notify" .. notif.level } },
+    virt_text = { { string.rep("━", max_width), self.highlights.border } },
     virt_text_win_col = 0,
     priority = max_width,
   })
-  api.nvim_buf_set_extmark(buf, namespace, 1, 0, {
-    virt_text = { { string.rep("━", max_width), "Notify" .. notif.level } },
-    virt_text_win_col = 0,
-    priority = max_width,
+  api.nvim_buf_set_lines(buf, 2, 2 + #notif.message, false, notif.message)
+
+  api.nvim_buf_set_extmark(buf, namespace, 2, 0, {
+    hl_group = self.highlights.body,
+    end_line = 1 + #notif.message,
+    end_col = #notif.message[#notif.message],
   })
 
-  api.nvim_buf_set_lines(buf, 2, 2 + #notif.message, false, notif.message)
   api.nvim_buf_set_option(buf, "modifiable", false)
 
   self._width = max_width

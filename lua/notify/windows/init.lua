@@ -50,8 +50,10 @@ function WindowAnimator:push_pending(queue)
     if not win_opts then
       return
     end
+    local opacity = util.pop(win_opts, "opacity", 100)
+    notif_buf.highlights:set_opacity(opacity)
     local win = api.nvim_open_win(notif_buf:buffer(), false, win_opts)
-    vim.wo[win].winhl = "Normal:Normal,FloatBorder:Notify" .. notif_buf:level()
+    vim.wo[win].winhl = "Normal:Normal,FloatBorder:" .. notif_buf.highlights.border
     vim.wo[win].wrap = false
     self.win_stages[win] = 2
     self.notif_bufs[win] = notif_buf
@@ -61,14 +63,17 @@ function WindowAnimator:push_pending(queue)
 end
 
 function WindowAnimator:advance_stages(goals)
+  local default_complete = function(goal, position)
+    return goal == util.round(position, 2)
+  end
   for win, _ in pairs(self.win_stages) do
     local win_goals = goals[win]
     local complete = true
     for field, state in pairs(self.win_states[win] or {}) do
       if win_goals[field].complete then
         complete = win_goals[field].complete(state.position)
-      elseif state.goal ~= util.round(state.position, 2) then
-        complete = false
+      else
+        complete = default_complete(state.goal, state.position)
       end
       if not complete then
         break
@@ -152,9 +157,12 @@ function WindowAnimator:stage_state(win, goals, time)
       local goal_type = type(goal)
       -- Handle spring goal
       if goal_type == "table" and goal[1] then
+        local init_state = (
+            field == "opacity" and self.notif_bufs[win].highlights:get_opacity() or win_conf[field]
+          )
         local cur_field_state = cur_state[field] or {}
         new_state[field] = animate.spring(time, {
-          position = cur_field_state.position or win_conf[field],
+          position = cur_field_state.position or init_state,
           velocity = cur_field_state.velocity,
           goal = goal[1],
         }, {
@@ -192,7 +200,11 @@ function WindowAnimator:get_updates()
   for win, states in pairs(self.win_states) do
     updates[win] = {}
     for field, state in pairs(states) do
-      updates[win][field] = state.position
+      if field == "opacity" then
+        self.notif_bufs[win].highlights:set_opacity(state.position)
+      else
+        updates[win][field] = state.position
+      end
     end
   end
   return updates
