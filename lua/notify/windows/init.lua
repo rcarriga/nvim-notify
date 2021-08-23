@@ -32,7 +32,7 @@ function WindowAnimator:render(queue, time)
   local goals = self:get_goals()
   self:update_states(time, goals)
   self:advance_stages(goals)
-  return self:get_updates()
+  return self:apply_updates()
 end
 
 function WindowAnimator:push_pending(queue)
@@ -133,7 +133,7 @@ function WindowAnimator:update_states(time, goals)
         end
         self:advance_stage(win)
       end
-      vim.defer_fn(timer_func, win_goals.time)
+      vim.defer_fn(timer_func, self.notif_bufs[win]:timeout() or win_goals.time)
     end
 
     updated_states[win] = self:stage_state(win, win_goals, time)
@@ -195,7 +195,7 @@ function WindowAnimator:get_goals()
   return goals
 end
 
-function WindowAnimator:get_updates()
+function WindowAnimator:apply_updates()
   local updates = {}
   for win, states in pairs(self.win_states) do
     updates[win] = {}
@@ -207,7 +207,11 @@ function WindowAnimator:get_updates()
       end
     end
   end
-  return updates
+  if vim.tbl_isempty(updates) then
+    return false
+  end
+  util.update_configs(updates)
+  return true
 end
 
 ---@return WindowAnimator

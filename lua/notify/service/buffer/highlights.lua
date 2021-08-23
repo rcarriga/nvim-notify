@@ -6,6 +6,7 @@ local util = require("notify.util")
 ---@field opacity number
 ---@field title string
 ---@field border string
+---@field icon string
 ---@field body string
 local NotifyBufHighlights = {}
 
@@ -17,18 +18,19 @@ local function group_fields(group)
 end
 
 function NotifyBufHighlights:new(level, buffer)
-  local orig_title = "Notify" .. level .. "Title"
-  local orig_border = "Notify" .. level
-  local orig_body = "Notify" .. level .. "Body"
-  local title = "Notify" .. level .. "Title" .. buffer
-  local border = "Notify" .. level .. buffer
-  local body = "Notify" .. level .. "Body" .. buffer
-  vim.cmd("hi link " .. title .. " " .. orig_title)
-  vim.cmd("hi link " .. border .. " " .. orig_border)
-  vim.cmd("hi link " .. body .. " " .. orig_body)
+  local function linked_group(section)
+    local orig = "Notify" .. level .. section
+    local new = orig .. buffer
+    vim.cmd("hi link " .. new .. " " .. orig)
+    return new
+  end
+  local title = linked_group("Title")
+  local border = linked_group("Border")
+  local body = linked_group("Body")
+  local icon = linked_group("Icon")
 
   local groups = {}
-  for _, group in pairs({ title, border, body }) do
+  for _, group in pairs({ title, border, body, icon }) do
     groups[group] = group_fields(group)
   end
   local buf_highlights = {
@@ -37,6 +39,7 @@ function NotifyBufHighlights:new(level, buffer)
     border = border,
     body = body,
     title = title,
+    icon = icon,
   }
   self.__index = self
   setmetatable(buf_highlights, self)

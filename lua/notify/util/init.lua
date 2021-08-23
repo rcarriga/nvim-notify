@@ -155,7 +155,7 @@ end
 function M.highlight(name, fields)
   local fields_string = ""
   for field, value in pairs(fields) do
-    fields_string = " " .. field .. "=" .. value
+    fields_string = fields_string .. " " .. field .. "=" .. value
   end
   vim.cmd("hi " .. name .. fields_string)
 end

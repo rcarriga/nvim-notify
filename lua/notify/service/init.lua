@@ -7,7 +7,7 @@ local Notification = util.lazy_require("notify.service.notification")
 ---@class NotificationService
 ---@field private _running boolean
 ---@field private _pending FIFOQueue
----@field private _receiver fun(pending: FIFOQueue, time: number): table | nil
+---@field private _receiver fun(pending: FIFOQueue, time: number): boolean
 ---@field private _notifications Notification[]
 local NotificationService = {}
 
@@ -25,17 +25,16 @@ end
 
 function NotificationService:_run()
   self._running = true
-  local succees, updates = pcall(self._receiver, self._pending, 30 / 1000)
+  local succees, updated = pcall(self._receiver, self._pending, 30 / 1000)
   if not succees then
-    print("Error running notification service: " .. updates)
+    print("Error running notification service: " .. updated)
     self._running = false
     return
   end
-  if not updates then
+  if not updated then
     self._running = false
     return
   end
-  util.update_configs(updates)
   vim.defer_fn(function()
     self:_run()
   end, 30)
@@ -46,7 +45,6 @@ end
 ---@param opts NotifyOptions
 function NotificationService:push(message, level, opts)
   local notif = Notification(message, level, opts or {})
-  self._notifications[#self._notifications + 1] = notif
   local buf = vim.api.nvim_create_buf(false, true)
   local notif_buf = NotificationBuf(buf, notif)
   notif_buf:render()
@@ -56,7 +54,7 @@ function NotificationService:push(message, level, opts)
   end
 end
 
----@param receiver fun(pending: FIFOQueue, time: number): table | nil
+---@param receiver fun(pending: FIFOQueue, time: number): boolean
 ---@return NotificationService
 return function(receiver)
   return NotificationService:new(receiver)

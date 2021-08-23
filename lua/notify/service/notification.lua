@@ -3,7 +3,7 @@ local config = require("notify.config")
 ---@class Notification
 ---@field level string
 ---@field message string
----@field timeout number
+---@field timeout number | nil
 ---@field title string
 ---@field icon string
 ---@field time number
@@ -26,7 +26,7 @@ function Notification:new(message, level, opts)
     title = opts.title or "",
     icon = opts.icon or config.icons()[level] or config.icons().INFO,
     time = vim.fn.localtime(),
-    timeout = opts.timeout or 5000,
+    timeout = opts.timeout,
     level = level,
     keep = opts.keep,
     on_open = opts.on_open,
@@ -43,9 +43,11 @@ end
 ---@field timeout number | nil
 ---@field on_open fun(win: number) | nil
 ---@field on_close fun(win: number) | nil
+---@field keep fun(win: number): boolean | nil
 
 ---@param message string | string[]
 ---@param level string | number
+---@param opts NotifyOptions
 return function(message, level, opts)
   return Notification:new(message, level, opts)
 end

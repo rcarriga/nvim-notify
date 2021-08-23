@@ -73,22 +73,26 @@ function NotificationBuf:render()
   api.nvim_buf_set_option(buf, "modifiable", true)
 
   local right_title = vim.fn.strftime("%H:%M", notif.time)
-  local left_title = " " .. notif.icon .. " " .. (notif.title or "")
+  local left_icon = notif.icon .. " "
   local max_width = math.max(
     math.max(unpack(vim.tbl_map(function(line)
       return vim.fn.strchars(line)
     end, notif.message))),
-    vim.fn.strchars(left_title .. right_title),
     50
   )
+  local left_title = (notif.title or "") .. string.rep(" ", max_width)
   api.nvim_buf_set_lines(buf, 0, 1, false, { "", "" })
   api.nvim_buf_set_extmark(buf, namespace, 0, 0, {
-    virt_text = { { left_title, self.highlights.title } },
+    virt_text = {
+      { " " },
+      { left_icon, self.highlights.icon },
+      { left_title, self.highlights.title },
+    },
     virt_text_win_col = 0,
     priority = max_width,
   })
   api.nvim_buf_set_extmark(buf, namespace, 0, 0, {
-    virt_text = { { right_title, self.highlights.title } },
+    virt_text = { { right_title, self.highlights.title }, { " " } },
     virt_text_pos = "right_align",
     priority = max_width,
   })
