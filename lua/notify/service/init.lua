@@ -1,8 +1,6 @@
 local util = require("notify.util")
----@type fun(buf: number, notification: Notification): NotificationBuf
-local NotificationBuf = util.lazy_require("notify.service.buffer")
----@type fun(message: string | string[], level: number | string, opts: NotifyOptions): Notification
-local Notification = util.lazy_require("notify.service.notification")
+local NotificationBuf = require("notify.service.buffer")
+local Notification = require("notify.service.notification")
 
 ---@class NotificationService
 ---@field private _running boolean

@@ -1,3 +1,4 @@
+local config = require("notify.config")
 local api = vim.api
 local animate = require("notify.animate")
 local util = require("notify.util")
@@ -43,10 +44,10 @@ function WindowAnimator:push_pending(queue)
     ---@type NotificationBuf
     local notif_buf = queue:peek()
     local windows = vim.tbl_keys(self.win_stages)
-    local win_opts = self.stages[1](
-      windows,
-      { height = notif_buf:height(), width = notif_buf:width() }
-    )
+    local win_opts = self.stages[1]({
+      message = { height = notif_buf:height(), width = notif_buf:width() },
+      open_windows = windows,
+    })
     if not win_opts then
       return
     end
@@ -133,7 +134,7 @@ function WindowAnimator:update_states(time, goals)
         end
         self:advance_stage(win)
       end
-      vim.defer_fn(timer_func, self.notif_bufs[win]:timeout() or win_goals.time)
+      vim.defer_fn(timer_func, self.notif_bufs[win]:timeout() or config.default_timeout())
     end
 
     updated_states[win] = self:stage_state(win, win_goals, time)
@@ -172,6 +173,8 @@ function WindowAnimator:stage_state(win, goals, time)
         --- Directly move goal
       elseif goal_type ~= "table" then
         new_state[field] = { position = goal }
+      else
+        print("nvim-notify: Invalid stage goal: " .. vim.inspect(goal))
       end
     end
   end
@@ -180,12 +183,13 @@ end
 
 function WindowAnimator:get_goals()
   local goals = {}
+  local open_windows = vim.tbl_keys(self.win_stages)
   for win, win_stage in pairs(self.win_stages) do
     local notif_buf = self.notif_bufs[win]
-    local win_goals = self.stages[win_stage](
-      win,
-      { height = notif_buf:height(), width = notif_buf:width() }
-    )
+    local win_goals = self.stages[win_stage]({
+      message = { height = notif_buf:height(), width = notif_buf:width() },
+      open_windows = open_windows,
+    }, win)
     if not win_goals then
       self:remove_win(win)
     else

@@ -48,7 +48,7 @@ end
 
 function NotifyBufHighlights:set_opacity(alpha)
   self.opacity = alpha
-  local background = config.background_highlight()
+  local background = config.background_colour()
   for group, fields in pairs(self.groups) do
     local updated_fields = {}
     for name, value in pairs(fields) do

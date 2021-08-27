@@ -1,17 +1,17 @@
 local stage_util = require("notify.stages.util")
 
 return {
-  function(open_windows, state)
-    local next_height = state.height + 2
-    local next_row = stage_util.available_row(open_windows, next_height)
+  function(state)
+    local next_height = state.message.height + 2
+    local next_row = stage_util.available_row(state.open_windows, next_height)
     if not next_row then
       return nil
     end
     return {
       relative = "editor",
       anchor = "NE",
-      width = state.width,
-      height = state.height,
+      width = state.message.width,
+      height = state.message.height,
       col = vim.opt.columns:get(),
       row = next_row,
       border = "rounded",
@@ -21,7 +21,7 @@ return {
   function()
     return {
       col = { vim.opt.columns:get() },
-      time = 2000,
+      time = true,
     }
   end,
 }
