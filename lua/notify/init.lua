@@ -1,82 +1,37 @@
-local NotificationRenderer = require("notify.render")
-local config = require("notify.config")
+local util = require("notify.util")
 
-local renderer = NotificationRenderer()
+local config = util.lazy_require("notify.config")
+local stages = util.lazy_require("notify.stages")
+---@type fun(stages: function[]): WindowAnimator
+local WindowAnimator = util.lazy_require("notify.windows")
+---@type fun(receiver: fun(pending: FIFOQueue, time: number): table | nil): NotificationService
+local NotificationService = util.lazy_require("notify.service")
 
-local running = false
+local service
 
-local function run()
-  running = true
-  local succees, ran = pcall(renderer.step, renderer, 30 / 1000)
-  if not succees then
-    print("Error running notification service: " .. ran)
-    running = false
-    return
-  end
-  if not ran then
-    running = false
-    return
-  end
-  vim.defer_fn(run, 30)
-end
-
-local notifications = {}
-
----@class Notification
----@field level string
----@field message string
----@field timeout number
----@field title string
----@field icon string
----@field time number
----@field width number
----@field on_open fun(win: number) | nil
----@field on_close fun(win: number) | nil
-local Notification = {}
-
-function Notification:new(message, level, opts)
-  if type(level) == "number" then
-    level = vim.lsp.log_levels[level]
-  end
-  if type(message) == "string" then
-    message = vim.split(message, "\n")
-  end
-  level = vim.fn.toupper(level or "info")
-  local notif = {
-    message = message,
-    title = opts.title or "",
-    icon = opts.icon or config.icons()[level] or config.icons().INFO,
-    time = vim.fn.localtime(),
-    timeout = opts.timeout or 5000,
-    level = level,
-    on_open = opts.on_open,
-    on_close = opts.on_close,
-  }
-  self.__index = self
-  setmetatable(notif, self)
-  return notif
-end
-
----@class NotifyOptions
----@field title string | nil
----@field icon string | nil
----@field timeout number | nil
----@field on_open fun(win: number) | nil
----@field on_close fun(win: number) | nil
-
----@param opts NotifyOptions
-local function notify(_, message, level, opts)
-  vim.schedule(function()
-    local notif = Notification:new(message, level, opts or {})
-    notifications[#notifications + 1] = notif
-    renderer:queue(notif)
-    if not running then
-      run()
-    end
+local function setup(user_config)
+  config.setup(user_config)
+  local animator_stages = config.stages()
+  animator_stages = type(animator_stages) == "string" and stages[animator_stages] or animator_stages
+  local animator = WindowAnimator(animator_stages)
+  service = NotificationService(function(...)
+    return animator:render(...)
   end)
 end
 
-local M = {}
+---@param message string | string[]
+---@param level string | number
+---@param opts NotifyOptions
+local function notify(_, message, level, opts)
+  vim.schedule(function()
+    if not service then
+      setup()
+    end
+    service:push(message, level, opts)
+  end)
+end
+
+local M = { setup = setup }
 
 setmetatable(M, { __call = notify })
 
