@@ -33,7 +33,7 @@ There are a number of custom options that can be supplied in a table as the thir
 - `timeout`: Number of milliseconds to show the window (default 5000)
 - `on_open`: A function to call with the window ID as an argument after opening
 - `on_close`: A function to call with the window ID as an argument after closing
-- `title`: Title string for the header
+- `title`: Title string or tuple of strings for the header. If tuple, the right header is set to the second element.
 - `icon`: Icon to use for the header
 - `keep`: Function that returns whether or not to keep the window open instead of using a timeout
 

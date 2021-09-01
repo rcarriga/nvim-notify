@@ -4,7 +4,7 @@ local config = require("notify.config")
 ---@field level string
 ---@field message string
 ---@field timeout number | nil
----@field title string
+---@field title string[]
 ---@field icon string
 ---@field time number
 ---@field width number
@@ -21,11 +21,16 @@ function Notification:new(message, level, opts)
     message = vim.split(message, "\n")
   end
   level = vim.fn.toupper(level or "info")
+  local time = vim.fn.localtime()
+  local title = opts.title or ""
+  if type(title) == "string" then
+    title = { title, vim.fn.strftime("%H:%M", time) }
+  end
   local notif = {
     message = message,
-    title = opts.title or "",
+    title = title,
     icon = opts.icon or config.icons()[level] or config.icons().INFO,
-    time = vim.fn.localtime(),
+    time = time,
     timeout = opts.timeout,
     level = level,
     keep = opts.keep,
