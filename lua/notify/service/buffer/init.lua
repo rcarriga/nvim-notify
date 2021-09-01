@@ -37,7 +37,9 @@ function NotificationBuf:open(win)
   end
   self._state = BufState.OPEN
   if self._notif.on_open then
-    self._notif.on_open(win)
+    vim.schedule(function()
+      self._notif.on_open(win)
+    end)
   end
 end
 
@@ -47,7 +49,9 @@ function NotificationBuf:close(win)
   end
   self._state = BufState.CLOSED
   if self._notif.on_close then
-    self._notif.on_close(win)
+    vim.schedule(function()
+      self._notif.on_close(win)
+    end)
   end
 end
 

@@ -31,15 +31,17 @@ local function validate_highlight(colour_or_group, needs_opacity)
   local group_bg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(colour_or_group)), "bg")
   if group_bg == "" then
     if needs_opacity then
-      vim.notify(
-        "Highlight group '"
-          .. colour_or_group
-          .. "' has no background highlight.\n\n"
-          .. "Please provide an RGB hex value or highlight group with a background value for 'background_colour' option\n\n"
-          .. "Defaulting to #000000",
-        "warn",
-        { title = "nvim-notify" }
-      )
+      vim.schedule(function()
+        vim.notify(
+          "Highlight group '"
+            .. colour_or_group
+            .. "' has no background highlight.\n\n"
+            .. "Please provide an RGB hex value or highlight group with a background value for 'background_colour' option\n\n"
+            .. "Defaulting to #000000",
+          "warn",
+          { title = "nvim-notify" }
+        )
+      end)
     end
     return "#000000"
   end

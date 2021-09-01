@@ -1,0 +1,12 @@
+describe("checking public interface", function()
+  local notify = require("notify")
+  require("notify").setup({ background_colour = "#000000" })
+
+  describe("notifications", function()
+    it("returns all previous notifications", function()
+      notify("test", "error")
+      local notifs = notify.history()
+      assert.are.same({ { message = { "test" }, level = "ERROR", time = notifs[1].time } }, notifs)
+    end)
+  end)
+end)

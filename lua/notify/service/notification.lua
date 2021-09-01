@@ -2,7 +2,7 @@ local config = require("notify.config")
 
 ---@class Notification
 ---@field level string
----@field message string
+---@field message string[]
 ---@field timeout number | nil
 ---@field title string[]
 ---@field icon string
@@ -14,6 +14,7 @@ local config = require("notify.config")
 local Notification = {}
 
 function Notification:new(message, level, opts)
+  opts = opts or {}
   if type(level) == "number" then
     level = vim.lsp.log_levels[level]
   end

@@ -1,12 +1,10 @@
 local util = require("notify.util")
 local NotificationBuf = require("notify.service.buffer")
-local Notification = require("notify.service.notification")
 
 ---@class NotificationService
 ---@field private _running boolean
 ---@field private _pending FIFOQueue
 ---@field private _receiver fun(pending: FIFOQueue, time: number): boolean
----@field private _notifications Notification[]
 local NotificationService = {}
 
 function NotificationService:new(receiver)
@@ -14,7 +12,6 @@ function NotificationService:new(receiver)
     _receiver = receiver,
     _pending = util.FIFOQueue(),
     _running = false,
-    _notifications = {},
   }
   self.__index = self
   setmetatable(service, self)
@@ -38,11 +35,7 @@ function NotificationService:_run()
   end, 30)
 end
 
----@param message string | string[]
----@param level string | number
----@param opts NotifyOptions
-function NotificationService:push(message, level, opts)
-  local notif = Notification(message, level, opts or {})
+function NotificationService:push(notif)
   local buf = vim.api.nvim_create_buf(false, true)
   local notif_buf = NotificationBuf(buf, notif)
   notif_buf:render()
