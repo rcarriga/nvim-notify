@@ -24,7 +24,7 @@ function NotifyBufHighlights:new(level, buffer)
       orig = "NotifyINFO" .. section
     end
     local new = orig .. buffer
-    vim.cmd("hi link " .. new .. " " .. orig)
+    vim.cmd("silent! hi link " .. new .. " " .. orig)
     return new
   end
   local title = linked_group("Title")

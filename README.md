@@ -63,6 +63,15 @@ vim.notify("This is an error message.\nSomething went wrong!", "error", {
 })
 ```
 
+You can get a list of past notifications with the history function
+```lua
+require("notify").history()
+```
+which returns a list of tables with the following keys:
+- `message: string[]` Lines of the message
+- `level: string` Log level
+- `time: number` Time of message, as returned by `vim.fn.localtime()`
+
 ## Configuration
 
 ### Setup
