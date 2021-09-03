@@ -96,7 +96,9 @@ require("notify").setup({
 ### Highlights
 
 You can define custom highlights by supplying highlight groups for each of the levels.
-The naming scheme follows a simple structure: `Notify<upper case level name><section>`
+The naming scheme follows a simple structure: `Notify<upper case level name><section>`.
+If you want to use custom levels, you can define the highlights for them or
+they will follow the `INFO` highlights by default.
 
 Here are the defaults:
 

@@ -20,6 +20,9 @@ end
 function NotifyBufHighlights:new(level, buffer)
   local function linked_group(section)
     local orig = "Notify" .. level .. section
+    if vim.fn.hlID(orig) == 0 then
+      orig = "NotifyINFO"..section
+    end
     local new = orig .. buffer
     vim.cmd("hi link " .. new .. " " .. orig)
     return new
