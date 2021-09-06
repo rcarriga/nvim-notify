@@ -74,6 +74,7 @@ function NotificationBuf:render()
   local notif = self._notif
   local buf = self._buffer
 
+  api.nvim_buf_set_option(buf, "filetype", "notify")
   api.nvim_buf_set_option(buf, "modifiable", true)
 
   local left_icon = notif.icon .. " "
