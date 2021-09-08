@@ -55,7 +55,7 @@ function NotifyBufHighlights:set_opacity(alpha)
   for group, fields in pairs(self.groups) do
     local updated_fields = {}
     for name, value in pairs(fields) do
-      if value ~= "" then
+      if value ~= "" and value ~= "none" then
         updated_fields[name] = util.blend(value, background, alpha / 100)
       end
     end
