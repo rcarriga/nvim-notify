@@ -29,7 +29,7 @@ local function validate_highlight(colour_or_group, needs_opacity)
     return colour_or_group
   end
   local group_bg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(colour_or_group)), "bg")
-  if group_bg == "" then
+  if group_bg == "" or group_bg == "none" then
     if needs_opacity then
       vim.schedule(function()
         vim.notify(
