@@ -22,6 +22,9 @@ function M.setup()
     hi default link NotifyINFOBody Normal
     hi default link NotifyDEBUGBody Normal
     hi default link NotifyTRACEBody Normal
+
+    hi default link NotifyLogTime Comment
+    hi default link NotifyLogTitle Special
   ]])
 end
 

@@ -72,6 +72,8 @@ which returns a list of tables with the following keys:
 - `level: string` Log level
 - `time: number` Time of message, as returned by `vim.fn.localtime()`
 
+There is also a `:Notifications` command to display a log of the history.
+
 ## Configuration
 
 ### Setup

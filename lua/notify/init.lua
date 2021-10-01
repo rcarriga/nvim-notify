@@ -23,6 +23,8 @@ function M.setup(user_config)
   service = NotificationService(function(...)
     return animator:render(...)
   end)
+
+  vim.cmd([[command! Notifications :lua require("notify")._print_history()<CR>]])
 end
 
 ---@param message string | string[]
@@ -39,8 +41,30 @@ end
 
 function M.history()
   return vim.tbl_map(function(notif)
-    return { message = notif.message, level = notif.level, time = notif.time }
+    return {
+      message = notif.message,
+      level = notif.level,
+      time = notif.time,
+      title = notif.title,
+      icon = notif.icon,
+    }
   end, notifications)
+end
+
+function M._print_history()
+  for _, notif in ipairs(M.history()) do
+    vim.api.nvim_echo({
+      { vim.fn.strftime("%FT%T", notif.time), "NotifyLogTime" },
+      { " ", "Normal" },
+      { notif.title[1], "NotifyLogTitle" },
+      { #notif.title[1] > 0 and " " or "", "Normal" },
+      { notif.icon, "Notify" .. notif.level .. "Title" },
+      { #notif.title[1] > 0 and " " or "", "Normal" },
+      { notif.level, "Notify" .. notif.level .. "Title" },
+      { " ", "Normal" },
+      { table.concat(notif.message, "\n"), "Normal" },
+    }, false, {})
+  end
 end
 
 setmetatable(M, {
