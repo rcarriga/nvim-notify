@@ -70,6 +70,8 @@ require("notify").history()
 which returns a list of tables with the following keys:
 - `message: string[]` Lines of the message
 - `level: string` Log level
+- `title: string[]` Left and right sections of the title
+- `icon: string` Icon used for notification
 - `time: number` Time of message, as returned by `vim.fn.localtime()`
 
 There is also a `:Notifications` command to display a log of the history.
