@@ -55,14 +55,14 @@ function M._print_history()
   for _, notif in ipairs(M.history()) do
     vim.api.nvim_echo({
       { vim.fn.strftime("%FT%T", notif.time), "NotifyLogTime" },
-      { " ", "Normal" },
+      { " ", "MsgArea" },
       { notif.title[1], "NotifyLogTitle" },
-      { #notif.title[1] > 0 and " " or "", "Normal" },
+      { #notif.title[1] > 0 and " " or "", "MsgArea" },
       { notif.icon, "Notify" .. notif.level .. "Title" },
-      { #notif.title[1] > 0 and " " or "", "Normal" },
+      { #notif.title[1] > 0 and " " or "", "MsgArea" },
       { notif.level, "Notify" .. notif.level .. "Title" },
-      { " ", "Normal" },
-      { table.concat(notif.message, "\n"), "Normal" },
+      { " ", "MsgArea" },
+      { table.concat(notif.message, "\n"), "MsgArea" },
     }, false, {})
   end
 end
