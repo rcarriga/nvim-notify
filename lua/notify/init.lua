@@ -17,6 +17,12 @@ local M = {}
 
 function M.setup(user_config)
   config.setup(user_config)
+
+  local has_telescope = pcall(require, "telescope")
+  if has_telescope then
+    require("telescope").load_extension("notify")
+  end
+
   local animator_stages = config.stages()
   animator_stages = type(animator_stages) == "string" and stages[animator_stages] or animator_stages
   local animator = WindowAnimator(animator_stages)

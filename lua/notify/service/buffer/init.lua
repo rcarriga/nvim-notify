@@ -10,6 +10,7 @@ local NotifyBufHighlights = require("notify.service.buffer.highlights")
 ---@field _buffer number
 ---@field _height number
 ---@field _width number
+---@field _max_width number | nil
 local NotificationBuf = {}
 
 local BufState = {
@@ -19,6 +20,7 @@ local BufState = {
 
 function NotificationBuf:new(kwargs)
   local notif_buf = {
+    _max_width = kwargs.max_width,
     _notif = kwargs.notif,
     _buffer = kwargs.buffer,
     _state = BufState.CLOSED,
@@ -78,12 +80,13 @@ function NotificationBuf:render()
   api.nvim_buf_set_option(buf, "modifiable", true)
 
   local left_icon = notif.icon .. " "
-  local max_width = math.max(
-    math.max(unpack(vim.tbl_map(function(line)
-      return vim.fn.strchars(line)
-    end, notif.message))),
-    50
-  )
+  local max_width = self._max_width
+    or math.max(
+      math.max(unpack(vim.tbl_map(function(line)
+        return vim.fn.strchars(line)
+      end, notif.message))),
+      50
+    )
   local left_title = notif.title[1] .. string.rep(" ", max_width)
   local right_title = notif.title[2]
   api.nvim_buf_set_lines(buf, 0, 1, false, { "", "" })
@@ -135,6 +138,8 @@ end
 ---@param buf number
 ---@param notification Notification
 ---@return NotificationBuf
-return function(buf, notification)
-  return NotificationBuf:new({ buffer = buf, notif = notification })
+return function(buf, notification, opts)
+  return NotificationBuf:new(
+    vim.tbl_extend("keep", { buffer = buf, notif = notification }, opts or {})
+  )
 end

@@ -1,7 +1,5 @@
 # nvim-notify
 
-**This is in proof of concept stage right now, changes are very likely but you are free to try it out and give feedback!**
-
 A fancy, configurable, notification manager for NeoVim
 
 ![notify](https://user-images.githubusercontent.com/24252670/130856848-e8289850-028f-4f49-82f1-5ea1b8912f5e.gif)
@@ -63,6 +61,32 @@ vim.notify("This is an error message.\nSomething went wrong!", "error", {
 })
 ```
 
+### Viewing History
+
+If you have [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) installed then you can use the `notify` extension to search the history:
+
+```vim
+:Telescope notify
+```
+or in lua
+```lua
+require('telescope').extensions.notify.notify(<opts>)
+```
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/24252670/136264308-2fcdfe57-a8f6-4b34-8ea1-e3a8349bc581.png" />
+</p>
+
+There is a command to display a log of the history.
+
+```vim
+:Notifications
+```
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/24252670/136264653-83038119-634b-48e7-8e8a-0edf4546efe2.png" />
+</p>
+
 You can get a list of past notifications with the history function
 ```lua
 require("notify").history()
@@ -74,7 +98,7 @@ which returns a list of tables with the following keys:
 - `icon: string` Icon used for notification
 - `time: number` Time of message, as returned by `vim.fn.localtime()`
 
-There is also a `:Notifications` command to display a log of the history.
+
 
 ## Configuration
 
@@ -93,6 +117,7 @@ require("notify").setup({
   timeout = 5000,
 
   -- For stages that change opacity this is treated as the highlight behind the window
+  -- Set this to either a highlight group or an RGB hex value e.g. "#000000"
   background_colour = "Normal",
 
   -- Icons for the different levels
