@@ -1,0 +1,113 @@
+================================================================================
+                                                                   *nvim-notify*
+
+A fancy, configurable notification manager for NeoVim
+
+NotifyOptions                                                  *NotifyOptions*
+    Options for an individual notification
+
+    Fields: ~
+        {title}    (string|nil)
+        {icon}     (string|nil)
+        {timeout}  (number|nil)    Time to show notification in milliseconds.
+        {on_open}  (function|nil)  Callback for when window opens, receives
+                                   window as argument.
+        {on_close} (function|nil)  Callback for when window closes, receives
+                                   window as argument.
+        {keep}     (function|nil)  Function to keep the notification window
+                                   open after timeout, should return boolean.
+
+
+NotificationEvents                                        *NotificationEvents*
+    Async events for a notification
+
+    Fields: ~
+        {open}  (function)  Resolves when notification is opened
+        {close} (function)  Resolved when notification is closed
+
+
+NotificationRecord                                        *NotificationRecord*
+    Record of a previously sent notification
+
+    Fields: ~
+        {message} (string[])  Lines of the message
+        {level}   (string)    Log level
+        {title}   (string[])  Left and right sections of the title
+        {icon}    (string)    Icon used for notification
+        {time}    (number)    Time of message, as returned by
+                              `vim.fn.localtime()`
+
+
+notify.setup({user_config})                                   *notify.setup()*
+    Configure nvim-notify with custom settings
+
+
+    Parameters: ~
+        {user_config} (table)  Custom config
+
+    Fields: ~
+        {timeout}           (number)                 Default timeout for
+                                                     notification
+        {stages}            (function[])             Animation stages
+        {background_colour} (string)                 For stages that change
+                                                     opacity this is treated
+                                                     as the highlight behind
+                                                     the window. Set this to
+                                                     either a highlight group
+                                                     or an RGB hex value e.g.
+                                                     "#000000"
+        {icons}             (table<string, string>)  Icons for each level
+                                                     (upper case names)
+        {on_open}           (function|nil)           Function called when a
+                                                     new window is opened, use
+                                                     for changing win
+                                                     settings/config
+
+
+notify.notify({message}, {level}, {opts})                    *notify.notify()*
+    Display a notification.
+
+    You can call the module directly rather than using this:
+    >
+     require("notify")(message, level, opts)
+<
+
+
+    Parameters: ~
+        {message} (string|string[])    Notification message
+        {level}   (string|number|nil)
+        {opts}    (NotifyOptions|nil)  Notification options
+
+
+notify.async({message}, {level}, {opts})                      *notify.async()*
+    Display a notification asynchronously
+
+    This uses plenary's async library, allowing a cleaner interface for
+    open/close events. You must call this function within an async context.
+
+    The `on_close` and `on_open` options are not used.
+
+
+
+    Parameters: ~
+        {message} (string|string[])    Notification message
+        {level}   (string|number|nil)
+        {opts}    (NotifyOptions|nil)  Notification options
+
+    Return: ~
+        NotificationEvents
+
+
+notify.history()                                            *notify.history()*
+    Get records of all previous notifications
+
+    You can use the `:Notifications` command to display a log of previous
+    notifications
+
+
+    Return: ~
+        NotificationRecord[]
+
+
+
+ vim:tw=78:ts=8:ft=help:norl:

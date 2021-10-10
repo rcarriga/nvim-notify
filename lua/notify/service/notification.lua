@@ -43,14 +43,6 @@ function Notification:new(message, level, opts)
   return notif
 end
 
----@class NotifyOptions
----@field title string | nil
----@field icon string | nil
----@field timeout number | nil
----@field on_open fun(win: number) | nil
----@field on_close fun(win: number) | nil
----@field keep fun(win: number): boolean | nil
-
 ---@param message string | string[]
 ---@param level string | number
 ---@param opts NotifyOptions
