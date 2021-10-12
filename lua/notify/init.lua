@@ -18,7 +18,7 @@ local M = {}
 function M.setup(user_config)
   config.setup(user_config)
 
-  local has_telescope = pcall(require, "telescope")
+  local has_telescope = (vim.fn.exists("g:loaded_telescope") == 1)
   if has_telescope then
     require("telescope").load_extension("notify")
   end

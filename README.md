@@ -73,6 +73,8 @@ or in lua
 require('telescope').extensions.notify.notify(<opts>)
 ```
 
+**Note:** If you lazy load `telescope` you should manually call `require("telescope").load_extension("notify")` before using the above commands. If you don't lazy load `telescope` then `notify` does this for you.
+
 <p align="center">
   <img src="https://user-images.githubusercontent.com/24252670/136264308-2fcdfe57-a8f6-4b34-8ea1-e3a8349bc581.png" />
 </p>
