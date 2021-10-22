@@ -157,7 +157,9 @@ function M.highlight(name, fields)
   for field, value in pairs(fields) do
     fields_string = fields_string .. " " .. field .. "=" .. value
   end
-  vim.cmd("hi " .. name .. fields_string)
+  if fields_string ~= "" then
+    vim.cmd("hi " .. name .. fields_string)
+  end
 end
 
 return M
