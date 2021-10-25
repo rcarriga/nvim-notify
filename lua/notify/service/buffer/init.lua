@@ -1,5 +1,6 @@
 local api = vim.api
 local namespace = api.nvim_create_namespace("nvim-notify")
+local config = require("notify.config")
 
 local NotifyBufHighlights = require("notify.service.buffer.highlights")
 
@@ -38,11 +39,14 @@ function NotificationBuf:open(win)
     return
   end
   self._state = BufState.OPEN
-  if self._notif.on_open then
-    vim.schedule(function()
+  vim.schedule(function()
+    if self._notif.on_open then
       self._notif.on_open(win)
-    end)
-  end
+    end
+    if config.on_open() then
+      config.on_open()(win)
+    end
+  end)
 end
 
 function NotificationBuf:close(win)

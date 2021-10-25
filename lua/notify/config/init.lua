@@ -13,6 +13,7 @@ local default_config = {
   timeout = 5000,
   stages = BUILTIN_STAGES.FADE_IN_SLIDE_OUT,
   background_colour = "Normal",
+  on_open = nil,
   icons = {
     ERROR = "",
     WARN = "",
@@ -77,6 +78,10 @@ end
 
 function M.default_timeout()
   return user_config.timeout
+end
+
+function M.on_open()
+  return user_config.on_open
 end
 
 return M
