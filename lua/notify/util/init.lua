@@ -1,4 +1,5 @@
 local M = {}
+local bit = require 'bit'
 
 function M.lazy_require(require_path)
   return setmetatable({}, {
@@ -35,13 +36,27 @@ function M.zip(first, second)
   return new
 end
 
-local function split_hex_colour(hex)
+local function resolve_color_to_hex(color)
+  local v = vim.api.nvim_get_color_by_name(color)
+  if v < 0 then return nil end
+  return bit.tohex(v, 6)
+end
+
+local function split_hex_colour(color)
+  -- Split a color (named or hex) into a table of integers {R, G, B}.
+  local hex = nil
+  if not color:match("^#[0A-Fa-f0-9]{6}") then
+    hex = resolve_color_to_hex(color)
+    if hex == nil then
+      error("Cannot recognize the color: " .. color)
+    end
+  end
   hex = hex:gsub("#", "")
   return { tonumber(hex:sub(1, 2), 16), tonumber(hex:sub(3, 4), 16), tonumber(hex:sub(5, 6), 16) }
 end
 
-function M.blend(fg_hex, bg_hex, alpha)
-  local channels = M.zip(split_hex_colour(fg_hex), split_hex_colour(bg_hex))
+function M.blend(fg_color, bg_color, alpha)
+  local channels = M.zip(split_hex_colour(fg_color), split_hex_colour(bg_color))
 
   local blended = {}
   for i, i_chans in pairs(channels) do
