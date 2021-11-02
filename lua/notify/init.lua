@@ -8,11 +8,8 @@ local util = require("notify.util")
 
 local config = util.lazy_require("notify.config")
 local stages = util.lazy_require("notify.stages")
----@type fun(message: string | string[], level: string | number, opts: NotifyOptions): Notification
 local Notification = util.lazy_require("notify.service.notification")
----@type fun(stages: function[]): WindowAnimator
 local WindowAnimator = util.lazy_require("notify.windows")
----@type fun(receiver: fun(pending: FIFOQueue, time: number): table | nil): NotificationService
 local NotificationService = util.lazy_require("notify.service")
 
 local service
@@ -140,6 +137,13 @@ function notify.history()
       icon = notif.icon,
     }
   end, notifications)
+end
+
+---Dismiss all notification windows currently displayed
+function notify.dismiss()
+  if service then
+    service:dismiss()
+  end
 end
 
 function notify._print_history()
