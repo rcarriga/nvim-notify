@@ -4,7 +4,6 @@ local animate = require("notify.animate")
 local util = require("notify.util")
 
 ---@class WindowAnimator
----@field pending FIFOQueue
 ---@field win_states table<number, table<string, SpringState>>
 ---@field win_stages table<number, string>
 ---@field notif_bufs table<number, NotificationBuf>

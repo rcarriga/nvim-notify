@@ -45,6 +45,20 @@ function NotificationService:push(notif)
   end
 end
 
+function NotificationService:dismiss()
+  local bufs = vim.api.nvim_list_bufs()
+  local notif_wins = {}
+  for _, buf in pairs(bufs) do
+    local win = vim.fn.bufwinid(buf)
+    if win ~= -1 and vim.api.nvim_buf_get_option(buf, "filetype") == "notify" then
+      notif_wins[#notif_wins + 1] = win
+    end
+  end
+  for _, win in pairs(notif_wins) do
+    pcall(vim.api.nvim_win_close, win, true)
+  end
+end
+
 ---@param receiver fun(pending: FIFOQueue, time: number): boolean
 ---@return NotificationService
 return function(receiver)
