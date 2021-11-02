@@ -61,6 +61,17 @@ vim.notify("This is an error message.\nSomething went wrong!", "error", {
 })
 ```
 
+You can also use plenary's async library to avoid using callbacks:
+```lua
+local async = require("plenary.async")
+local notify = require("notify").async
+
+async.run(function()
+  notify("Let's wait for this to close").close()
+  notify("It closed!")
+end)
+```
+
 ### Viewing History
 
 If you have [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) installed then you can use the `notify` extension to search the history:

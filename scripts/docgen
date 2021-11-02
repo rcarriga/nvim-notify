@@ -1,0 +1,3 @@
+#!/bin/bash
+
+nvim --headless -c "luafile ./scripts/gendocs.lua" -c 'qa'

@@ -1,3 +1,9 @@
+---@brief [[
+---A fancy, configurable notification manager for NeoVim
+---@brief ]]
+
+---@tag nvim-notify
+
 local util = require("notify.util")
 
 local config = util.lazy_require("notify.config")
@@ -13,9 +19,16 @@ local service
 ---@type Notification[]
 local notifications = {}
 
-local M = {}
+local notify = {}
 
-function M.setup(user_config)
+---Configure nvim-notify with custom settings
+---@param user_config table: Custom config
+---@field timeout number: Default timeout for notification
+---@field stages function[]: Animation stages
+---@field background_colour string: For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group or an RGB hex value e.g. "#000000"
+---@field icons table<string, string>: Icons for each level (upper case names)
+---@field on_open function | nil: Function called when a new window is opened, use for changing win settings/config
+function notify.setup(user_config)
   config.setup(user_config)
 
   local has_telescope = (vim.fn.exists("g:loaded_telescope") == 1)
@@ -33,19 +46,91 @@ function M.setup(user_config)
   vim.cmd([[command! Notifications :lua require("notify")._print_history()<CR>]])
 end
 
----@param message string | string[]
----@param level string | number
----@param opts NotifyOptions
-local function notify(message, level, opts)
+---@class NotifyOptions @Options for an individual notification
+---@field title string | nil
+---@field icon string | nil
+---@field timeout number | nil: Time to show notification in milliseconds.
+---@field on_open function | nil: Callback for when window opens, receives window as argument.
+---@field on_close function | nil: Callback for when window closes, receives window as argument.
+---@field keep function | nil: Function to keep the notification window open after timeout, should return boolean.
+
+---@class NotificationEvents @Async events for a notification
+---@field open function: Resolves when notification is opened
+---@field close function: Resolved when notification is closed
+
+---@class NotificationRecord @Record of a previously sent notification
+---@field message string[]: Lines of the message
+---@field level string: Log level
+---@field title string[]: Left and right sections of the title
+---@field icon string: Icon used for notification
+---@field time number: Time of message, as returned by `vim.fn.localtime()`
+
+---Display a notification.
+---
+---You can call the module directly rather than using this:
+---<pre>
+--->
+---  require("notify")(message, level, opts)
+---</pre>
+---@param message string | string[]: Notification message
+---@param level string | number | nil
+---@param opts NotifyOptions | nil: Notification options
+function notify.notify(message, level, opts)
   if not service then
-    M.setup()
+    notify.setup()
   end
   local notification = Notification(message, level, opts or {})
   table.insert(notifications, notification)
   service:push(notification)
 end
 
-function M.history()
+---Display a notification asynchronously
+---
+---This uses plenary's async library, allowing a cleaner interface for
+---open/close events. You must call this function within an async context.
+---
+---The `on_close` and `on_open` options are not used.
+---
+---@param message string | string[]: Notification message
+---@param level string | number | nil
+---@param opts NotifyOptions | nil: Notification options
+---@return NotificationEvents
+function notify.async(message, level, opts)
+  opts = opts or {}
+  local async = require("plenary.async")
+  async.util.scheduler()
+  local close_cond = async.control.Condvar.new()
+  local close_args = {}
+  opts.on_close = function(...)
+    close_args = { ... }
+    close_cond:notify_all()
+  end
+
+  local open_cond = async.control.Condvar.new()
+  local open_args = {}
+  opts.on_open = function(...)
+    open_args = { ... }
+    open_cond:notify_all()
+  end
+
+  notify.notify(message, level, opts)
+  return {
+    open = function()
+      open_cond:wait()
+      return unpack(open_args)
+    end,
+    close = function()
+      close_cond:wait()
+      return unpack(close_args)
+    end,
+  }
+end
+
+---Get records of all previous notifications
+---
+--- You can use the `:Notifications` command to display a log of previous notifications
+---@return NotificationRecord[]
+function notify.history()
   return vim.tbl_map(function(notif)
     return {
       message = notif.message,
@@ -57,8 +142,8 @@ function M.history()
   end, notifications)
 end
 
-function M._print_history()
-  for _, notif in ipairs(M.history()) do
+function notify._print_history()
+  for _, notif in ipairs(notify.history()) do
     vim.api.nvim_echo({
       { vim.fn.strftime("%FT%T", notif.time), "NotifyLogTime" },
       { " ", "MsgArea" },
@@ -73,16 +158,16 @@ function M._print_history()
   end
 end
 
-setmetatable(M, {
+setmetatable(notify, {
   __call = function(_, m, l, o)
     if vim.in_fast_event() then
       vim.schedule(function()
-        notify(m, l, o)
+        notify.notify(m, l, o)
       end)
     else
-      notify(m, l, o)
+      notify.notify(m, l, o)
     end
   end,
 })
 
-return M
+return notify
