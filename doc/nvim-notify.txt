@@ -109,5 +109,10 @@ notify.history()                                            *notify.history()*
         NotificationRecord[]
 
 
+notify.dismiss()                                            *notify.dismiss()*
+    Dismiss all notification windows currently displayed
+
+
+
 
  vim:tw=78:ts=8:ft=help:norl:
