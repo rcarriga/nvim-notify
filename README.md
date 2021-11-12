@@ -139,6 +139,9 @@ require("notify").setup({
   -- Set this to either a highlight group or an RGB hex value e.g. "#000000"
   background_colour = "Normal",
 
+  -- Minimum width for notification windows
+  minimum_width = 50,
+
   -- Icons for the different levels
   icons = {
     ERROR = "",

@@ -26,6 +26,7 @@ local notify = {}
 ---@field icons table<string, string>: Icons for each level (upper case names)
 ---@field on_open function | nil: Function called when a new window is opened, use for changing win settings/config
 ---@field render function | string: Function to render a notification buffer or a built-in renderer name
+---@field minimum_width integer: Minimum width for notification windows
 ---@see notify-render
 function notify.setup(user_config)
   config.setup(user_config)

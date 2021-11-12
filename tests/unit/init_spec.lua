@@ -45,4 +45,13 @@ describe("checking public interface", function()
       end)
     end)
   end)
+
+  a.it("uses the confgured minimum width", function()
+    notify.setup({
+      background_colour = "#000000",
+      minimum_width = 10,
+    })
+    local win = notify.async("test").open()
+    assert.equal(vim.api.nvim_win_get_width(win), 10)
+  end)
 end)

@@ -87,7 +87,7 @@ function NotificationBuf:render()
   api.nvim_buf_set_option(buf, "modifiable", false)
 
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-  local width = 50
+  local width = config.minimum_width()
   for _, line in pairs(lines) do
     width = math.max(width, vim.str_utfindex(line))
   end
