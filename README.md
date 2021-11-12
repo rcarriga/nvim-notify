@@ -129,6 +129,9 @@ require("notify").setup({
   -- Function called when a new window is opened, use for changing win settings/config
   on_open = nil,
 
+  -- Render function for notifications. See notify-render()
+  render = "default",
+
   -- Default timeout for notifications
   timeout = 5000,
 
@@ -178,6 +181,21 @@ highlight link NotifyINFOBody Normal
 highlight link NotifyDEBUGBody Normal
 highlight link NotifyTRACEBody Normal
 ```
+
+### Render Style
+
+The appearance of the notifications can be configured, using either built-in methods or custome functions.
+See `:help notify-render()` for details
+
+1. "default"
+
+![default](https://user-images.githubusercontent.com/24252670/141534868-fdcc9d03-9f7b-47fd-acfc-5a20b98e4e0a.png)
+
+2. "minimal
+
+![image](https://user-images.githubusercontent.com/24252670/141534952-bb0cf491-5bb4-473c-9a67-8adb5b23b232.png)
+
+Feel free to submit custom rendering functions to share with others!
 
 ### Animation Style
 

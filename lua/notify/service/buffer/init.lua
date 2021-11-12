@@ -1,5 +1,4 @@
 local api = vim.api
-local namespace = api.nvim_create_namespace("nvim-notify")
 local config = require("notify.config")
 
 local NotifyBufHighlights = require("notify.service.buffer.highlights")
@@ -83,48 +82,18 @@ function NotificationBuf:render()
   api.nvim_buf_set_option(buf, "filetype", "notify")
   api.nvim_buf_set_option(buf, "modifiable", true)
 
-  local left_icon = notif.icon .. " "
-  local max_width = self._max_width
-    or math.max(
-      math.max(unpack(vim.tbl_map(function(line)
-        return vim.fn.strchars(line)
-      end, notif.message))),
-      50
-    )
-  local left_title = notif.title[1] .. string.rep(" ", max_width)
-  local right_title = notif.title[2]
-  api.nvim_buf_set_lines(buf, 0, 1, false, { "", "" })
-  api.nvim_buf_set_extmark(buf, namespace, 0, 0, {
-    virt_text = {
-      { " " },
-      { left_icon, self.highlights.icon },
-      { left_title, self.highlights.title },
-    },
-    virt_text_win_col = 0,
-    priority = max_width,
-  })
-  api.nvim_buf_set_extmark(buf, namespace, 0, 0, {
-    virt_text = { { right_title, self.highlights.title }, { " " } },
-    virt_text_pos = "right_align",
-    priority = max_width,
-  })
-  api.nvim_buf_set_extmark(buf, namespace, 1, 0, {
-    virt_text = { { string.rep("━", max_width), self.highlights.border } },
-    virt_text_win_col = 0,
-    priority = max_width,
-  })
-  api.nvim_buf_set_lines(buf, 2, 2 + #notif.message, false, notif.message)
-
-  api.nvim_buf_set_extmark(buf, namespace, 2, 0, {
-    hl_group = self.highlights.body,
-    end_line = 1 + #notif.message,
-    end_col = #notif.message[#notif.message],
-  })
+  notif.render(buf, notif, self.highlights)
 
   api.nvim_buf_set_option(buf, "modifiable", false)
 
-  self._width = max_width
-  self._height = 2 + #notif.message
+  local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+  local width = 50
+  for _, line in pairs(lines) do
+    width = math.max(width, vim.str_utfindex(line))
+  end
+
+  self._width = width
+  self._height = #lines
 end
 
 function NotificationBuf:timeout()
