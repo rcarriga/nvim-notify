@@ -5,6 +5,7 @@ local docs = {}
 docs.test = function()
   local input_files = {
     "./lua/notify/init.lua",
+    "./lua/notify/render/init.lua",
   }
 
   -- Output file

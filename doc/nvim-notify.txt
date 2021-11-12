@@ -16,6 +16,7 @@ NotifyOptions                                                  *NotifyOptions*
                                    window as argument.
         {keep}     (function|nil)  Function to keep the notification window
                                    open after timeout, should return boolean.
+        {render}   (function)      Function to render a notification buffer.
 
 
 NotificationEvents                                        *NotificationEvents*
@@ -36,6 +37,7 @@ NotificationRecord                                        *NotificationRecord*
         {icon}    (string)    Icon used for notification
         {time}    (number)    Time of message, as returned by
                               `vim.fn.localtime()`
+        {render}  (function)  Function to render notification buffer
 
 
 notify.setup({user_config})                                   *notify.setup()*
@@ -62,6 +64,12 @@ notify.setup({user_config})                                   *notify.setup()*
                                                      new window is opened, use
                                                      for changing win
                                                      settings/config
+        {render}            (function|string)        Function to render a
+                                                     notification buffer or a
+                                                     built-in renderer name
+
+    See: ~
+        |notify-render()|
 
 
 notify.notify({message}, {level}, {opts})                    *notify.notify()*
@@ -112,6 +120,39 @@ notify.history()                                            *notify.history()*
 notify.dismiss()                                            *notify.dismiss()*
     Dismiss all notification windows currently displayed
 
+
+
+
+================================================================================
+                                                               *notify-render()*
+
+Notification buffer rendering
+
+Custom rendering can be provided by both the user config in the setup or on an
+individual notification using the `render` key. The key can either be the name
+of a built-in renderer or a custom function.
+
+Built-in renderers:
+- `"default"`
+- `"minimal"`
+
+Custom functions should accept a buffer, a notification record and a highlights
+table
+
+>
+    render: fun(buf: integer, notification: NotificationRecord, highlights: NotificationHighlights)
+<
+You should use the provided highlight groups to take advantage of opacity
+changes as they will be updated as the notification is animated
+
+NotificationHighlights                                *NotificationHighlights*
+
+
+    Fields: ~
+        {title}  (string)
+        {icon}   (string)
+        {border} (string)
+        {body}   (string)
 
 
 

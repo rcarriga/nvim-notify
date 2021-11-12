@@ -6,11 +6,11 @@
 
 local util = require("notify.util")
 
-local config = util.lazy_require("notify.config")
-local stages = util.lazy_require("notify.stages")
-local Notification = util.lazy_require("notify.service.notification")
-local WindowAnimator = util.lazy_require("notify.windows")
-local NotificationService = util.lazy_require("notify.service")
+local config = require("notify.config")
+local stages = require("notify.stages")
+local Notification = require("notify.service.notification")
+local WindowAnimator = require("notify.windows")
+local NotificationService = require("notify.service")
 
 local service
 ---@type Notification[]
@@ -25,6 +25,8 @@ local notify = {}
 ---@field background_colour string: For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group or an RGB hex value e.g. "#000000"
 ---@field icons table<string, string>: Icons for each level (upper case names)
 ---@field on_open function | nil: Function called when a new window is opened, use for changing win settings/config
+---@field render function | string: Function to render a notification buffer or a built-in renderer name
+---@see notify-render
 function notify.setup(user_config)
   config.setup(user_config)
 
@@ -43,6 +45,13 @@ function notify.setup(user_config)
   vim.cmd([[command! Notifications :lua require("notify")._print_history()<CR>]])
 end
 
+local function get_render(render)
+  if type(render) == "function" then
+    return render
+  end
+  return require("notify.render")[render]
+end
+
 ---@class NotifyOptions @Options for an individual notification
 ---@field title string | nil
 ---@field icon string | nil
@@ -50,6 +59,7 @@ end
 ---@field on_open function | nil: Callback for when window opens, receives window as argument.
 ---@field on_close function | nil: Callback for when window closes, receives window as argument.
 ---@field keep function | nil: Function to keep the notification window open after timeout, should return boolean.
+---@field render function: Function to render a notification buffer.
 
 ---@class NotificationEvents @Async events for a notification
 ---@field open function: Resolves when notification is opened
@@ -61,6 +71,7 @@ end
 ---@field title string[]: Left and right sections of the title
 ---@field icon string: Icon used for notification
 ---@field time number: Time of message, as returned by `vim.fn.localtime()`
+---@field render function: Function to render notification buffer
 
 ---Display a notification.
 ---
@@ -76,7 +87,9 @@ function notify.notify(message, level, opts)
   if not service then
     notify.setup()
   end
-  local notification = Notification(message, level, opts or {})
+  opts = opts or {}
+  opts.render = get_render(opts.render or config.render())
+  local notification = Notification(message, level, opts)
   table.insert(notifications, notification)
   service:push(notification)
 end
@@ -129,13 +142,7 @@ end
 ---@return NotificationRecord[]
 function notify.history()
   return vim.tbl_map(function(notif)
-    return {
-      message = notif.message,
-      level = notif.level,
-      time = notif.time,
-      title = notif.title,
-      icon = notif.icon,
-    }
+    return notif:record()
   end, notifications)
 end
 

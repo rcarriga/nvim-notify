@@ -2,6 +2,11 @@ local M = {}
 
 require("notify.config.highlights")
 
+local BUILTIN_RENDERERS = {
+  DEFAULT = "default",
+  MINIMAL = "minimal",
+}
+
 local BUILTIN_STAGES = {
   FADE = "fade",
   SLIDE = "slide",
@@ -12,6 +17,7 @@ local BUILTIN_STAGES = {
 local default_config = {
   timeout = 5000,
   stages = BUILTIN_STAGES.FADE_IN_SLIDE_OUT,
+  render = BUILTIN_RENDERERS.DEFAULT,
   background_colour = "Normal",
   on_open = nil,
   icons = {
@@ -82,6 +88,10 @@ end
 
 function M.on_open()
   return user_config.on_open
+end
+
+function M.render()
+  return user_config.render
 end
 
 return M
