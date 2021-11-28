@@ -12,8 +12,8 @@ local NotifyBufHighlights = {}
 
 local function group_fields(group)
   return {
-    guifg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(group)), "fg"),
-    guibg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(group)), "bg"),
+    guifg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(group)), "fg#"),
+    guibg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(group)), "bg#"),
   }
 end
 
