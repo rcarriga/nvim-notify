@@ -64,9 +64,13 @@ notify.setup({user_config})                                   *notify.setup()*
                                                      new window is opened, use
                                                      for changing win
                                                      settings/config
+        {on_close}          (function|nil)           Function called when a
+                                                     window is closed
         {render}            (function|string)        Function to render a
                                                      notification buffer or a
                                                      built-in renderer name
+        {minimum_width}     (integer)                Minimum width for
+                                                     notification windows
 
     See: ~
         |notify-render()|

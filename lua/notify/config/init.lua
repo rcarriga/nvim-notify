@@ -20,6 +20,7 @@ local default_config = {
   render = BUILTIN_RENDERERS.DEFAULT,
   background_colour = "Normal",
   on_open = nil,
+  on_close = nil,
   minimum_width = 50,
   icons = {
     ERROR = "",
@@ -89,6 +90,10 @@ end
 
 function M.on_open()
   return user_config.on_open
+end
+
+function M.on_close()
+  return user_config.on_close
 end
 
 function M.render()

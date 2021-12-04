@@ -53,11 +53,14 @@ function NotificationBuf:close(win)
     return
   end
   self._state = BufState.CLOSED
-  if self._notif.on_close then
-    vim.schedule(function()
+  vim.schedule(function()
+    if self._notif.on_close then
       self._notif.on_close(win)
-    end)
-  end
+    end
+    if config.on_close() then
+      config.on_close()(win)
+    end
+  end)
 end
 
 function NotificationBuf:height()

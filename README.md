@@ -129,6 +129,9 @@ require("notify").setup({
   -- Function called when a new window is opened, use for changing win settings/config
   on_open = nil,
 
+  -- Function called when a window is closed
+  on_close = nil,
+
   -- Render function for notifications. See notify-render()
   render = "default",
 

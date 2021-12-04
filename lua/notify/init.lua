@@ -25,6 +25,7 @@ local notify = {}
 ---@field background_colour string: For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group or an RGB hex value e.g. "#000000"
 ---@field icons table<string, string>: Icons for each level (upper case names)
 ---@field on_open function | nil: Function called when a new window is opened, use for changing win settings/config
+---@field on_close function | nil: Function called when a window is closed
 ---@field render function | string: Function to render a notification buffer or a built-in renderer name
 ---@field minimum_width integer: Minimum width for notification windows
 ---@see notify-render
