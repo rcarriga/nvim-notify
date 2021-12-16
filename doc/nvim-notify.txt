@@ -121,9 +121,15 @@ notify.history()                                            *notify.history()*
         NotificationRecord[]
 
 
-notify.dismiss()                                            *notify.dismiss()*
+notify.dismiss({opts})                                      *notify.dismiss()*
     Dismiss all notification windows currently displayed
 
+
+    Parameters: ~
+        {opts} (table)
+
+    Fields: ~
+        {pending} (boolean)  Clear pending notifications
 
 
 

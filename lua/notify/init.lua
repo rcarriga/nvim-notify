@@ -149,9 +149,11 @@ function notify.history()
 end
 
 ---Dismiss all notification windows currently displayed
-function notify.dismiss()
+---@param opts table
+---@field pending boolean: Clear pending notifications
+function notify.dismiss(opts)
   if service then
-    service:dismiss()
+    service:dismiss(opts or {})
   end
 end
 

@@ -45,7 +45,7 @@ function NotificationService:push(notif)
   end
 end
 
-function NotificationService:dismiss()
+function NotificationService:dismiss(opts)
   local bufs = vim.api.nvim_list_bufs()
   local notif_wins = {}
   for _, buf in pairs(bufs) do
@@ -56,6 +56,13 @@ function NotificationService:dismiss()
   end
   for _, win in pairs(notif_wins) do
     pcall(vim.api.nvim_win_close, win, true)
+  end
+  if opts.pending then
+    local cleared = 0
+    while self._pending:pop() do
+      cleared = cleared + 1
+    end
+    vim.notify("Cleared " .. cleared .. " pending notifications")
   end
 end
 
