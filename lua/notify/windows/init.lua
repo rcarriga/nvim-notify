@@ -50,8 +50,10 @@ function WindowAnimator:push_pending(queue)
     if not win_opts then
       return
     end
-    local opacity = util.pop(win_opts, "opacity", 100)
-    notif_buf.highlights:set_opacity(opacity)
+    local opacity = util.pop(win_opts, "opacity")
+    if opacity then
+      notif_buf.highlights:set_opacity(opacity)
+    end
     local win = api.nvim_open_win(notif_buf:buffer(), false, win_opts)
     vim.wo[win].winhl = "Normal:Normal,FloatBorder:" .. notif_buf.highlights.border
     vim.wo[win].wrap = false

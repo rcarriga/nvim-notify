@@ -67,6 +67,17 @@ function M.setup(config)
     stages
   )
 
+  if needs_opacity and not vim.opt.termguicolors:get() then
+    filled.stages = BUILTIN_STAGES.STATIC
+    vim.schedule(function()
+      vim.notify(
+        "Opacity changes require termguicolors to be set.\nChange to different animation stages or set termguicolors to disable this warning",
+        "warn",
+        { title = "nvim-notify" }
+      )
+    end)
+  end
+
   user_config.background_colour = validate_highlight(user_config.background_colour, needs_opacity)
 end
 
