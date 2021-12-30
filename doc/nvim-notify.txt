@@ -58,7 +58,7 @@ notify.setup({user_config})                                   *notify.setup()*
                                                      either a highlight group,
                                                      an RGB hex value e.g.
                                                      "#000000" or a function
-                                                     returning these for
+                                                     returning an RGB code for
                                                      dynamic values
         {icons}             (table<string, string>)  Icons for each level
                                                      (upper case names)
