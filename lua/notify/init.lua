@@ -22,7 +22,7 @@ local notify = {}
 ---@param user_config table: Custom config
 ---@field timeout number: Default timeout for notification
 ---@field stages function[]: Animation stages
----@field background_colour string: For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group or an RGB hex value e.g. "#000000"
+---@field background_colour string: For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group, an RGB hex value e.g. "#000000" or a function returning these for dynamic values
 ---@field icons table<string, string>: Icons for each level (upper case names)
 ---@field on_open function | nil: Function called when a new window is opened, use for changing win settings/config
 ---@field on_close function | nil: Function called when a window is closed

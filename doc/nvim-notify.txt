@@ -55,9 +55,11 @@ notify.setup({user_config})                                   *notify.setup()*
                                                      opacity this is treated
                                                      as the highlight behind
                                                      the window. Set this to
-                                                     either a highlight group
-                                                     or an RGB hex value e.g.
-                                                     "#000000"
+                                                     either a highlight group,
+                                                     an RGB hex value e.g.
+                                                     "#000000" or a function
+                                                     returning these for
+                                                     dynamic values
         {icons}             (table<string, string>)  Icons for each level
                                                      (upper case names)
         {on_open}           (function|nil)           Function called when a

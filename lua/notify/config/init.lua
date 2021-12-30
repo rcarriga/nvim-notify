@@ -34,27 +34,34 @@ local default_config = {
 local user_config = default_config
 
 local function validate_highlight(colour_or_group, needs_opacity)
-  if colour_or_group:sub(1, 1) == "#" then
+  if type(colour_or_group) == "function" then
     return colour_or_group
   end
-  local group_bg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(colour_or_group)), "bg#")
-  if group_bg == "" or group_bg == "none" then
-    if needs_opacity then
-      vim.schedule(function()
-        vim.notify(
-          "Highlight group '"
-            .. colour_or_group
-            .. "' has no background highlight.\n\n"
-            .. "Please provide an RGB hex value or highlight group with a background value for 'background_colour' option\n\n"
-            .. "Defaulting to #000000",
-          "warn",
-          { title = "nvim-notify" }
-        )
-      end)
+  if colour_or_group:sub(1, 1) == "#" then
+    return function()
+      return colour_or_group
     end
-    return "#000000"
   end
-  return group_bg
+  return function()
+    local group_bg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(colour_or_group)), "bg#")
+    if group_bg == "" or group_bg == "none" then
+      if needs_opacity then
+        vim.schedule(function()
+          vim.notify(
+            "Highlight group '"
+              .. colour_or_group
+              .. "' has no background highlight.\n\n"
+              .. "Please provide an RGB hex value or highlight group with a background value for 'background_colour' option\n\n"
+              .. "Defaulting to #000000",
+            "warn",
+            { title = "nvim-notify" }
+          )
+        end)
+      end
+      return "#000000"
+    end
+    return group_bg
+  end
 end
 
 function M.setup(config)
@@ -84,7 +91,7 @@ end
 ---@param colour_or_group string
 
 function M.background_colour()
-  return user_config.background_colour
+  return user_config.background_colour()
 end
 
 function M.icons()
