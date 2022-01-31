@@ -28,7 +28,9 @@ end
 ---@param required_height number Window height including borders
 function M.available_row(existing_wins, required_height)
   local next_row = vim.opt.tabline:get() == "" and 0 or 1
+  local window_found = false
   for _, interval in pairs(window_intervals(existing_wins, "vertical")) do
+    window_found = true
     local next_bottom = next_row + required_height
     if interval[1] <= next_bottom then
       next_row = interval[2]
@@ -37,7 +39,7 @@ function M.available_row(existing_wins, required_height)
     end
   end
 
-  if next_row + required_height >= vim.opt.lines:get() then
+  if window_found and next_row + required_height >= vim.opt.lines:get() then
     return nil
   end
 
