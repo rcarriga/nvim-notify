@@ -44,7 +44,7 @@ function WindowAnimator:push_pending(queue)
     local notif_buf = queue:peek()
     local windows = vim.tbl_keys(self.win_stages)
     local win_opts = self.stages[1]({
-      message = { height = notif_buf:height(), width = notif_buf:width() },
+      message = self._get_dimensions(notif_buf),
       open_windows = windows,
     })
     if not win_opts then
@@ -192,7 +192,7 @@ function WindowAnimator:get_goals()
   for win, win_stage in pairs(self.win_stages) do
     local notif_buf = self.notif_bufs[win]
     local win_goals = self.stages[win_stage]({
-      message = { height = notif_buf:height(), width = notif_buf:width() },
+      message = self._get_dimensions(notif_buf),
       open_windows = open_windows,
     }, win)
     if not win_goals then
@@ -202,6 +202,13 @@ function WindowAnimator:get_goals()
     end
   end
   return goals
+end
+
+function WindowAnimator._get_dimensions(notif_buf)
+  return {
+    height = math.min(config.max_height() or 1000, notif_buf:height()),
+    width = math.min(config.max_width() or 1000, notif_buf:width()),
+  }
 end
 
 function WindowAnimator:apply_updates()

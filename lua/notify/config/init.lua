@@ -16,6 +16,8 @@ local BUILTIN_STAGES = {
 
 local default_config = {
   timeout = 5000,
+  max_width = nil,
+  max_height = nil,
   stages = BUILTIN_STAGES.FADE_IN_SLIDE_OUT,
   render = BUILTIN_RENDERERS.DEFAULT,
   background_colour = "Normal",
@@ -120,6 +122,14 @@ end
 
 function M.minimum_width()
   return user_config.minimum_width
+end
+
+function M.max_width()
+  return user_config.max_width
+end
+
+function M.max_height()
+  return user_config.max_height
 end
 
 return M
