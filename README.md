@@ -72,6 +72,8 @@ async.run(function()
 end)
 ```
 
+For more usages check out the wiki!
+
 ### Viewing History
 
 If you have [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) installed then you can use the `notify` extension to search the history:
