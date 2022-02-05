@@ -7,16 +7,34 @@ NotifyOptions                                                  *NotifyOptions*
     Options for an individual notification
 
     Fields: ~
-        {title}    (string|nil)
-        {icon}     (string|nil)
-        {timeout}  (number|nil)    Time to show notification in milliseconds.
-        {on_open}  (function|nil)  Callback for when window opens, receives
-                                   window as argument.
-        {on_close} (function|nil)  Callback for when window closes, receives
-                                   window as argument.
-        {keep}     (function|nil)  Function to keep the notification window
-                                   open after timeout, should return boolean.
-        {render}   (function)      Function to render a notification buffer.
+        {title}             (string)
+        {icon}              (string)
+        {timeout}           (number|boolean)        Time to show notification
+                                                    in milliseconds, set to
+                                                    false to disable timeout.
+        {on_open}           (function)              Callback for when window
+                                                    opens, receives window as
+                                                    argument.
+        {on_close}          (function)              Callback for when window
+                                                    closes, receives window as
+                                                    argument.
+        {keep}              (function)              Function to keep the
+                                                    notification window open
+                                                    after timeout, should
+                                                    return boolean.
+        {render}            (function)              Function to render a
+                                                    notification buffer.
+        {replace}           (integer|NotifyRecord)  Notification record or the
+                                                    record `id` field. Replace
+                                                    an existing notification
+                                                    if still open. All
+                                                    arguments not given are
+                                                    inherited from the
+                                                    replaced notification
+                                                    including message and
+                                                    level.
+        {hide_from_history} (boolean)               Hide this notification
+                                                    from the history
 
 
 NotificationEvents                                        *NotificationEvents*
@@ -27,10 +45,11 @@ NotificationEvents                                        *NotificationEvents*
         {close} (function)  Resolved when notification is closed
 
 
-NotificationRecord                                        *NotificationRecord*
+NotifyRecord                                                    *NotifyRecord*
     Record of a previously sent notification
 
     Fields: ~
+        {id}      (integer)
         {message} (string[])  Lines of the message
         {level}   (string)    Log level
         {title}   (string[])  Left and right sections of the title
@@ -38,6 +57,13 @@ NotificationRecord                                        *NotificationRecord*
         {time}    (number)    Time of message, as returned by
                               `vim.fn.localtime()`
         {render}  (function)  Function to render notification buffer
+
+
+NotifyAsyncRecord                                          *NotifyAsyncRecord*
+    NotifyRecord
+
+    Fields: ~
+        {events} (NotificationEvents)
 
 
 notify.setup({user_config})                                   *notify.setup()*
@@ -54,7 +80,7 @@ notify.setup({user_config})                                   *notify.setup()*
                                                      messages
         {max_height}        (number|function)        Max number of lines for a
                                                      message
-        {stages}            (function[])             Animation stages
+        {stages}            (string|function[])      Animation stages
         {background_colour} (string)                 For stages that change
                                                      opacity this is treated
                                                      as the highlight behind
@@ -66,11 +92,11 @@ notify.setup({user_config})                                   *notify.setup()*
                                                      dynamic values
         {icons}             (table<string, string>)  Icons for each level
                                                      (upper case names)
-        {on_open}           (function|nil)           Function called when a
+        {on_open}           (function)               Function called when a
                                                      new window is opened, use
                                                      for changing win
                                                      settings/config
-        {on_close}          (function|nil)           Function called when a
+        {on_close}          (function)               Function called when a
                                                      window is closed
         {render}            (function|string)        Function to render a
                                                      notification buffer or a
@@ -92,9 +118,12 @@ notify.notify({message}, {level}, {opts})                    *notify.notify()*
 
 
     Parameters: ~
-        {message} (string|string[])    Notification message
-        {level}   (string|number|nil)
-        {opts}    (NotifyOptions|nil)  Notification options
+        {message} (string|string[])  Notification message
+        {level}   (string|number)
+        {opts}    (NotifyOptions)    Notification options
+
+    Return: ~
+        NotifyRecord
 
 
 notify.async({message}, {level}, {opts})                      *notify.async()*
@@ -108,23 +137,29 @@ notify.async({message}, {level}, {opts})                      *notify.async()*
 
 
     Parameters: ~
-        {message} (string|string[])    Notification message
-        {level}   (string|number|nil)
-        {opts}    (NotifyOptions|nil)  Notification options
+        {message} (string|string[])  Notification message
+        {level}   (string|number)
+        {opts}    (NotifyOptions)    Notification options
 
     Return: ~
-        NotificationEvents
+        NotifyAsyncRecord
 
 
-notify.history()                                            *notify.history()*
+notify.history({args})                                      *notify.history()*
     Get records of all previous notifications
 
     You can use the `:Notifications` command to display a log of previous
     notifications
 
 
+    Parameters: ~
+        {args} (table)
+
+    Fields: ~
+        {include_hidden} (boolean)  Include notifications hidden from history
+
     Return: ~
-        NotificationRecord[]
+        NotifyRecord[]
 
 
 notify.dismiss({opts})                                      *notify.dismiss()*

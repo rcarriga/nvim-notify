@@ -26,16 +26,15 @@ You can supply a level to change the border highlighting
 vim.notify("This is an error message", "error")
 ```
 
-There are a number of custom options that can be supplied in a table as the third argument:
+Updating an existing notification is also possible!
 
-- `timeout`: Number of milliseconds to show the window (default 5000)
-- `on_open`: A function to call with the window ID as an argument after opening
-- `on_close`: A function to call with the window ID as an argument after closing
-- `title`: Title string or tuple of strings for the header. If tuple, the right header is set to the second element.
-- `icon`: Icon to use for the header
-- `keep`: Function that returns whether or not to keep the window open instead of using a timeout
+![](https://user-images.githubusercontent.com/24252670/152641078-92f3da72-f49f-4705-aec8-86512693445f.gif)
 
-Sample code for the GIF above:
+
+There are a number of custom options that can be supplied in a table as the third argument.
+See `:h NotifyOptions` for details.
+
+Sample code for the first GIF above:
 
 ```lua
 local plugin = "My Awesome Plugin"
@@ -67,12 +66,12 @@ local async = require("plenary.async")
 local notify = require("notify").async
 
 async.run(function()
-  notify("Let's wait for this to close").close()
+  notify("Let's wait for this to close").events.close()
   notify("It closed!")
 end)
 ```
 
-For more usages check out the wiki!
+Check out the wiki for more examples!
 
 ### Viewing History
 
@@ -106,14 +105,6 @@ You can get a list of past notifications with the history function
 ```lua
 require("notify").history()
 ```
-which returns a list of tables with the following keys:
-- `message: string[]` Lines of the message
-- `level: string` Log level
-- `title: string[]` Left and right sections of the title
-- `icon: string` Icon used for notification
-- `time: number` Time of message, as returned by `vim.fn.localtime()`
-
-
 
 ## Configuration
 
