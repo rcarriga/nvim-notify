@@ -1,4 +1,5 @@
 local M = {}
+local util = require("notify.util")
 
 require("notify.config.highlights")
 
@@ -125,11 +126,13 @@ function M.minimum_width()
 end
 
 function M.max_width()
-  return user_config.max_width
+  return util.is_callable(user_config.max_width) and user_config.max_width()
+    or user_config.max_width
 end
 
 function M.max_height()
-  return user_config.max_height
+  return util.is_callable(user_config.max_height) and user_config.max_height()
+    or user_config.max_height
 end
 
 return M

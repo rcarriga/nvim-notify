@@ -1,5 +1,9 @@
 local M = {}
 
+function M.is_callable(obj)
+  return type(obj) == "function" or (type(obj) == "table" and obj.__call)
+end
+
 function M.lazy_require(require_path)
   return setmetatable({}, {
     __call = function(_, ...)

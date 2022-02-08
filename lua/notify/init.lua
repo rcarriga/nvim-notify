@@ -4,8 +4,6 @@
 
 ---@tag nvim-notify
 
-local util = require("notify.util")
-
 local config = require("notify.config")
 local stages = require("notify.stages")
 local Notification = require("notify.service.notification")
@@ -21,8 +19,8 @@ local notify = {}
 ---Configure nvim-notify with custom settings
 ---@param user_config table: Custom config
 ---@field timeout number: Default timeout for notification
----@field max_width number: Max number of columns for messages
----@field max_height number: Max number of lines for a message
+---@field max_width number | function: Max number of columns for messages
+---@field max_height number | function: Max number of lines for a message
 ---@field stages function[]: Animation stages
 ---@field background_colour string: For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group, an RGB hex value e.g. "#000000" or a function returning an RGB code for dynamic values
 ---@field icons table<string, string>: Icons for each level (upper case names)

@@ -50,9 +50,9 @@ notify.setup({user_config})                                   *notify.setup()*
     Fields: ~
         {timeout}           (number)                 Default timeout for
                                                      notification
-        {max_width}         (number)                 Max number of columns for
+        {max_width}         (number|function)        Max number of columns for
                                                      messages
-        {max_height}        (number)                 Max number of lines for a
+        {max_height}        (number|function)        Max number of lines for a
                                                      message
         {stages}            (function[])             Animation stages
         {background_colour} (string)                 For stages that change

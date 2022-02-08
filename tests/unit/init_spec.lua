@@ -54,4 +54,26 @@ describe("checking public interface", function()
     local win = notify.async("test").open()
     assert.equal(vim.api.nvim_win_get_width(win), 10)
   end)
+
+  a.it("uses the configured max width", function()
+    notify.setup({
+      background_colour = "#000000",
+      max_width = function()
+        return 3
+      end,
+    })
+    local win = notify.async("test").open()
+    assert.equal(vim.api.nvim_win_get_width(win), 3)
+  end)
+
+  a.it("uses the configured max height", function()
+    notify.setup({
+      background_colour = "#000000",
+      max_height = function()
+        return 3
+      end,
+    })
+    local win = notify.async("test").open()
+    assert.equal(vim.api.nvim_win_get_height(win), 3)
+  end)
 end)
