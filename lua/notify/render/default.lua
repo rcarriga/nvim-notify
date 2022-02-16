@@ -1,4 +1,5 @@
 local api = vim.api
+local config = require("notify.config")
 local namespace = api.nvim_create_namespace("nvim-notify")
 
 return function(bufnr, notif, highlights)
@@ -7,7 +8,7 @@ return function(bufnr, notif, highlights)
     math.max(unpack(vim.tbl_map(function(line)
       return vim.fn.strchars(line)
     end, notif.message))),
-    50
+    config.minimum_width()
   )
   local left_title = notif.title[1] .. string.rep(" ", max_width)
   local right_title = notif.title[2]
