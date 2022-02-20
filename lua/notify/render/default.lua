@@ -32,7 +32,7 @@ return function(bufnr, notif, highlights)
     virt_text_win_col = 0,
     priority = max_width,
   })
-  api.nvim_buf_set_lines(bufnr, 2, 2 + #notif.message, false, notif.message)
+  api.nvim_buf_set_lines(bufnr, 2, -1, false, notif.message)
 
   api.nvim_buf_set_extmark(bufnr, namespace, 2, 0, {
     hl_group = highlights.body,

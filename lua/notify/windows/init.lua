@@ -85,7 +85,7 @@ function WindowAnimator:advance_stages(goals)
         break
       end
     end
-    if complete then
+    if complete and not win_goals.time then
       self:advance_stage(win)
     end
   end
@@ -93,7 +93,7 @@ end
 
 function WindowAnimator:advance_stage(win)
   local cur_stage = self.win_stages[win]
-  if self.timed[win] or not cur_stage then
+  if not cur_stage then
     return
   end
   if cur_stage < #self.stages then
@@ -130,16 +130,22 @@ function WindowAnimator:update_states(time, goals)
 
   for win, win_goals in pairs(goals) do
     if win_goals.time and not self.timed[win] then
-      self.timed[win] = true
-      local timer_func = function()
-        self.timed[win] = nil
-        local notif_buf = self.notif_bufs[win]
-        if notif_buf and notif_buf:should_stay() then
-          return
+      local buf_time = self.notif_bufs[win]:timeout()
+      if buf_time ~= false then
+        if buf_time == true then
+          buf_time = nil
         end
-        self:advance_stage(win)
+        self.timed[win] = true
+        local timer_func = function()
+          self.timed[win] = nil
+          local notif_buf = self.notif_bufs[win]
+          if notif_buf and notif_buf:should_stay() then
+            return
+          end
+          self:advance_stage(win)
+        end
+        vim.defer_fn(timer_func, buf_time or config.default_timeout())
       end
-      vim.defer_fn(timer_func, self.notif_bufs[win]:timeout() or config.default_timeout())
     end
 
     updated_states[win] = self:stage_state(win, win_goals, time)

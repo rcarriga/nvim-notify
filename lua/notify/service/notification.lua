@@ -1,6 +1,7 @@
 local config = require("notify.config")
 
 ---@class Notification
+---@field id integer
 ---@field level string
 ---@field message string[]
 ---@field timeout number | nil
@@ -8,14 +9,14 @@ local config = require("notify.config")
 ---@field icon string
 ---@field time number
 ---@field width number
+---@field hide_from_history boolean
 ---@field keep fun(): boolean
 ---@field on_open fun(win: number) | nil
 ---@field on_close fun(win: number) | nil
 ---@field render fun(buf: integer, notification: Notification, highlights: table<string, string>)
 local Notification = {}
 
-function Notification:new(message, level, opts)
-  opts = opts or {}
+function Notification:new(id, message, level, opts)
   if type(level) == "number" then
     level = vim.lsp.log_levels[level]
   end
@@ -29,6 +30,7 @@ function Notification:new(message, level, opts)
     title = { title, vim.fn.strftime("%H:%M", time) }
   end
   local notif = {
+    id = id,
     message = message,
     title = title,
     icon = opts.icon or config.icons()[level] or config.icons().INFO,
@@ -39,6 +41,7 @@ function Notification:new(message, level, opts)
     on_open = opts.on_open,
     on_close = opts.on_close,
     render = opts.render,
+    hide_from_history = opts.hide_from_history,
   }
   self.__index = self
   setmetatable(notif, self)
@@ -59,6 +62,6 @@ end
 ---@param message string | string[]
 ---@param level string | number
 ---@param opts NotifyOptions
-return function(message, level, opts)
-  return Notification:new(message, level, opts)
+return function(id, message, level, opts)
+  return Notification:new(id, message, level, opts)
 end

@@ -21,16 +21,28 @@ local BufState = {
 function NotificationBuf:new(kwargs)
   local notif_buf = {
     _max_width = kwargs.max_width,
-    _notif = kwargs.notif,
     _buffer = kwargs.buffer,
     _state = BufState.CLOSED,
     _width = 0,
     _height = 0,
-    highlights = NotifyBufHighlights(kwargs.notif.level, kwargs.buffer),
   }
   setmetatable(notif_buf, self)
   self.__index = self
+  notif_buf:set_notification(kwargs.notif)
   return notif_buf
+end
+
+function NotificationBuf:set_notification(notif)
+  self._notif = notif
+  self:_create_highlights()
+end
+
+function NotificationBuf:_create_highlights()
+  local existing_opacity = self.highlights and self.highlights.opacity or 100
+  self.highlights = NotifyBufHighlights(self._notif.level, self._buffer)
+  if existing_opacity < 100 then
+    self.highlights:set_opacity(existing_opacity)
+  end
 end
 
 function NotificationBuf:open(win)
