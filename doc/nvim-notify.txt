@@ -171,6 +171,8 @@ notify.dismiss({opts})                                      *notify.dismiss()*
 
     Fields: ~
         {pending} (boolean)  Clear pending notifications
+        {silent}  (boolean)  Suppress notification that pending notifications
+                             were dismissed.
 
 
 

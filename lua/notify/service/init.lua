@@ -82,7 +82,9 @@ function NotificationService:dismiss(opts)
     while self._pending:pop() do
       cleared = cleared + 1
     end
-    vim.notify("Cleared " .. cleared .. " pending notifications")
+    if not opts.silent then
+      vim.notify("Cleared " .. cleared .. " pending notifications")
+    end
   end
 end
 
