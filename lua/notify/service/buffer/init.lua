@@ -106,6 +106,28 @@ function NotificationBuf:render()
   for _, line in pairs(lines) do
     width = math.max(width, vim.str_utfindex(line))
   end
+  local render_namespace = require("notify.render.base").namespace()
+  local success, extmarks = pcall(
+    api.nvim_buf_get_extmarks,
+    buf,
+    render_namespace,
+    0,
+    #lines,
+    { details = true }
+  )
+  if not success then
+    extmarks = {}
+  end
+  local virt_texts = {}
+  for _, mark in ipairs(extmarks) do
+    local details = mark[4]
+    for _, virt_text in ipairs(details.virt_text or {}) do
+      virt_texts[mark[2]] = (virt_texts[mark[2]] or "") .. virt_text[1]
+    end
+  end
+  for _, text in pairs(virt_texts) do
+    width = math.max(width, vim.str_utfindex(text))
+  end
 
   self._width = width
   self._height = #lines

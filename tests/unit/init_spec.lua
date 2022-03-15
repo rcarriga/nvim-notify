@@ -82,10 +82,10 @@ describe("checking public interface", function()
   a.it("uses the confgured minimum width", function()
     notify.setup({
       background_colour = "#000000",
-      minimum_width = 10,
+      minimum_width = 20,
     })
     local win = notify.async("test").events.open()
-    assert.equal(vim.api.nvim_win_get_width(win), 10)
+    assert.equal(vim.api.nvim_win_get_width(win), 20)
   end)
 
   a.it("uses the configured max width", function()
@@ -108,5 +108,14 @@ describe("checking public interface", function()
     })
     local win = notify.async("test").events.open()
     assert.equal(vim.api.nvim_win_get_height(win), 3)
+  end)
+
+  a.it("renders title as longest line", function()
+    notify.setup({
+      background_colour = "#000000",
+      minimum_width = 10,
+    })
+    local win = notify.async("test", nil, { title = { string.rep("a", 16), "" } }).events.open()
+    assert.equal(21, vim.api.nvim_win_get_width(win))
   end)
 end)
