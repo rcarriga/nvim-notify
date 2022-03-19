@@ -36,6 +36,8 @@ local default_config = {
 
 local user_config = default_config
 
+local opacity_warned = false
+
 local function validate_highlight(colour_or_group, needs_opacity)
   if type(colour_or_group) == "function" then
     return colour_or_group
@@ -48,7 +50,8 @@ local function validate_highlight(colour_or_group, needs_opacity)
   return function()
     local group_bg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(colour_or_group)), "bg#")
     if group_bg == "" or group_bg == "none" then
-      if needs_opacity then
+      if needs_opacity and not opacity_warned then
+        opacity_warned = true
         vim.schedule(function()
           vim.notify(
             "Highlight group '"
