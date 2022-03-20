@@ -94,8 +94,10 @@ function NotificationBuf:render()
   local notif = self._notif
   local buf = self._buffer
 
+  local render_namespace = require("notify.render.base").namespace()
   api.nvim_buf_set_option(buf, "filetype", "notify")
   api.nvim_buf_set_option(buf, "modifiable", true)
+  api.nvim_buf_clear_namespace(buf, render_namespace, 0, -1)
 
   notif.render(buf, notif, self.highlights)
 
@@ -106,7 +108,6 @@ function NotificationBuf:render()
   for _, line in pairs(lines) do
     width = math.max(width, vim.str_utfindex(line))
   end
-  local render_namespace = require("notify.render.base").namespace()
   local success, extmarks = pcall(
     api.nvim_buf_get_extmarks,
     buf,
