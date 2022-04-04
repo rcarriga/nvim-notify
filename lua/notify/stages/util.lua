@@ -46,12 +46,4 @@ function M.available_row(existing_wins, required_height)
   return next_row
 end
 
-function M.open_win(notif_buf, opts)
-  local win = vim.api.nvim_open_win(notif_buf:buffer(), false, opts)
-  vim.wo[win].winhl = "Normal:Normal,FloatBorder:Notify" .. notif_buf:level()
-  vim.wo[win].wrap = false
-  notif_buf:open(win)
-  return win
-end
-
 return M
