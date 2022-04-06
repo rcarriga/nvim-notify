@@ -1,4 +1,5 @@
 local NotificationBuf = require("notify.service.buffer")
+local util = require("notify.util")
 local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
 local conf = require("telescope.config").values
@@ -72,7 +73,7 @@ local telescope_notifications = function(opts)
         local lines = vim.opt.lines:get()
         local cols = vim.opt.columns:get()
 
-        local win = vim.api.nvim_open_win(buf, true, {
+        util.open_win(notif_buf, true, {
           relative = "editor",
           row = (lines - height) / 2,
           col = (cols - width) / 2,
@@ -81,8 +82,6 @@ local telescope_notifications = function(opts)
           border = "rounded",
           style = "minimal",
         })
-        vim.wo[win].winhl = "Normal:Normal,FloatBorder:" .. notif_buf.highlights.border
-        vim.wo[win].wrap = false
       end)
       return true
     end,

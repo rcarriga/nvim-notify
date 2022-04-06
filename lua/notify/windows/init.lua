@@ -55,12 +55,7 @@ function WindowAnimator:push_pending(queue)
       notif_buf.highlights:set_opacity(opacity)
     end
     win_opts.noautocmd = true
-    local win = api.nvim_open_win(notif_buf:buffer(), false, win_opts)
-    vim.wo[win].winhl = "Normal:"
-      .. notif_buf.highlights.body
-      .. ",FloatBorder:"
-      .. notif_buf.highlights.border
-    vim.wo[win].wrap = false
+    local win = util.open_win(notif_buf, false, win_opts)
     self.win_stages[win] = 2
     self.notif_bufs[win] = notif_buf
     notif_buf:open(win)
