@@ -2,6 +2,8 @@ local config = require("notify.config")
 local api = vim.api
 local animate = require("notify.animate")
 local util = require("notify.util")
+local round = util.round
+local max = math.max
 
 ---@class WindowAnimator
 ---@field win_states table<number, table<string, SpringState>>
@@ -57,6 +59,7 @@ function WindowAnimator:push_pending(queue)
     win_opts.noautocmd = true
     local win = util.open_win(notif_buf, false, win_opts)
     self.win_stages[win] = 2
+    self.win_states[win] = {}
     self.notif_bufs[win] = notif_buf
     notif_buf:open(win)
     queue:pop()
@@ -64,20 +67,20 @@ function WindowAnimator:push_pending(queue)
 end
 
 function WindowAnimator:advance_stages(goals)
-  local default_complete = function(goal, position)
-    return goal == util.round(position, 2)
-  end
   for win, _ in pairs(self.win_stages) do
     local win_goals = goals[win]
     local complete = true
-    for field, state in pairs(self.win_states[win] or {}) do
-      if win_goals[field].complete then
-        complete = win_goals[field].complete(state.position)
-      else
-        complete = default_complete(state.goal, state.position)
-      end
-      if not complete then
-        break
+    local win_state = self.win_states[win]
+    for field, goal in pairs(win_goals) do
+      if field ~= "time" then
+        if goal.complete then
+          complete = goal.complete(win_state[field].position)
+        else
+          complete = goal[1] == round(win_state[field].position, 2)
+        end
+        if not complete then
+          break
+        end
       end
     end
     if complete and not win_goals.time then
@@ -121,8 +124,6 @@ function WindowAnimator:remove_win(win)
 end
 
 function WindowAnimator:update_states(time, goals)
-  local updated_states = {}
-
   for win, win_goals in pairs(goals) do
     if win_goals.time and not self.timed[win] then
       local buf_time = self.notif_bufs[win]:timeout()
@@ -143,48 +144,53 @@ function WindowAnimator:update_states(time, goals)
       end
     end
 
-    updated_states[win] = self:stage_state(win, win_goals, time)
+    self:update_win_state(win, win_goals, time)
   end
-
-  self.win_states = updated_states
 end
 
-function WindowAnimator:stage_state(win, goals, time)
-  local cur_state = self.win_states[win] or {}
+function WindowAnimator:update_win_state(win, goals, time)
+  local cur_state = self.win_states[win]
 
-  local exists, win_conf = util.get_win_config(win)
-  if not exists then
-    self:remove_win(win)
-    return
+  local win_configs = {}
+
+  local function win_conf(win_)
+    if win_configs[win_] then
+      return win_configs[win_]
+    end
+    local exists, conf = util.get_win_config(win_)
+    if not exists then
+      self:remove_win(win_)
+      return
+    end
+    win_configs[win_] = conf
+    return conf
   end
 
-  local new_state = {}
   for field, goal in pairs(goals) do
     if field ~= "time" then
       local goal_type = type(goal)
       -- Handle spring goal
       if goal_type == "table" and goal[1] then
-        local init_state = (
-            field == "opacity" and self.notif_bufs[win].highlights:get_opacity() or win_conf[field]
-          )
-        local cur_field_state = cur_state[field] or {}
-        new_state[field] = animate.spring(time, {
-          position = cur_field_state.position or init_state,
-          velocity = cur_field_state.velocity,
-          goal = goal[1],
-        }, {
-          frequency = goal.frequency or 1,
-          damping = goal.damping or 1,
-        })
+        if not cur_state[field] then
+          if field == "opacity" then
+            cur_state[field] = { position = self.notif_bufs[win].highlights:get_opacity() }
+          else
+            local conf = win_conf(win)
+            if not conf then
+              return
+            end
+            cur_state[field] = { position = conf[field] }
+          end
+        end
+        animate.spring(time, goal[1], cur_state[field], goal.frequency or 1, goal.damping or 1)
         --- Directly move goal
       elseif goal_type ~= "table" then
-        new_state[field] = { position = goal }
+        cur_state[field] = { position = goal }
       else
         print("nvim-notify: Invalid stage goal: " .. vim.inspect(goal))
       end
     end
   end
-  return new_state
 end
 
 function WindowAnimator:get_goals()
@@ -213,22 +219,40 @@ function WindowAnimator._get_dimensions(notif_buf)
 end
 
 function WindowAnimator:apply_updates()
-  local updates = {}
+  local updated = false
   for win, states in pairs(self.win_states) do
-    updates[win] = {}
-    for field, state in pairs(states) do
-      if field == "opacity" then
-        self.notif_bufs[win].highlights:set_opacity(state.position)
-      else
-        updates[win][field] = state.position
+    updated = true
+    if states.opacity then
+      self.notif_bufs[win].highlights:set_opacity(states.opacity.position)
+    end
+    local exists, conf = util.get_win_config(win)
+    if not exists then
+      self:remove_win(win)
+    else
+      local win_updated = false
+      local function set_field(field, round_field)
+        if not states[field] then
+          return
+        end
+        local new_value = round_field and max(round(states[field].position), 1)
+          or states[field].position
+        if new_value == conf[field] then
+          return
+        end
+        win_updated = true
+        conf[field] = new_value
+      end
+      set_field("row", false)
+      set_field("col", false)
+      set_field("width", true)
+      set_field("height", true)
+
+      if win_updated then
+        api.nvim_win_set_config(win, conf)
       end
     end
   end
-  if vim.tbl_isempty(updates) then
-    return false
-  end
-  util.update_configs(updates)
-  return true
+  return updated
 end
 
 ---@return WindowAnimator

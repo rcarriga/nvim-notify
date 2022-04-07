@@ -7,24 +7,17 @@ local cos = math.cos
 local sqrt = math.sqrt
 
 ---@class SpringState
----@field position number | string
----@field goal number | string
+---@field position number
 ---@field velocity number | nil
----@field damping number
----@field frequency number
 
 ---@param dt number @Step in time
 ---@param state SpringState
----@return SpringState
-return function(dt, state, settings)
-  local damping = settings.damping
-  local angular_freq = settings.frequency * 2 * pi
+return function(dt, goal, state, frequency, damping)
+  local angular_freq = frequency * 2 * pi
 
-  local cur_os = state.position
   local cur_vel = state.velocity or 0
-  local goal = state.goal
 
-  local offset = cur_os - goal
+  local offset = state.position - goal
   local decay = exp(-dt * damping * angular_freq)
 
   local new_pos
@@ -43,7 +36,7 @@ return function(dt, state, settings)
         * decay
       + goal
     new_vel = (i * c * cur_vel - j * (cur_vel * damping + angular_freq * offset)) * decay / c
-  elseif damping > 1 then -- overdamped
+  else -- overdamped
     local c = sqrt(damping * damping - 1)
 
     local r1 = -angular_freq * (damping - c)
@@ -58,11 +51,6 @@ return function(dt, state, settings)
     new_pos = e1 + e2 + goal
     new_pos = r1 * e1 + r2 * e2
   end
-  return {
-    position = new_pos,
-    velocity = new_vel,
-    goal = goal,
-    damping = state.damping,
-    frequency = state.frequency,
-  }
+  state.position = new_pos
+  state.velocity = new_vel
 end

@@ -77,19 +77,13 @@ function M.get_win_config(win)
   if not success or not conf.row then
     return false, conf
   end
-  for _, field in pairs({ "row", "col" }) do
-    if type(conf[field]) == "table" then
-      conf[field] = conf[field][false]
-    end
+  if type(conf.row) == "table" then
+    conf.row = conf.row[false]
+  end
+  if type(conf.col) == "table" then
+    conf.col = conf.col[false]
   end
   return success, conf
-end
-
-function M.set_win_config(win, conf)
-  for _, field in pairs({ "height", "width" }) do
-    conf[field] = math.max(M.round(conf[field]), 1)
-  end
-  return (pcall(vim.api.nvim_win_set_config, win, conf))
 end
 
 function M.open_win(notif_buf, enter, opts)
@@ -103,11 +97,7 @@ function M.open_win(notif_buf, enter, opts)
     "&winhl",
     "Normal:" .. notif_buf.highlights.body .. ",FloatBorder:" .. notif_buf.highlights.border
   )
-  vim.fn.setwinvar(
-    win,
-    "&wrap",
-    0
-  )
+  vim.fn.setwinvar(win, "&wrap", 0)
   return win
 end
 
@@ -127,52 +117,6 @@ function M.numbers_to_rgb(colours)
     colour = colour .. string.format("%X", num)
   end
   return colour
-end
-
-function M.deep_equal(t1, t2, ignore_mt)
-  local ty1 = type(t1)
-  local ty2 = type(t2)
-
-  if ty1 ~= ty2 then
-    return false
-  end
-  if ty1 ~= "table" then
-    return t1 == t2
-  end
-
-  local mt = getmetatable(t1)
-  if not ignore_mt and mt and mt.__eq then
-    return t1 == t2
-  end
-
-  local checked
-
-  for k1, v1 in pairs(t1) do
-    local v2 = t2[k1]
-    checked[k1] = true
-    if v2 == nil or not M.deep_equal(v1, v2, ignore_mt) then
-      return false
-    end
-  end
-
-  for k2, _ in pairs(t2) do
-    if not checked[k2] then
-      return false
-    end
-  end
-  return true
-end
-
-function M.update_configs(updates)
-  for win, win_updates in pairs(updates) do
-    local exists, conf = M.get_win_config(win)
-    if exists then
-      for _, field in pairs({ "row", "col", "height", "width" }) do
-        conf[field] = win_updates[field] or conf[field]
-      end
-      M.set_win_config(win, conf)
-    end
-  end
 end
 
 function M.highlight(name, fields)
