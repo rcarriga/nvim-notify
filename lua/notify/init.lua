@@ -102,24 +102,24 @@ function notify.notify(message, level, opts)
       opts.replace = opts.replace.id
     end
     local existing = notifications[opts.replace]
-    if not existing then
-      vim.notify("Invalid notification to replace", "error", { title = "nvim-notify" })
-      return
-    end
-    local notif_keys = {
-      "title",
-      "icon",
-      "timeout",
-      "keep",
-      "on_open",
-      "on_close",
-      "render",
-      "hide_from_history",
-    }
-    message = message or existing.message
-    level = level or existing.level
-    for _, key in ipairs(notif_keys) do
-      opts[key] = opts[key] or existing[key]
+    if not existing or service:find(opts.replace):is_closed() then
+      opts.replace = nil
+    else
+      local notif_keys = {
+        "title",
+        "icon",
+        "timeout",
+        "keep",
+        "on_open",
+        "on_close",
+        "render",
+        "hide_from_history",
+      }
+      message = message or existing.message
+      level = level or existing.level
+      for _, key in ipairs(notif_keys) do
+        opts[key] = opts[key] or existing[key]
+      end
     end
   end
   opts.render = get_render(opts.render or config.render())

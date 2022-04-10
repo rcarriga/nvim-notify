@@ -147,6 +147,11 @@ function NotificationBuf:level()
   return self._notif.level
 end
 
+---@return boolean
+function NotificationBuf:is_closed()
+  return BufState.CLOSED == self._state
+end
+
 ---@param buf number
 ---@param notification Notification
 ---@return NotificationBuf

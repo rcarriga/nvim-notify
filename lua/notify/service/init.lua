@@ -53,7 +53,7 @@ end
 
 ---@return NotificationBuf
 function NotificationService:replace(id, notif)
-  local existing = self._buffers[id]
+  local existing = self:find(id)
   if not existing then
     vim.notify("No matching notification found to replace")
     return
@@ -63,6 +63,11 @@ function NotificationService:replace(id, notif)
   self._buffers[notif.id] = existing
   existing:render()
   return existing
+end
+
+---@return NotificationBuf | nil
+function NotificationService:find(id)
+  return self._buffers[id]
 end
 
 function NotificationService:dismiss(opts)
