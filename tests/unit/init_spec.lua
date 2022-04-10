@@ -3,8 +3,12 @@ require("plenary.async").tests.add_to_env()
 describe("checking public interface", function()
   local notify = require("notify")
   local async_notify = require("notify").async
-  require("notify").setup({ background_colour = "#000000" })
   assert:add_formatter(vim.inspect)
+
+  before_each(function()
+    notify.setup({ background_colour = "#000000" })
+    notify.dismiss({ pending = true, silent = true })
+  end)
 
   describe("notifications", function()
     it("returns all previous notifications", function()
@@ -117,5 +121,20 @@ describe("checking public interface", function()
     })
     local win = notify.async("test", nil, { title = { string.rep("a", 16), "" } }).events.open()
     assert.equal(21, vim.api.nvim_win_get_width(win))
+  end)
+
+  a.it("renders notification above config level", function()
+    local win =
+      notify.async("test", "info", { message = { string.rep("a", 16), "" } }).events.open()
+    assert.Not.Nil(vim.api.nvim_win_get_config(win))
+  end)
+
+  a.it("doesn't render notification below config level", function()
+    local win = notify.async("test", "debug", { message = { string.rep("a", 16), "" } })
+    a.util.sleep(500)
+    local bufs = vim.api.nvim_list_bufs()
+    for _, buf in ipairs(bufs) do
+      assert.Not.same(vim.api.nvim_buf_get_option(buf, "filetype"), "notify")
+    end
   end)
 end)

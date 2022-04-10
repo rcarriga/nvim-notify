@@ -116,6 +116,9 @@ Default Config:
 
 ```lua
 require("notify").setup({
+  -- Minimum level to show
+  level = "info",
+
   -- Animation style (see below for details)
   stages = "fade_in_slide_out",
 

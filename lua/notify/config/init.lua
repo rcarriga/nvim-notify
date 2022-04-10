@@ -16,6 +16,7 @@ local BUILTIN_STAGES = {
 }
 
 local default_config = {
+  level = "info",
   timeout = 5000,
   max_width = nil,
   max_height = nil,
@@ -95,6 +96,10 @@ function M.setup(config)
 end
 
 ---@param colour_or_group string
+
+function M.level()
+  return vim.lsp.log_levels[user_config.level] or vim.lsp.log_levels.INFO
+end
 
 function M.background_colour()
   return user_config.background_colour()

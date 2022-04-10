@@ -126,6 +126,7 @@ function notify.notify(message, level, opts)
   local id = #notifications + 1
   local notification = Notification(id, message, level, opts)
   table.insert(notifications, notification)
+  local level_num = vim.lsp.log_levels[notification.level]
   if opts.replace then
     local notif_buf = service:replace(opts.replace, notification)
     local win = vim.fn.bufwinid(notif_buf:buffer())
@@ -141,7 +142,7 @@ function notify.notify(message, level, opts)
         "Normal:" .. notif_buf.highlights.body .. ",FloatBorder:" .. notif_buf.highlights.border
       )
     end
-  else
+  elseif level_num >= config.level() then
     service:push(notification)
   end
   return {
