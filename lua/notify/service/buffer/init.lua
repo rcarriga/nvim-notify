@@ -11,6 +11,7 @@ local NotifyBufHighlights = require("notify.service.buffer.highlights")
 ---@field _height number
 ---@field _width number
 ---@field _max_width number | nil
+---@field _was_replaced boolean
 local NotificationBuf = {}
 
 local BufState = {
@@ -25,6 +26,7 @@ function NotificationBuf:new(kwargs)
     _state = BufState.CLOSED,
     _width = 0,
     _height = 0,
+    _was_replaced = false,
   }
   setmetatable(notif_buf, self)
   self.__index = self
@@ -33,6 +35,7 @@ function NotificationBuf:new(kwargs)
 end
 
 function NotificationBuf:set_notification(notif)
+  self._was_replaced = nil ~= self._notif
   self._notif = notif
   self:_create_highlights()
 end
@@ -85,6 +88,10 @@ function NotificationBuf:width()
 end
 
 function NotificationBuf:should_stay()
+  if self._was_replaced then
+    self._was_replaced = false
+    return true
+  end
   if self._notif.keep then
     return self._notif.keep()
   end
