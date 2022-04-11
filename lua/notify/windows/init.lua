@@ -9,7 +9,7 @@ local max = math.max
 ---@field win_states table<number, table<string, SpringState>>
 ---@field win_stages table<number, string>
 ---@field notif_bufs table<number, NotificationBuf>
----@field timed table
+---@field timers table
 ---@field stages table
 local WindowAnimator = {}
 
@@ -18,7 +18,7 @@ function WindowAnimator:new(stages)
     win_stages = {},
     win_states = {},
     notif_bufs = {},
-    timed = {},
+    timers = {},
     stages = stages,
   }
   self.__index = self
@@ -123,24 +123,41 @@ function WindowAnimator:remove_win(win)
   notif_buf:close(win)
 end
 
+function WindowAnimator:on_refresh(win)
+  local notif_buf = self.notif_bufs[win]
+  if not notif_buf then
+    return
+  end
+  if self.timers[win] then
+    self.timers[win]:set_repeat(notif_buf:timeout() or config.default_timeout())
+    self.timers[win]:again()
+  end
+end
+
 function WindowAnimator:update_states(time, goals)
   for win, win_goals in pairs(goals) do
-    if win_goals.time and not self.timed[win] then
+    if win_goals.time and not self.timers[win] then
       local buf_time = self.notif_bufs[win]:timeout()
       if buf_time ~= false then
         if buf_time == true then
           buf_time = nil
         end
-        self.timed[win] = true
-        local timer_func = function()
-          self.timed[win] = nil
-          local notif_buf = self.notif_bufs[win]
-          if notif_buf and notif_buf:should_stay() then
-            return
-          end
-          self:advance_stage(win)
-        end
-        vim.defer_fn(timer_func, buf_time or config.default_timeout())
+        local timer = vim.loop.new_timer()
+        self.timers[win] = timer
+        local advance_time = buf_time or config.default_timeout()
+        timer:start(
+          advance_time,
+          advance_time,
+          vim.schedule_wrap(function()
+            timer:stop()
+            self.timers[win] = nil
+            local notif_buf = self.notif_bufs[win]
+            if notif_buf and notif_buf:should_stay() then
+              return
+            end
+            self:advance_stage(win)
+          end)
+        )
       end
     end
 

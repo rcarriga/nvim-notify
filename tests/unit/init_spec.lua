@@ -130,11 +130,23 @@ describe("checking public interface", function()
   end)
 
   a.it("doesn't render notification below config level", function()
-    local win = notify.async("test", "debug", { message = { string.rep("a", 16), "" } })
+    notify.async("test", "debug", { message = { string.rep("a", 16), "" } })
     a.util.sleep(500)
     local bufs = vim.api.nvim_list_bufs()
     for _, buf in ipairs(bufs) do
       assert.Not.same(vim.api.nvim_buf_get_option(buf, "filetype"), "notify")
     end
+  end)
+  a.it("refreshes timeout on replace", function()
+    -- Don't want to spend time animating
+    notify.setup({ background_colour = "#000000", stages = "static" })
+
+    local notif = notify.async("test", "error", { timeout = 500 })
+    local win = notif.events.open()
+    a.util.sleep(300)
+    notify.async("test2", "error", { replace = notif })
+    a.util.sleep(300)
+    a.util.scheduler()
+    assert(vim.api.nvim_win_is_valid(win))
   end)
 end)

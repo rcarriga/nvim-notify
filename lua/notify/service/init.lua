@@ -4,13 +4,13 @@ local NotificationBuf = require("notify.service.buffer")
 ---@class NotificationService
 ---@field private _running boolean
 ---@field private _pending FIFOQueue
----@field private _receiver fun(pending: FIFOQueue, time: number): boolean
+---@field private _animator WindowAnimator
 ---@field private _buffers table<integer, NotificationBuf>
 local NotificationService = {}
 
-function NotificationService:new(receiver)
+function NotificationService:new(animator)
   local service = {
-    _receiver = receiver,
+    _animator = animator,
     _pending = util.FIFOQueue(),
     _running = false,
     _buffers = {},
@@ -22,7 +22,7 @@ end
 
 function NotificationService:_run()
   self._running = true
-  local succees, updated = pcall(self._receiver, self._pending, 30 / 1000)
+  local succees, updated = pcall(self._animator.render, self._animator, self._pending, 30 / 1000)
   if not succees then
     print("Error running notification service: " .. updated)
     self._running = false
@@ -51,7 +51,6 @@ function NotificationService:push(notif)
   return buf
 end
 
----@return NotificationBuf
 function NotificationService:replace(id, notif)
   local existing = self._buffers[id]
   if not existing then
@@ -61,8 +60,21 @@ function NotificationService:replace(id, notif)
   existing:set_notification(notif)
   self._buffers[id] = nil
   self._buffers[notif.id] = existing
-  existing:render()
-  return existing
+  pcall(existing.render, existing)
+  local win = vim.fn.bufwinid(existing:buffer())
+  if win ~= -1 then
+    -- Highlights can change name if level changed so we have to re-link
+    -- vim.wo does not behave like setlocal, thus we use setwinvar to set a
+    -- local option. Otherwise our changes would affect subsequently opened
+    -- windows.
+    -- see e.g. neovim#14595
+    vim.fn.setwinvar(
+      win,
+      "&winhl",
+      "Normal:" .. existing.highlights.body .. ",FloatBorder:" .. existing.highlights.border
+    )
+    self._animator:on_refresh(win)
+  end
 end
 
 function NotificationService:dismiss(opts)
