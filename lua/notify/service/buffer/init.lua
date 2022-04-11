@@ -72,7 +72,7 @@ function NotificationBuf:close(win)
     if config.on_close() then
       config.on_close()(win)
     end
-    api.nvim_buf_delete(self._buffer, { force = true })
+    pcall(api.nvim_buf_delete, self._buffer, { force = true })
   end)
 end
 
