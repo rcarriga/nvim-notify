@@ -9,5 +9,6 @@ return function(bufnr, notif, highlights)
     hl_group = highlights.icon,
     end_line = #notif.message - 1,
     end_col = #notif.message[#notif.message],
+    priority = 50,
   })
 end

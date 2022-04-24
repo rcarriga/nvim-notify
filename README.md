@@ -6,6 +6,16 @@ A fancy, configurable, notification manager for NeoVim
 
 Credit to [sunjon](https://github.com/sunjon) for [the design](https://neovim.discourse.group/t/wip-animated-notifications-plugin/448) that inspired the appearance of this plugin.
 
+* [Usage](#usage)
+  - [Viewing History](#viewing-history)
+* [Configuration](#configuration)
+  - [Setup](#setup)
+  - [Highlights](#highlights)
+  - [Render Style](#render-style)
+  - [Animation Style](#animation-style)
+    + [Opening the window](#opening-the-window)
+    + [Changing the window](#changing-the-window)
+
 ## Usage
 
 Simply call the module with a message!
@@ -30,6 +40,10 @@ Updating an existing notification is also possible!
 
 ![](https://user-images.githubusercontent.com/24252670/152641078-92f3da72-f49f-4705-aec8-86512693445f.gif)
 
+
+Use treesitter highlighting inside notifications with opacity changing
+
+![](https://user-images.githubusercontent.com/24252670/165042795-565878a3-9c6d-4c0b-ab0d-6858515835c5.gif)
 
 There are a number of custom options that can be supplied in a table as the third argument.
 See `:h NotifyOptions` for details.
@@ -70,6 +84,19 @@ async.run(function()
   notify("It closed!")
 end)
 ```
+
+Set a custom filetype to take advantage of treesitter highlighting:
+
+```lua
+vim.notify(text, "info", {
+  title = "My Awesome Plugin",
+  on_open = function(win)
+    local buf = vim.api.nvim_win_get_buf(win)
+    vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+  end,
+})
+```
+
 
 Check out the wiki for more examples!
 

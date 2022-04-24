@@ -199,6 +199,7 @@ end
 ---Dismiss all notification windows currently displayed
 ---@param opts table
 ---@field pending boolean: Clear pending notifications
+---@field silent boolean: Suppress notification that pending notifications were dismissed.
 function notify.dismiss(opts)
   if service then
     service:dismiss(opts or {})

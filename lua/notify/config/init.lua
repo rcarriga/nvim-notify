@@ -102,7 +102,7 @@ function M.level()
 end
 
 function M.background_colour()
-  return user_config.background_colour()
+  return tonumber(user_config.background_colour():gsub("#", "0x"), 16)
 end
 
 function M.icons()
