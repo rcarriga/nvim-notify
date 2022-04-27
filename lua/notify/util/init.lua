@@ -1,5 +1,7 @@
 local M = {}
 
+local min, max, floor = math.min, math.max, math.floor
+local rshift, lshift, band, bor = bit.rshift, bit.lshift, bit.band, bit.bor
 function M.is_callable(obj)
   return type(obj) == "function" or (type(obj) == "table" and obj.__call)
 end
@@ -27,32 +29,18 @@ function M.pop(tbl, key, default)
   return val
 end
 
-function M.crop(val, min, max)
-  return math.min(math.max(min, val), max)
-end
-
-function M.zip(first, second)
-  local new = {}
-  for i, val in pairs(first) do
-    new[i] = { val, second[i] }
-  end
-  return new
-end
-
-local function split_hex_colour(hex)
-  hex = hex:gsub("#", "")
-  return { tonumber(hex:sub(1, 2), 16), tonumber(hex:sub(3, 4), 16), tonumber(hex:sub(5, 6), 16) }
-end
-
 function M.blend(fg_hex, bg_hex, alpha)
-  local channels = M.zip(split_hex_colour(fg_hex), split_hex_colour(bg_hex))
+  local segment = 0xFF0000
+  local result = 0
+  for i = 2, 0, -1 do
+    local blended = alpha * rshift(band(fg_hex, segment), i * 8)
+      + (1 - alpha) * rshift(band(bg_hex, segment), i * 8)
 
-  local blended = {}
-  for i, i_chans in pairs(channels) do
-    blended[i] = M.round(M.crop(alpha * i_chans[1] + (1 - alpha) * i_chans[2], 0, 255))
+    result = bor(lshift(result, 8), floor((min(max(blended, 0), 255)) + 0.5))
+    segment = rshift(segment, 8)
   end
 
-  return string.format("#%02x%02x%02x", unpack(blended))
+  return result
 end
 
 function M.round(num, decimals)

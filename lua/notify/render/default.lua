@@ -50,5 +50,6 @@ return function(bufnr, notif, highlights)
     hl_group = highlights.body,
     end_line = 1 + #notif.message,
     end_col = #notif.message[#notif.message],
+    priority = 50, -- Allow treesitter to override
   })
 end
