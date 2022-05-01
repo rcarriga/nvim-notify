@@ -16,18 +16,13 @@ local notifications = {}
 
 local notify = {}
 
----Configure nvim-notify with custom settings
----@param user_config table: Custom config
----@field timeout number: Default timeout for notification
----@field max_width number | function: Max number of columns for messages
----@field max_height number | function: Max number of lines for a message
----@field stages string | function[]: Animation stages
----@field background_colour string: For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group, an RGB hex value e.g. "#000000" or a function returning an RGB code for dynamic values
----@field icons table<string, string>: Icons for each level (upper case names)
----@field on_open function: Function called when a new window is opened, use for changing win settings/config
----@field on_close function: Function called when a window is closed
----@field render function | string: Function to render a notification buffer or a built-in renderer name
----@field minimum_width integer: Minimum width for notification windows
+---Configure nvim-notify
+---<pre>
+---    See: ~
+---        |notify.Config|
+---</pre>
+---@param user_config notify.Config
+---@eval { ['description'] = require('notify.config')._format_default() }
 ---@see notify-render
 function notify.setup(user_config)
   config.setup(user_config)
@@ -40,7 +35,7 @@ function notify.setup(user_config)
   local animator_stages = config.stages()
   animator_stages = type(animator_stages) == "string" and stages[animator_stages] or animator_stages
   local animator = WindowAnimator(animator_stages)
-  service = NotificationService(animator)
+  service = NotificationService({ fps = config.fps() }, animator)
 
   vim.cmd([[command! Notifications :lua require("notify")._print_history()<CR>]])
 end
@@ -52,7 +47,7 @@ local function get_render(render)
   return require("notify.render")[render]
 end
 
----@class NotifyOptions @Options for an individual notification
+---@class notify.Options @Options for an individual notification
 ---@field title string
 ---@field icon string
 ---@field timeout number | boolean: Time to show notification in milliseconds, set to false to disable timeout.
@@ -60,14 +55,14 @@ end
 ---@field on_close function: Callback for when window closes, receives window as argument.
 ---@field keep function: Function to keep the notification window open after timeout, should return boolean.
 ---@field render function: Function to render a notification buffer.
----@field replace integer | NotifyRecord: Notification record or the record `id` field. Replace an existing notification if still open. All arguments not given are inherited from the replaced notification including message and level.
+---@field replace integer | notify.Record: Notification record or the record `id` field. Replace an existing notification if still open. All arguments not given are inherited from the replaced notification including message and level.
 ---@field hide_from_history boolean: Hide this notification from the history
 
 ---@class NotificationEvents @Async events for a notification
 ---@field open function: Resolves when notification is opened
 ---@field close function: Resolved when notification is closed
 
----@class NotifyRecord @Record of a previously sent notification
+---@class notify.Record @Record of a previously sent notification
 ---@field id integer
 ---@field message string[]: Lines of the message
 ---@field level string: Log level
@@ -76,7 +71,7 @@ end
 ---@field time number: Time of message, as returned by `vim.fn.localtime()`
 ---@field render function: Function to render notification buffer
 
----@class NotifyAsyncRecord : NotifyRecord
+---@class notify.AsyncRecord : notify.Record
 ---@field events NotificationEvents
 
 ---Display a notification.
@@ -88,8 +83,8 @@ end
 ---</pre>
 ---@param message string | string[]: Notification message
 ---@param level string | number
----@param opts NotifyOptions: Notification options
----@return NotifyRecord
+---@param opts notify.Options: Notification options
+---@return notify.Record
 function notify.notify(message, level, opts)
   if not service then
     notify.setup()
@@ -144,8 +139,8 @@ end
 ---
 ---@param message string | string[]: Notification message
 ---@param level string | number
----@param opts NotifyOptions: Notification options
----@return NotifyAsyncRecord
+---@param opts notify.Options: Notification options
+---@return notify.AsyncRecord
 function notify.async(message, level, opts)
   opts = opts or {}
   local async = require("plenary.async")
@@ -184,7 +179,7 @@ end
 --- You can use the `:Notifications` command to display a log of previous notifications
 ---@param args table
 ---@field include_hidden boolean: Include notifications hidden from history
----@return NotifyRecord[]
+---@return notify.Record[]
 function notify.history(args)
   args = args or {}
   local records = {}

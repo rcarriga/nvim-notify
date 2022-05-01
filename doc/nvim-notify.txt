@@ -3,38 +3,38 @@
 
 A fancy, configurable notification manager for NeoVim
 
-NotifyOptions                                                  *NotifyOptions*
+notify.Options                                                *notify.Options*
     Options for an individual notification
 
     Fields: ~
         {title}             (string)
         {icon}              (string)
-        {timeout}           (number|boolean)        Time to show notification
-                                                    in milliseconds, set to
-                                                    false to disable timeout.
-        {on_open}           (function)              Callback for when window
-                                                    opens, receives window as
-                                                    argument.
-        {on_close}          (function)              Callback for when window
-                                                    closes, receives window as
-                                                    argument.
-        {keep}              (function)              Function to keep the
-                                                    notification window open
-                                                    after timeout, should
-                                                    return boolean.
-        {render}            (function)              Function to render a
-                                                    notification buffer.
-        {replace}           (integer|NotifyRecord)  Notification record or the
-                                                    record `id` field. Replace
-                                                    an existing notification
-                                                    if still open. All
-                                                    arguments not given are
-                                                    inherited from the
-                                                    replaced notification
-                                                    including message and
-                                                    level.
-        {hide_from_history} (boolean)               Hide this notification
-                                                    from the history
+        {timeout}           (number|boolean)         Time to show notification
+                                                     in milliseconds, set to
+                                                     false to disable timeout.
+        {on_open}           (function)               Callback for when window
+                                                     opens, receives window as
+                                                     argument.
+        {on_close}          (function)               Callback for when window
+                                                     closes, receives window
+                                                     as argument.
+        {keep}              (function)               Function to keep the
+                                                     notification window open
+                                                     after timeout, should
+                                                     return boolean.
+        {render}            (function)               Function to render a
+                                                     notification buffer.
+        {replace}           (integer|notify.Record)  Notification record or
+                                                     the record `id` field.
+                                                     Replace an existing
+                                                     notification if still
+                                                     open. All arguments not
+                                                     given are inherited from
+                                                     the replaced notification
+                                                     including message and
+                                                     level.
+        {hide_from_history} (boolean)                Hide this notification
+                                                     from the history
 
 
 NotificationEvents                                        *NotificationEvents*
@@ -45,7 +45,7 @@ NotificationEvents                                        *NotificationEvents*
         {close} (function)  Resolved when notification is closed
 
 
-NotifyRecord                                                    *NotifyRecord*
+notify.Record                                                  *notify.Record*
     Record of a previously sent notification
 
     Fields: ~
@@ -59,50 +59,38 @@ NotifyRecord                                                    *NotifyRecord*
         {render}  (function)  Function to render notification buffer
 
 
-NotifyAsyncRecord                                          *NotifyAsyncRecord*
-    NotifyRecord
+notify.AsyncRecord                                        *notify.AsyncRecord*
+    notify.Record
 
     Fields: ~
         {events} (NotificationEvents)
 
 
 notify.setup({user_config})                                   *notify.setup()*
-    Configure nvim-notify with custom settings
+    Configure nvim-notify
+       See: ~
+           |notify.Config|
 
+    Default values:
+      {
+        background_colour = "Normal",
+        fps = 30,
+        icons = {
+          DEBUG = "",
+          ERROR = "",
+          INFO = "",
+          TRACE = "✎",
+          WARN = ""
+        },
+        level = "info",
+        minimum_width = 50,
+        render = "default",
+        stages = "fade_in_slide_out",
+        timeout = 5000
+      }
 
     Parameters: ~
-        {user_config} (table)  Custom config
-
-    Fields: ~
-        {timeout}           (number)                 Default timeout for
-                                                     notification
-        {max_width}         (number|function)        Max number of columns for
-                                                     messages
-        {max_height}        (number|function)        Max number of lines for a
-                                                     message
-        {stages}            (string|function[])      Animation stages
-        {background_colour} (string)                 For stages that change
-                                                     opacity this is treated
-                                                     as the highlight behind
-                                                     the window. Set this to
-                                                     either a highlight group,
-                                                     an RGB hex value e.g.
-                                                     "#000000" or a function
-                                                     returning an RGB code for
-                                                     dynamic values
-        {icons}             (table<string, string>)  Icons for each level
-                                                     (upper case names)
-        {on_open}           (function)               Function called when a
-                                                     new window is opened, use
-                                                     for changing win
-                                                     settings/config
-        {on_close}          (function)               Function called when a
-                                                     window is closed
-        {render}            (function|string)        Function to render a
-                                                     notification buffer or a
-                                                     built-in renderer name
-        {minimum_width}     (integer)                Minimum width for
-                                                     notification windows
+        {user_config} (notify.Config)
 
     See: ~
         |notify-render()|
@@ -120,10 +108,10 @@ notify.notify({message}, {level}, {opts})                    *notify.notify()*
     Parameters: ~
         {message} (string|string[])  Notification message
         {level}   (string|number)
-        {opts}    (NotifyOptions)    Notification options
+        {opts}    (notify.Options)   Notification options
 
     Return: ~
-        NotifyRecord
+        notify.Record
 
 
 notify.async({message}, {level}, {opts})                      *notify.async()*
@@ -139,10 +127,10 @@ notify.async({message}, {level}, {opts})                      *notify.async()*
     Parameters: ~
         {message} (string|string[])  Notification message
         {level}   (string|number)
-        {opts}    (NotifyOptions)    Notification options
+        {opts}    (notify.Options)   Notification options
 
     Return: ~
-        NotifyAsyncRecord
+        notify.AsyncRecord
 
 
 notify.history({args})                                      *notify.history()*
@@ -159,7 +147,7 @@ notify.history({args})                                      *notify.history()*
         {include_hidden} (boolean)  Include notifications hidden from history
 
     Return: ~
-        NotifyRecord[]
+        notify.Record[]
 
 
 notify.dismiss({opts})                                      *notify.dismiss()*
@@ -173,6 +161,48 @@ notify.dismiss({opts})                                      *notify.dismiss()*
         {pending} (boolean)  Clear pending notifications
         {silent}  (boolean)  Suppress notification that pending notifications
                              were dismissed.
+
+
+
+================================================================================
+                                                                 *notify.config*
+
+notify.Config                                                  *notify.Config*
+
+
+    Fields: ~
+        {level}             (string)             Minimum log level to display.
+        {timeout}           (number)             Default timeout for
+                                                 notification
+        {max_width}         (number|function)    Max number of columns for
+                                                 messages
+        {max_height}        (number|function)    Max number of lines for a
+                                                 message
+        {stages}            (string|function[])  Animation stages
+        {background_colour} (string)             For stages that change
+                                                 opacity this is treated as
+                                                 the highlight behind the
+                                                 window. Set this to either a
+                                                 highlight group, an RGB hex
+                                                 value e.g. "#000000" or a
+                                                 function returning an RGB
+                                                 code for dynamic values
+        {icons}             (table)              Icons for each level (upper
+                                                 case names)
+        {on_open}           (function)           Function called when a new
+                                                 window is opened, use for
+                                                 changing win settings/config
+        {on_close}          (function)           Function called when a window
+                                                 is closed
+        {render}            (function|string)    Function to render a
+                                                 notification buffer or a
+                                                 built-in renderer name
+        {minimum_width}     (integer)            Minimum width for
+                                                 notification windows
+        {fps}               (integer)            Frames per second for
+                                                 animation stages, higher
+                                                 value means smoother
+                                                 animations but more CPU usage
 
 
 
@@ -193,12 +223,12 @@ Custom functions should accept a buffer, a notification record and a highlights
 table
 
 >
-    render: fun(buf: integer, notification: NotificationRecord, highlights: NotificationHighlights)
+    render: fun(buf: integer, notification: notify.Record, highlights: notify.Highlights)
 <
 You should use the provided highlight groups to take advantage of opacity
 changes as they will be updated as the notification is animated
 
-NotificationHighlights                                *NotificationHighlights*
+notify.Highlights                                          *notify.Highlights*
 
 
     Fields: ~

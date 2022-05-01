@@ -14,13 +14,13 @@
 ---
 --- <pre>
 --- >
----     render: fun(buf: integer, notification: NotificationRecord, highlights: NotificationHighlights)
+---     render: fun(buf: integer, notification: notify.Record, highlights: notify.Highlights)
 --- </pre>
 --- You should use the provided highlight groups to take advantage of opacity
 --- changes as they will be updated as the notification is animated
 ---@brief ]]
 
----@class NotificationHighlights
+---@class notify.Highlights
 ---@field title string
 ---@field icon string
 ---@field border string
