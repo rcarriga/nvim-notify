@@ -61,7 +61,7 @@ end
 
 ---@param message string | string[]
 ---@param level string | number
----@param opts NotifyOptions
+---@param opts notify.Options
 return function(id, message, level, opts)
   return Notification:new(id, message, level, opts)
 end

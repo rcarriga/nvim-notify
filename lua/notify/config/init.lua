@@ -1,4 +1,6 @@
-local M = {}
+---@tag notify.config
+
+local Config = {}
 local util = require("notify.util")
 
 require("notify.config.highlights")
@@ -26,6 +28,7 @@ local default_config = {
   on_open = nil,
   on_close = nil,
   minimum_width = 50,
+  fps = 30,
   icons = {
     ERROR = "",
     WARN = "",
@@ -34,6 +37,20 @@ local default_config = {
     TRACE = "✎",
   },
 }
+
+---@class notify.Config
+---@field level string: Minimum log level to display.
+---@field timeout number: Default timeout for notification
+---@field max_width number | function: Max number of columns for messages
+---@field max_height number | function: Max number of lines for a message
+---@field stages string | function[]: Animation stages
+---@field background_colour string: For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group, an RGB hex value e.g. "#000000" or a function returning an RGB code for dynamic values
+---@field icons table: Icons for each level (upper case names)
+---@field on_open function: Function called when a new window is opened, use for changing win settings/config
+---@field on_close function: Function called when a window is closed
+---@field render function | string: Function to render a notification buffer or a built-in renderer name
+---@field minimum_width integer: Minimum width for notification windows
+---@field fps integer: Frames per second for animation stages, higher value means smoother animations but more CPU usage
 
 local user_config = default_config
 
@@ -71,10 +88,10 @@ local function validate_highlight(colour_or_group, needs_opacity)
   end
 end
 
-function M.setup(config)
+function Config.setup(config)
   local filled = vim.tbl_deep_extend("keep", config or {}, default_config)
   user_config = filled
-  local stages = M.stages()
+  local stages = Config.stages()
 
   local needs_opacity = vim.tbl_contains(
     { BUILTIN_STAGES.FADE_IN_SLIDE_OUT, BUILTIN_STAGES.FADE },
@@ -95,52 +112,65 @@ function M.setup(config)
   user_config.background_colour = validate_highlight(user_config.background_colour, needs_opacity)
 end
 
+function Config._format_default()
+  local lines = { "<pre>", "Default values:" }
+  for line in vim.gsplit(vim.inspect(default_config), "\n", true) do
+    table.insert(lines, "  " .. line)
+  end
+  table.insert(lines, "</pre>")
+  return lines
+end
+
 ---@param colour_or_group string
 
-function M.level()
+function Config.level()
   return vim.lsp.log_levels[user_config.level] or vim.lsp.log_levels.INFO
 end
 
-function M.background_colour()
+function Config.fps()
+  return user_config.fps
+end
+
+function Config.background_colour()
   return tonumber(user_config.background_colour():gsub("#", "0x"), 16)
 end
 
-function M.icons()
+function Config.icons()
   return user_config.icons
 end
 
-function M.stages()
+function Config.stages()
   return user_config.stages
 end
 
-function M.default_timeout()
+function Config.default_timeout()
   return user_config.timeout
 end
 
-function M.on_open()
+function Config.on_open()
   return user_config.on_open
 end
 
-function M.on_close()
+function Config.on_close()
   return user_config.on_close
 end
 
-function M.render()
+function Config.render()
   return user_config.render
 end
 
-function M.minimum_width()
+function Config.minimum_width()
   return user_config.minimum_width
 end
 
-function M.max_width()
+function Config.max_width()
   return util.is_callable(user_config.max_width) and user_config.max_width()
     or user_config.max_width
 end
 
-function M.max_height()
+function Config.max_height()
   return util.is_callable(user_config.max_height) and user_config.max_height()
     or user_config.max_height
 end
 
-return M
+return Config

@@ -6,10 +6,16 @@ local NotificationBuf = require("notify.service.buffer")
 ---@field private _pending FIFOQueue
 ---@field private _animator WindowAnimator
 ---@field private _buffers table<integer, NotificationBuf>
+---@field private _fps integer
 local NotificationService = {}
 
-function NotificationService:new(animator)
+---@class notify.ServiceConfig
+---@field fps integer
+
+---@param config notify.ServiceConfig
+function NotificationService:new(config, animator)
   local service = {
+    _fps = config.fps,
     _animator = animator,
     _pending = util.FIFOQueue(),
     _running = false,
@@ -22,7 +28,12 @@ end
 
 function NotificationService:_run()
   self._running = true
-  local succees, updated = pcall(self._animator.render, self._animator, self._pending, 30 / 1000)
+  local succees, updated = pcall(
+    self._animator.render,
+    self._animator,
+    self._pending,
+    1 / self._fps
+  )
   if not succees then
     print("Error running notification service: " .. updated)
     self._running = false
@@ -34,7 +45,7 @@ function NotificationService:_run()
   end
   vim.defer_fn(function()
     self:_run()
-  end, 30)
+  end, 1000 / self._fps)
 end
 
 ---@param notif Notification
@@ -93,8 +104,7 @@ function NotificationService:dismiss(opts)
   end
 end
 
----@param receiver fun(pending: FIFOQueue, time: number): boolean
 ---@return NotificationService
-return function(receiver)
-  return NotificationService:new(receiver)
+return function(config, receiver)
+  return NotificationService:new(config, receiver)
 end
