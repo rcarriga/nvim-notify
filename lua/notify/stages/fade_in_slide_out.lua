@@ -13,7 +13,7 @@ return {
     end
     return {
       relative = "editor",
-      anchor = "NW",
+      anchor = "NE",
       width = state.message.width,
       height = state.message.height,
       col = vim.opt.columns:get(),
