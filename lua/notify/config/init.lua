@@ -124,7 +124,11 @@ end
 ---@param colour_or_group string
 
 function Config.level()
-  return vim.lsp.log_levels[user_config.level] or vim.lsp.log_levels.INFO
+  local level = user_config.level
+  if type(level) == "number" then
+    level = vim.lsp.log_levels[level] or vim.lsp.log_levels.INFO
+  end
+  return vim.lsp.log_levels[vim.fn.toupper(level)] or vim.lsp.log_levels.INFO
 end
 
 function Config.fps()
