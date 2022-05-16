@@ -1,5 +1,3 @@
-local config = require("notify.config")
-
 ---@class Notification
 ---@field id integer
 ---@field level string
@@ -16,7 +14,7 @@ local config = require("notify.config")
 ---@field render fun(buf: integer, notification: Notification, highlights: table<string, string>)
 local Notification = {}
 
-function Notification:new(id, message, level, opts)
+function Notification:new(id, message, level, opts, config)
   if type(level) == "number" then
     level = vim.lsp.log_levels[level]
   end
@@ -62,6 +60,6 @@ end
 ---@param message string | string[]
 ---@param level string | number
 ---@param opts notify.Options
-return function(id, message, level, opts)
-  return Notification:new(id, message, level, opts)
+return function(id, message, level, opts, config)
+  return Notification:new(id, message, level, opts, config)
 end

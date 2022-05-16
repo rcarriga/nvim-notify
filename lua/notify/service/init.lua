@@ -15,7 +15,8 @@ local NotificationService = {}
 ---@param config notify.ServiceConfig
 function NotificationService:new(config, animator)
   local service = {
-    _fps = config.fps,
+    _config = config,
+    _fps = config.fps(),
     _animator = animator,
     _pending = util.FIFOQueue(),
     _running = false,
@@ -52,7 +53,7 @@ end
 ---@return integer
 function NotificationService:push(notif)
   local buf = vim.api.nvim_create_buf(false, true)
-  local notif_buf = NotificationBuf(buf, notif)
+  local notif_buf = NotificationBuf(buf, notif, { config = self._config })
   notif_buf:render()
   self._buffers[notif.id] = notif_buf
   self._pending:push(notif_buf)
@@ -105,6 +106,6 @@ function NotificationService:dismiss(opts)
 end
 
 ---@return NotificationService
-return function(config, receiver)
-  return NotificationService:new(config, receiver)
+return function(config, animator)
+  return NotificationService:new(config, animator)
 end

@@ -1,4 +1,6 @@
-require("plenary.async").tests.add_to_env()
+local async = require("plenary.async")
+async.tests.add_to_env()
+vim.opt.termguicolors = true
 
 describe("checking public interface", function()
   local notify = require("notify")
@@ -62,23 +64,20 @@ describe("checking public interface", function()
       end)
 
       a.it("uses same window", function()
-        local first_win, second_win
-        local orig = async_notify("first", "info", {
-          on_open = function(win)
-            first_win = win
-          end,
-          timeout = false,
-        })
-        local next = async_notify("second", nil, {
-          replace = orig,
-          on_open = function(win)
-            second_win = win
-          end,
-          timeout = 100,
-        })
-        next.events.close()
-
-        assert.equal(first_win, second_win)
+        local orig = async_notify("first", "info", { timeout = false })
+        local win = orig.events.open()
+        async_notify("second", nil, { replace = orig, timeout = 100 })
+        async.util.scheduler()
+        local found = false
+        local bufs = vim.api.nvim_list_bufs()
+        for _, buf in ipairs(bufs) do
+          if vim.api.nvim_buf_get_option(buf, "filetype") == "notify" then
+            print("Buffer: " .. table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, true), "\n"))
+            assert.Not(found)
+            assert.same(vim.fn.bufwinid(buf), win)
+            found = true
+          end
+        end
       end)
     end)
   end)

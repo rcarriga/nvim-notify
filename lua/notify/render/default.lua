@@ -1,8 +1,7 @@
 local api = vim.api
-local config = require("notify.config")
 local base = require("notify.render.base")
 
-return function(bufnr, notif, highlights)
+return function(bufnr, notif, highlights, config)
   local left_icon = notif.icon .. " "
   local max_message_width = math.max(math.max(unpack(vim.tbl_map(function(line)
     return vim.fn.strchars(line)

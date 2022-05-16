@@ -163,6 +163,18 @@ notify.dismiss({opts})                                      *notify.dismiss()*
                              were dismissed.
 
 
+notify.instance({user_config}, {inherit})                  *notify.instance()*
+    Configure an instance of nvim-notify. You can use this to manage a separate
+    instance of nvim-notify with completely different configuration. The
+    returned instance will have the same functions as the notify module.
+
+
+    Parameters: ~
+        {user_config} (notify.Config)
+        {inherit}     (boolean)        Inherit the global configuration,
+                                       default true
+
+
 
 ================================================================================
                                                                  *notify.config*

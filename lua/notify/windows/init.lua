@@ -1,4 +1,3 @@
-local config = require("notify.config")
 local api = vim.api
 local animate = require("notify.animate")
 local util = require("notify.util")
@@ -6,6 +5,7 @@ local round = util.round
 local max = math.max
 
 ---@class WindowAnimator
+---@field config table
 ---@field win_states table<number, table<string, SpringState>>
 ---@field win_stages table<number, string>
 ---@field notif_bufs table<number, NotificationBuf>
@@ -13,8 +13,9 @@ local max = math.max
 ---@field stages table
 local WindowAnimator = {}
 
-function WindowAnimator:new(stages)
+function WindowAnimator:new(stages, config)
   local animator = {
+    config = config,
     win_stages = {},
     win_states = {},
     notif_bufs = {},
@@ -46,7 +47,7 @@ function WindowAnimator:push_pending(queue)
     local notif_buf = queue:peek()
     local windows = vim.tbl_keys(self.win_stages)
     local win_opts = self.stages[1]({
-      message = self._get_dimensions(notif_buf),
+      message = self:_get_dimensions(notif_buf),
       open_windows = windows,
     })
     if not win_opts then
@@ -129,7 +130,7 @@ function WindowAnimator:on_refresh(win)
     return
   end
   if self.timers[win] then
-    self.timers[win]:set_repeat(notif_buf:timeout() or config.default_timeout())
+    self.timers[win]:set_repeat(notif_buf:timeout() or self.config.default_timeout())
     self.timers[win]:again()
   end
 end
@@ -144,7 +145,7 @@ function WindowAnimator:update_states(time, goals)
         end
         local timer = vim.loop.new_timer()
         self.timers[win] = timer
-        local advance_time = buf_time or config.default_timeout()
+        local advance_time = buf_time or self.config.default_timeout()
         timer:start(
           advance_time,
           advance_time,
@@ -217,7 +218,7 @@ function WindowAnimator:get_goals()
     local notif_buf = self.notif_bufs[win]
     local win_goals = self.stages[win_stage]({
       buffer = notif_buf:buffer(),
-      message = self._get_dimensions(notif_buf),
+      message = self:_get_dimensions(notif_buf),
       open_windows = open_windows,
     }, win)
     if not win_goals then
@@ -229,10 +230,10 @@ function WindowAnimator:get_goals()
   return goals
 end
 
-function WindowAnimator._get_dimensions(notif_buf)
+function WindowAnimator:_get_dimensions(notif_buf)
   return {
-    height = math.min(config.max_height() or 1000, notif_buf:height()),
-    width = math.min(config.max_width() or 1000, notif_buf:width()),
+    height = math.min(self.config.max_height() or 1000, notif_buf:height()),
+    width = math.min(self.config.max_width() or 1000, notif_buf:width()),
   }
 end
 
@@ -274,6 +275,6 @@ function WindowAnimator:apply_updates()
 end
 
 ---@return WindowAnimator
-return function(stages)
-  return WindowAnimator:new(stages)
+return function(stages, config)
+  return WindowAnimator:new(stages, config)
 end

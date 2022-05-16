@@ -1,5 +1,3 @@
-local config = require("notify.config")
-
 local util = require("notify.util")
 
 ---@class NotifyBufHighlights
@@ -10,6 +8,7 @@ local util = require("notify.util")
 ---@field icon string
 ---@field body string
 ---@field buffer number
+---@field _config table
 local NotifyBufHighlights = {}
 
 local function manual_get_hl(name)
@@ -30,7 +29,7 @@ local function get_hl(name)
   return definition
 end
 
-function NotifyBufHighlights:new(level, buffer)
+function NotifyBufHighlights:new(level, buffer, config)
   local function linked_group(section)
     local orig = "Notify" .. level .. section
     if vim.fn.hlID(orig) == 0 then
@@ -62,6 +61,7 @@ function NotifyBufHighlights:new(level, buffer)
     title = title,
     icon = icon,
     buffer = buffer,
+    _config = config,
   }
   self.__index = self
   setmetatable(buf_highlights, self)
@@ -144,7 +144,7 @@ function NotifyBufHighlights:set_opacity(alpha)
     self:_redefine_treesitter()
   end
   self.opacity = alpha
-  local background = config.background_colour()
+  local background = self._config.background_colour()
   for group, fields in pairs(self.groups) do
     local updated_fields = {}
     vim.api.nvim_set_hl(0, group, updated_fields)
@@ -171,6 +171,6 @@ function NotifyBufHighlights:get_opacity()
 end
 
 ---@return NotifyBufHighlights
-return function(level, buffer)
-  return NotifyBufHighlights:new(level, buffer)
+return function(level, buffer, config)
+  return NotifyBufHighlights:new(level, buffer, config)
 end
