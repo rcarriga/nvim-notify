@@ -56,7 +56,7 @@ local plugin = "My Awesome Plugin"
 vim.notify("This is an error message.\nSomething went wrong!", "error", {
   title = plugin,
   on_open = function()
-    vim.notify("Attempting recovery.", vim.lsp.log_levels.WARN, {
+    vim.notify("Attempting recovery.", vim.log.levels.WARN, {
       title = plugin,
     })
     local timer = vim.loop.new_timer()

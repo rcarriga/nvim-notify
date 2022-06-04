@@ -18,7 +18,7 @@ local BUILTIN_STAGES = {
 }
 
 local default_config = {
-  level = "info",
+  level = vim.log.levels.INFO,
   timeout = 5000,
   max_width = nil,
   max_height = nil,
@@ -39,7 +39,7 @@ local default_config = {
 }
 
 ---@class notify.Config
----@field level string: Minimum log level to display.
+---@field level string|integer: Minimum log level to display. See vim.log.levels.
 ---@field timeout number: Default timeout for notification
 ---@field max_width number | function: Max number of columns for messages
 ---@field max_height number | function: Max number of lines for a message

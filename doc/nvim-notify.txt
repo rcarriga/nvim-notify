@@ -82,7 +82,7 @@ notify.setup({user_config})                                   *notify.setup()*
           TRACE = "✎",
           WARN = ""
         },
-        level = "info",
+        level = 2,
         minimum_width = 50,
         render = "default",
         stages = "fade_in_slide_out",
@@ -183,7 +183,8 @@ notify.Config                                                  *notify.Config*
 
 
     Fields: ~
-        {level}             (string)             Minimum log level to display.
+        {level}             (string|integer)     Minimum log level to display.
+                                                 See vim.log.levels.
         {timeout}           (number)             Default timeout for
                                                  notification
         {max_width}         (number|function)    Max number of columns for
