@@ -233,6 +233,7 @@ The function is given a state table that contains the following keys:
   - `width` Width of the message buffer
   - `height` Height of the message buffer
 - `open_windows: integer[]` List of all window IDs currently showing messages
+- `buffer: integer` The buffer containing the rendered notification message.
 
 If a notification can't be shown at the moment the function should return `nil`.
 

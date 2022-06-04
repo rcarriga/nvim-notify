@@ -216,6 +216,7 @@ function WindowAnimator:get_goals()
   for win, win_stage in pairs(self.win_stages) do
     local notif_buf = self.notif_bufs[win]
     local win_goals = self.stages[win_stage]({
+      buffer = notif_buf:buffer(),
       message = self._get_dimensions(notif_buf),
       open_windows = open_windows,
     }, win)
