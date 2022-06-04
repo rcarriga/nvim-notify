@@ -201,7 +201,7 @@ function notify.instance(user_config, inherit)
     local level_num = vim.lsp.log_levels[notification.level]
     if opts.replace then
       service:replace(opts.replace, notification)
-    elseif level_num >= instance_config.level() then
+    elseif not level_num or level_num >= instance_config.level() then
       service:push(notification)
     end
     return {
