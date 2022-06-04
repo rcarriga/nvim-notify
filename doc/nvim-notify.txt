@@ -50,13 +50,13 @@ notify.Record                                                  *notify.Record*
 
     Fields: ~
         {id}      (integer)
-        {message} (string[])  Lines of the message
-        {level}   (string)    Log level
-        {title}   (string[])  Left and right sections of the title
-        {icon}    (string)    Icon used for notification
-        {time}    (number)    Time of message, as returned by
-                              `vim.fn.localtime()`
-        {render}  (function)  Function to render notification buffer
+        {message} (string[])        Lines of the message
+        {level}   (string|integer)  Log level. See vim.log.levels
+        {title}   (string[])        Left and right sections of the title
+        {icon}    (string)          Icon used for notification
+        {time}    (number)          Time of message, as returned by
+                                    `vim.fn.localtime()`
+        {render}  (function)        Function to render notification buffer
 
 
 notify.AsyncRecord                                        *notify.AsyncRecord*
@@ -107,7 +107,7 @@ notify.notify({message}, {level}, {opts})                    *notify.notify()*
 
     Parameters: ~
         {message} (string|string[])  Notification message
-        {level}   (string|number)
+        {level}   (string|number)    Log level. See vim.log.levels
         {opts}    (notify.Options)   Notification options
 
     Return: ~
@@ -126,7 +126,7 @@ notify.async({message}, {level}, {opts})                      *notify.async()*
 
     Parameters: ~
         {message} (string|string[])  Notification message
-        {level}   (string|number)
+        {level}   (string|number)    Log level. See vim.log.levels
         {opts}    (notify.Options)   Notification options
 
     Return: ~

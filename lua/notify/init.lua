@@ -52,7 +52,7 @@ end
 ---@class notify.Record @Record of a previously sent notification
 ---@field id integer
 ---@field message string[]: Lines of the message
----@field level string: Log level
+---@field level string|integer: Log level. See vim.log.levels
 ---@field title string[]: Left and right sections of the title
 ---@field icon string: Icon used for notification
 ---@field time number: Time of message, as returned by `vim.fn.localtime()`
@@ -69,7 +69,7 @@ end
 ---  require("notify")(message, level, opts)
 ---</pre>
 ---@param message string | string[]: Notification message
----@param level string | number
+---@param level string | number: Log level. See vim.log.levels
 ---@param opts notify.Options: Notification options
 ---@return notify.Record
 function notify.notify(message, level, opts)
@@ -87,7 +87,7 @@ end
 ---The `on_close` and `on_open` options are not used.
 ---
 ---@param message string | string[]: Notification message
----@param level string | number
+---@param level string | number: Log level. See vim.log.levels
 ---@param opts notify.Options: Notification options
 ---@return notify.AsyncRecord
 function notify.async(message, level, opts)
