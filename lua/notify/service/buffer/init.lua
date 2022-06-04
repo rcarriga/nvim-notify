@@ -1,10 +1,10 @@
 local api = vim.api
-local config = require("notify.config")
 
 local NotifyBufHighlights = require("notify.service.buffer.highlights")
 
 ---@class NotificationBuf
 ---@field highlights NotifyBufHighlights
+---@field _config table
 ---@field _notif Notification
 ---@field _state "open" | "closed"
 ---@field _buffer number
@@ -20,6 +20,7 @@ local BufState = {
 
 function NotificationBuf:new(kwargs)
   local notif_buf = {
+    _config = kwargs.config,
     _max_width = kwargs.max_width,
     _buffer = kwargs.buffer,
     _state = BufState.CLOSED,
@@ -39,7 +40,7 @@ end
 
 function NotificationBuf:_create_highlights()
   local existing_opacity = self.highlights and self.highlights.opacity or 100
-  self.highlights = NotifyBufHighlights(self._notif.level, self._buffer)
+  self.highlights = NotifyBufHighlights(self._notif.level, self._buffer, self._config)
   if existing_opacity < 100 then
     self.highlights:set_opacity(existing_opacity)
   end
@@ -53,8 +54,8 @@ function NotificationBuf:open(win)
   if self._notif.on_open then
     self._notif.on_open(win)
   end
-  if config.on_open() then
-    config.on_open()(win)
+  if self._config.on_open() then
+    self._config.on_open()(win)
   end
 end
 
@@ -67,8 +68,8 @@ function NotificationBuf:close(win)
     if self._notif.on_close then
       self._notif.on_close(win)
     end
-    if config.on_close() then
-      config.on_close()(win)
+    if self._config.on_close() then
+      self._config.on_close()(win)
     end
     pcall(api.nvim_buf_delete, self._buffer, { force = true })
   end)
@@ -98,12 +99,12 @@ function NotificationBuf:render()
   api.nvim_buf_set_option(buf, "modifiable", true)
   api.nvim_buf_clear_namespace(buf, render_namespace, 0, -1)
 
-  notif.render(buf, notif, self.highlights)
+  notif.render(buf, notif, self.highlights, self._config)
 
   api.nvim_buf_set_option(buf, "modifiable", false)
 
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-  local width = config.minimum_width()
+  local width = self._config.minimum_width()
   for _, line in pairs(lines) do
     width = math.max(width, vim.str_utfindex(line))
   end
