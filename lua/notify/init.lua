@@ -34,6 +34,10 @@ function notify.setup(user_config)
   vim.cmd([[command! Notifications :lua require("notify")._print_history()<CR>]])
 end
 
+function notify._config()
+  return config.setup(global_config)
+end
+
 ---@class notify.Options @Options for an individual notification
 ---@field title string
 ---@field icon string

@@ -7,6 +7,7 @@ local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local previewers = require("telescope.previewers")
 local entry_display = require("telescope.pickers.entry_display")
+local notify = require("notify")
 
 local widths = {
   time = 8,
@@ -64,7 +65,7 @@ local telescope_notifications = function(opts)
         local selection = action_state.get_selected_entry()
         local notification = selection.value
         local buf = vim.api.nvim_create_buf(false, true)
-        local notif_buf = NotificationBuf(buf, notification)
+        local notif_buf = NotificationBuf(buf, notification, { config = notify._config() })
         notif_buf:render()
 
         local height = notif_buf:height()
@@ -90,7 +91,11 @@ local telescope_notifications = function(opts)
       define_preview = function(self, entry, status)
         local notification = entry.value
         local max_width = vim.api.nvim_win_get_config(status.preview_win).width
-        local notif_buf = NotificationBuf(self.state.bufnr, notification, { max_width = max_width })
+        local notif_buf = NotificationBuf(
+          self.state.bufnr,
+          notification,
+          { max_width = max_width, config = notify._config() }
+        )
         notif_buf:render()
       end,
     }),
