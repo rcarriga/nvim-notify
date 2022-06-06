@@ -136,7 +136,7 @@ function notify._print_history()
       { notif.title[1], "NotifyLogTitle" },
       { #notif.title[1] > 0 and " " or "", "MsgArea" },
       { notif.icon, "Notify" .. notif.level .. "Title" },
-      { #notif.title[1] > 0 and " " or "", "MsgArea" },
+      { " ", "MsgArea" },
       { notif.level, "Notify" .. notif.level .. "Title" },
       { " ", "MsgArea" },
       { table.concat(notif.message, "\n"), "MsgArea" },
