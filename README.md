@@ -6,6 +6,7 @@ A fancy, configurable, notification manager for NeoVim
 
 Credit to [sunjon](https://github.com/sunjon) for [the design](https://neovim.discourse.group/t/wip-animated-notifications-plugin/448) that inspired the appearance of this plugin.
 
+* [Installation](#Installation)
 * [Usage](#usage)
   - [Viewing History](#viewing-history)
 * [Configuration](#configuration)
@@ -15,6 +16,22 @@ Credit to [sunjon](https://github.com/sunjon) for [the design](https://neovim.di
   - [Animation Style](#animation-style)
     + [Opening the window](#opening-the-window)
     + [Changing the window](#changing-the-window)
+
+## Installation
+
+You can install nvim-notify with the package manager of your choice.
+
+[**dein**](https://github.com/Shougo/dein.vim):
+
+```vim
+call dein#add("rcarriga/nvim-notify")
+```
+
+[**vim-plug**](https://github.com/junegunn/vim-plug)
+
+```vim
+Plug 'rcarriga/nvim-notify'
+```
 
 ## Usage
 
