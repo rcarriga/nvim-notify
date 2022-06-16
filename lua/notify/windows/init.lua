@@ -138,17 +138,16 @@ end
 function WindowAnimator:update_states(time, goals)
   for win, win_goals in pairs(goals) do
     if win_goals.time and not self.timers[win] then
-      local buf_time = self.notif_bufs[win]:timeout()
+      local buf_time = self.notif_bufs[win]:timeout() or self.config.default_timeout()
       if buf_time ~= false then
         if buf_time == true then
           buf_time = nil
         end
         local timer = vim.loop.new_timer()
         self.timers[win] = timer
-        local advance_time = buf_time or self.config.default_timeout()
         timer:start(
-          advance_time,
-          advance_time,
+          buf_time,
+          buf_time,
           vim.schedule_wrap(function()
             timer:stop()
             self.timers[win] = nil
@@ -261,6 +260,7 @@ function WindowAnimator:apply_updates()
         win_updated = true
         conf[field] = new_value
       end
+
       set_field("row", false)
       set_field("col", false)
       set_field("width", true)
