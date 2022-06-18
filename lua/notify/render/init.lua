@@ -14,7 +14,7 @@
 ---
 --- <pre>
 --- >
----     render: fun(buf: integer, notification: notify.Record, highlights: notify.Highlights)
+---     render: fun(buf: integer, notification: notify.Record, highlights: notify.Highlights, config)
 --- </pre>
 --- You should use the provided highlight groups to take advantage of opacity
 --- changes as they will be updated as the notification is animated

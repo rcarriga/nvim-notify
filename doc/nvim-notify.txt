@@ -236,7 +236,7 @@ Custom functions should accept a buffer, a notification record and a highlights
 table
 
 >
-    render: fun(buf: integer, notification: notify.Record, highlights: notify.Highlights)
+    render: fun(buf: integer, notification: notify.Record, highlights: notify.Highlights, config)
 <
 You should use the provided highlight groups to take advantage of opacity
 changes as they will be updated as the notification is animated
