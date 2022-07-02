@@ -155,12 +155,12 @@ function Config.setup(custom_config)
 
   function config.max_width()
     return util.is_callable(user_config.max_width) and user_config.max_width()
-        or user_config.max_width
+      or user_config.max_width
   end
 
   function config.max_height()
     return util.is_callable(user_config.max_height) and user_config.max_height()
-        or user_config.max_height
+      or user_config.max_height
   end
 
   local stages = config.stages()

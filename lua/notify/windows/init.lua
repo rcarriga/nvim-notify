@@ -138,7 +138,8 @@ end
 function WindowAnimator:update_states(time, goals)
   for win, win_goals in pairs(goals) do
     if win_goals.time and not self.timers[win] then
-      local buf_time = self.notif_bufs[win]:timeout() or self.config.default_timeout()
+      local buf_time = self.notif_bufs[win]:timeout() == nil and self.config.default_timeout()
+        or self.notif_bufs[win]:timeout()
       if buf_time ~= false then
         if buf_time == true then
           buf_time = nil
