@@ -3,11 +3,8 @@ local stages_util = require("notify.stages.util")
 return {
   function(state)
     local next_height = state.message.height + 2
-    local next_row = stages_util.available_slot(
-      state.open_windows,
-      next_height,
-      stages_util.DIRECTION.TOP_DOWN
-    )
+    local next_row =
+      stages_util.available_slot(state.open_windows, next_height, stages_util.DIRECTION.TOP_DOWN)
     if not next_row then
       return nil
     end
@@ -23,19 +20,33 @@ return {
       opacity = 0,
     }
   end,
-  function()
+  function(state, win)
     return {
       opacity = { 100 },
       col = { vim.opt.columns:get() },
+      row = {
+        stages_util.slot_after_previous(win, state.open_windows, stages_util.DIRECTION.TOP_DOWN),
+        frequency = 3,
+        complete = function()
+          return true
+        end,
+      },
     }
   end,
-  function()
+  function(state, win)
     return {
       col = { vim.opt.columns:get() },
       time = true,
+      row = {
+        stages_util.slot_after_previous(win, state.open_windows, stages_util.DIRECTION.TOP_DOWN),
+        frequency = 3,
+        complete = function()
+          return true
+        end,
+      },
     }
   end,
-  function()
+  function(state, win)
     return {
       width = {
         1,
@@ -53,6 +64,13 @@ return {
         end,
       },
       col = { vim.opt.columns:get() },
+      row = {
+        stages_util.slot_after_previous(win, state.open_windows, stages_util.DIRECTION.TOP_DOWN),
+        frequency = 3,
+        complete = function()
+          return true
+        end,
+      },
     }
   end,
 }
