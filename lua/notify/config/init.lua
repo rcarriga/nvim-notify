@@ -165,10 +165,8 @@ function Config.setup(custom_config)
 
   local stages = config.stages()
 
-  local needs_opacity = vim.tbl_contains(
-    { BUILTIN_STAGES.FADE_IN_SLIDE_OUT, BUILTIN_STAGES.FADE },
-    stages
-  )
+  local needs_opacity =
+    vim.tbl_contains({ BUILTIN_STAGES.FADE_IN_SLIDE_OUT, BUILTIN_STAGES.FADE }, stages)
 
   if needs_opacity and not vim.opt.termguicolors:get() then
     user_config.stages = BUILTIN_STAGES.STATIC

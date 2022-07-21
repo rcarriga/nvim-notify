@@ -29,12 +29,8 @@ end
 
 function NotificationService:_run()
   self._running = true
-  local succees, updated = pcall(
-    self._animator.render,
-    self._animator,
-    self._pending,
-    1 / self._fps
-  )
+  local succees, updated =
+    pcall(self._animator.render, self._animator, self._pending, 1 / self._fps)
   if not succees then
     print("Error running notification service: " .. updated)
     self._running = false

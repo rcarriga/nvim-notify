@@ -43,11 +43,13 @@ describe("checking public interface", function()
 
       a.it("uses custom render in call", function()
         local called = false
-        notify.async("test", "error", {
-          render = function()
-            called = true
-          end,
-        }).events.open()
+        notify
+          .async("test", "error", {
+            render = function()
+              called = true
+            end,
+          }).events
+          .open()
         assert.is.True(called)
       end)
     end)
