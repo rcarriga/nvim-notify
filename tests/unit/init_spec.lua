@@ -1,6 +1,9 @@
 local async = require("plenary.async")
 async.tests.add_to_env()
 vim.opt.termguicolors = true
+A = vim.schedule_wrap(function(...)
+  print(vim.inspect(...))
+end)
 
 describe("checking public interface", function()
   local notify = require("notify")
@@ -73,8 +76,7 @@ describe("checking public interface", function()
         local found = false
         local bufs = vim.api.nvim_list_bufs()
         for _, buf in ipairs(bufs) do
-          if vim.api.nvim_buf_get_option(buf, "filetype") == "notify" then
-            print("Buffer: " .. table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, true), "\n"))
+          if vim.api.nvim_buf_get_lines(buf, 0, -1, false)[1] == "second" then
             assert.Not(found)
             assert.same(vim.fn.bufwinid(buf), win)
             found = true
@@ -105,22 +107,22 @@ describe("checking public interface", function()
   end)
 
   a.it("uses the configured max height", function()
-    notify.setup({
+    local instance = notify.instance({
       background_colour = "#000000",
       max_height = function()
         return 3
       end,
-    })
-    local win = notify.async("test").events.open()
+    }, false)
+    local win = instance.async("test").events.open()
     assert.equal(vim.api.nvim_win_get_height(win), 3)
   end)
 
   a.it("renders title as longest line", function()
-    notify.setup({
+    local instance = notify.instance({
       background_colour = "#000000",
       minimum_width = 10,
-    })
-    local win = notify.async("test", nil, { title = { string.rep("a", 16), "" } }).events.open()
+    }, false)
+    local win = instance.async("test", nil, { title = { string.rep("a", 16), "" } }).events.open()
     assert.equal(21, vim.api.nvim_win_get_width(win))
   end)
 
@@ -131,11 +133,15 @@ describe("checking public interface", function()
   end)
 
   a.it("doesn't render notification below config level", function()
-    notify.async("test", "debug", { message = { string.rep("a", 16), "" } })
-    a.util.sleep(500)
+    async.run(function()
+      local notif = notify.async("test", "debug", { message = { string.rep("a", 16), "" } })
+      local win = notif.events.open()
+      async.api.nvim_buf_set_option(async.api.nvim_win_get_buf(win), "filetype", "test")
+    end)
+    async.util.sleep(100)
     local bufs = vim.api.nvim_list_bufs()
     for _, buf in ipairs(bufs) do
-      assert.Not.same(vim.api.nvim_buf_get_option(buf, "filetype"), "notify")
+      assert.Not.same(vim.api.nvim_buf_get_option(buf, "filetype"), "test")
     end
   end)
   a.it("refreshes timeout on replace", function()
