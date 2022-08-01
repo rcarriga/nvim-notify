@@ -64,6 +64,10 @@ local telescope_notifications = function(opts)
         actions.select_default:replace(function()
           actions.close(prompt_bufnr)
           local selection = action_state.get_selected_entry()
+          if selection == nil then
+            return
+          end
+
           local notification = selection.value
           local buf = vim.api.nvim_create_buf(false, true)
           local notif_buf = NotificationBuf(buf, notification, { config = notify._config() })
