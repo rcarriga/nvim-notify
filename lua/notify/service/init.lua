@@ -76,16 +76,7 @@ function NotificationService:replace(id, notif)
   pcall(existing.render, existing)
   local win = vim.fn.bufwinid(existing:buffer())
   if win ~= -1 then
-    -- Highlights can change name if level changed so we have to re-link
-    -- vim.wo does not behave like setlocal, thus we use setwinvar to set a
-    -- local option. Otherwise our changes would affect subsequently opened
-    -- windows.
-    -- see e.g. neovim#14595
-    vim.fn.setwinvar(
-      win,
-      "&winhl",
-      "Normal:" .. existing.highlights.body .. ",FloatBorder:" .. existing.highlights.border
-    )
+    vim.api.nvim_win_set_hl_ns(win, existing.highlights.namespace)
     self._animator:on_refresh(win)
   end
 end

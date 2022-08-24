@@ -79,7 +79,7 @@ local telescope_notifications = function(opts)
           local lines = vim.opt.lines:get()
           local cols = vim.opt.columns:get()
 
-          util.open_win(notif_buf, true, {
+          local win = util.open_win(notif_buf, true, {
             relative = "editor",
             row = (lines - height) / 2,
             col = (cols - width) / 2,
@@ -88,6 +88,7 @@ local telescope_notifications = function(opts)
             border = "rounded",
             style = "minimal",
           })
+          vim.api.nvim_win_set_hl_ns(win, notif_buf.highlights.namespace)
         end)
         return true
       end,

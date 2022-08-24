@@ -1,6 +1,7 @@
 local util = require("notify.util")
 
 ---@class NotifyBufHighlights
+---@field namespace integer
 ---@field groups table
 ---@field opacity number
 ---@field title string
@@ -30,30 +31,33 @@ local function get_hl(name)
 end
 
 function NotifyBufHighlights:new(level, buffer, config)
-  local function linked_group(section)
-    local orig = "Notify" .. level .. section
-    if vim.fn.hlID(orig) == 0 then
-      orig = "NotifyINFO" .. section
+  local function get_level_hl(section)
+    local group = "Notify" .. level .. section
+    if vim.fn.hlID(group) == 0 then
+      group = "NotifyINFO" .. section
     end
-    local new = orig .. buffer
-
-    vim.api.nvim_set_hl(0, new, { link = orig })
-
-    return new, get_hl(new)
+    return group, get_hl(group)
   end
 
-  local title, title_def = linked_group("Title")
-  local border, border_def = linked_group("Border")
-  local body, body_def = linked_group("Body")
-  local icon, icon_def = linked_group("Icon")
+  local title, title_def = get_level_hl("Title")
+  local border, border_def = get_level_hl("Border")
+  local body, body_def = get_level_hl("Body")
+  local icon, icon_def = get_level_hl("Icon")
+
+  local namespace = vim.api.nvim_create_namespace(string.format("NotifyBufHighlights - %s", buffer))
+  vim.api.nvim_set_hl(namespace, "Normal", { link = body })
+  vim.api.nvim_set_hl(namespace, "FloatBorder", { link = border })
 
   local groups = {
+    Normal = body_def,
+    FloatBorder = border_def,
     [title] = title_def,
     [border] = border_def,
     [body] = body_def,
     [icon] = icon_def,
   }
   local buf_highlights = {
+    namespace = namespace,
     groups = groups,
     opacity = 100,
     border = border,
@@ -65,6 +69,7 @@ function NotifyBufHighlights:new(level, buffer, config)
   }
   self.__index = self
   setmetatable(buf_highlights, self)
+  buf_highlights:set_opacity(100)
   return buf_highlights
 end
 
@@ -82,7 +87,7 @@ function NotifyBufHighlights:_redefine_treesitter()
     if self.groups[new] then
       return new
     end
-    vim.api.nvim_set_hl(0, new, { link = orig })
+    vim.api.nvim_set_hl(self.namespace, new, { link = orig })
     self.groups[new] = get_hl(new)
     return new
   end
@@ -158,21 +163,17 @@ function NotifyBufHighlights:set_opacity(alpha)
   local background = self._config.background_colour()
   for group, fields in pairs(self.groups) do
     local updated_fields = {}
-    vim.api.nvim_set_hl(0, group, updated_fields)
-    local hl_string = ""
     if fields.foreground then
-      hl_string = "guifg=#"
+      updated_fields.fg = "#"
         .. string.format("%06x", util.blend(fields.foreground, background, alpha / 100))
     end
     if fields.background then
-      hl_string = hl_string
-        .. " guibg=#"
+      updated_fields.bg = "#"
         .. string.format("%06x", util.blend(fields.background, background, alpha / 100))
     end
 
-    if hl_string ~= "" then
-      -- Can't use nvim_set_hl https://github.com/neovim/neovim/issues/18160
-      vim.cmd("hi " .. group .. " " .. hl_string)
+    if updated_fields.fg or updated_fields.bg then
+      vim.api.nvim_set_hl(self.namespace, group, updated_fields)
     end
   end
 end
