@@ -67,7 +67,8 @@ end
 
 function M.get_slot_range(direction)
   local top = vim.opt.tabline:get() == "" and 0 or 1
-  local bottom = vim.opt.lines:get() - (vim.opt.laststatus:get() > 0 and 2 or 1)
+  local bottom = vim.opt.lines:get()
+    - (vim.opt.cmdheight:get() + (vim.opt.laststatus:get() > 0 and 2 or 1))
   local left = 1
   local right = vim.opt.columns:get()
   if M.DIRECTION.TOP_DOWN == direction then
@@ -140,8 +141,8 @@ end
 
 ---Gets the next slow available for the given window while maintaining its position using the given list.
 ---@param win number
----@param open_windows
----@param direction
+---@param open_windows number[]
+---@param direction string
 function M.slot_after_previous(win, open_windows, direction)
   local key = slot_key(direction)
   local cmp = (direction == M.DIRECTION.LEFT_RIGHT or direction == M.DIRECTION.TOP_DOWN) and less
@@ -167,7 +168,7 @@ function M.slot_after_previous(win, open_windows, direction)
   if #higher_wins == 0 then
     local first_slot = M.get_slot_range(direction)
     if direction == M.DIRECTION.RIGHT_LEFT or direction == M.DIRECTION.BOTTOM_UP then
-      return move_slot(direction, first_slot, cur_win_conf[space_key(direction)] + 2)
+      return move_slot(direction, first_slot, cur_win_conf[space_key(direction)])
     end
     return first_slot
   end
@@ -177,10 +178,11 @@ function M.slot_after_previous(win, open_windows, direction)
   end)
 
   local last_win = higher_wins[#higher_wins]
+  local last_win_conf = win_confs[last_win]
   local res = move_slot(
     direction,
-    win_confs[last_win][key][false],
-    win_confs[last_win][space_key(direction)] + 2
+    last_win_conf[key][false],
+    last_win_conf[space_key(direction)] + (last_win_conf.border ~= "none" and 2 or 0)
   )
   return res
 end
