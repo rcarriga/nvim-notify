@@ -2,6 +2,7 @@
 
 local Config = {}
 local util = require("notify.util")
+local stage_util = require("notify.stages.util")
 
 require("notify.config.highlights")
 
@@ -29,6 +30,7 @@ local default_config = {
   on_close = nil,
   minimum_width = 50,
   fps = 30,
+  direction = stage_util.DIRECTION.TOP_DOWN,
   icons = {
     ERROR = "",
     WARN = "",
@@ -139,6 +141,10 @@ function Config.setup(custom_config)
 
   function config.on_open()
     return user_config.on_open
+  end
+
+  function config.direction()
+    return user_config.direction
   end
 
   function config.on_close()

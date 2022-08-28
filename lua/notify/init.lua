@@ -158,7 +158,9 @@ function notify.instance(user_config, inherit)
   local instance_config = config.setup(user_config)
 
   local animator_stages = instance_config.stages()
-  animator_stages = type(animator_stages) == "string" and stages[animator_stages] or animator_stages
+  animator_stages = type(animator_stages) == "string"
+      and stages[animator_stages](instance_config.direction())
+    or animator_stages
   local animator = WindowAnimator(animator_stages, instance_config)
   local service = NotificationService(instance_config, animator)
 
