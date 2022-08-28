@@ -1,5 +1,5 @@
 ================================================================================
-                                                                   *nvim-notify*
+NVIM-NOTIFY                                                        *nvim-notify*
 
 A fancy, configurable notification manager for NeoVim
 
@@ -74,6 +74,7 @@ notify.setup({user_config})                                   *notify.setup()*
     Default values:
       {
         background_colour = "Normal",
+        direction = "top_down",
         fps = 30,
         icons = {
           DEBUG = "",
@@ -177,7 +178,7 @@ notify.instance({user_config}, {inherit})                  *notify.instance()*
 
 
 ================================================================================
-                                                                 *notify.config*
+CONFIG                                                           *notify.config*
 
 notify.Config                                                  *notify.Config*
 
@@ -220,7 +221,7 @@ notify.Config                                                  *notify.Config*
 
 
 ================================================================================
-                                                               *notify-render()*
+NOTIFY-RENDER()                                                *notify-render()*
 
 Notification buffer rendering
 
