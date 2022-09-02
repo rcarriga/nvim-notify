@@ -74,7 +74,6 @@ notify.setup({user_config})                                   *notify.setup()*
     Default values:
       {
         background_colour = "Normal",
-        direction = "top_down",
         fps = 30,
         icons = {
           DEBUG = "",
@@ -87,7 +86,8 @@ notify.setup({user_config})                                   *notify.setup()*
         minimum_width = 50,
         render = "default",
         stages = "fade_in_slide_out",
-        timeout = 5000
+        timeout = 5000,
+        top_down = true
       }
 
     Parameters: ~
@@ -217,6 +217,9 @@ notify.Config                                                  *notify.Config*
                                                  animation stages, higher
                                                  value means smoother
                                                  animations but more CPU usage
+        {top_down}          (boolean)            whether or not to position
+                                                 the notifications at the top
+                                                 or not
 
 
 
