@@ -115,8 +115,19 @@ function NotifyBufHighlights:_redefine_treesitter()
         i = i + 1
         local c = query._query.captures[capture] -- name of the capture in the query
         if c ~= nil then
-          local general_hl, is_vim_hl = query:_get_hl_from_capture(capture)
-          local capture_hl = is_vim_hl and general_hl or (tree:lang() .. general_hl)
+          local capture_hl
+          -- Removed in nightly with change of highlight names to @...
+          -- https://github.com/neovim/neovim/pull/19931
+          if query._get_hl_from_capture then
+            local general_hl, is_vim_hl = query:_get_hl_from_capture(capture)
+            capture_hl = is_vim_hl and general_hl or (tree:lang() .. general_hl)
+          else
+            capture_hl = query._query.captures[capture]
+            if not vim.startswith(capture_hl, "_") then
+              capture_hl = "@" .. capture_hl .. "." .. tree:lang()
+            end
+          end
+
           local start_row, start_col, end_row, end_col = node:range()
           local custom_hl = link(capture_hl)
 
