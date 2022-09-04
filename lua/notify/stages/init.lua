@@ -13,7 +13,7 @@ local M = {}
 setmetatable(M, {
   ---@return Stages
   __index = function(_, key)
-    return vim.deepcopy(require("notify.stages." .. key))
+    return require("notify.stages." .. key)
   end,
 })
 

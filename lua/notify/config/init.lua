@@ -29,6 +29,7 @@ local default_config = {
   on_close = nil,
   minimum_width = 50,
   fps = 30,
+  top_down = true,
   icons = {
     ERROR = "",
     WARN = "",
@@ -51,6 +52,7 @@ local default_config = {
 ---@field render function | string: Function to render a notification buffer or a built-in renderer name
 ---@field minimum_width integer: Minimum width for notification windows
 ---@field fps integer: Frames per second for animation stages, higher value means smoother animations but more CPU usage
+---@field top_down boolean: whether or not to position the notifications at the top or not
 
 local opacity_warned = false
 
@@ -139,6 +141,10 @@ function Config.setup(custom_config)
 
   function config.on_open()
     return user_config.on_open
+  end
+
+  function config.top_down()
+    return user_config.top_down
   end
 
   function config.on_close()

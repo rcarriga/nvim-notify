@@ -1,5 +1,5 @@
 ================================================================================
-                                                                   *nvim-notify*
+NVIM-NOTIFY                                                        *nvim-notify*
 
 A fancy, configurable notification manager for NeoVim
 
@@ -86,7 +86,8 @@ notify.setup({user_config})                                   *notify.setup()*
         minimum_width = 50,
         render = "default",
         stages = "fade_in_slide_out",
-        timeout = 5000
+        timeout = 5000,
+        top_down = true
       }
 
     Parameters: ~
@@ -177,7 +178,7 @@ notify.instance({user_config}, {inherit})                  *notify.instance()*
 
 
 ================================================================================
-                                                                 *notify.config*
+CONFIG                                                           *notify.config*
 
 notify.Config                                                  *notify.Config*
 
@@ -216,11 +217,14 @@ notify.Config                                                  *notify.Config*
                                                  animation stages, higher
                                                  value means smoother
                                                  animations but more CPU usage
+        {top_down}          (boolean)            whether or not to position
+                                                 the notifications at the top
+                                                 or not
 
 
 
 ================================================================================
-                                                               *notify-render()*
+NOTIFY-RENDER()                                                *notify-render()*
 
 Notification buffer rendering
 

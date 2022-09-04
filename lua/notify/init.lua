@@ -9,6 +9,7 @@ local stages = require("notify.stages")
 local Notification = require("notify.service.notification")
 local WindowAnimator = require("notify.windows")
 local NotificationService = require("notify.service")
+local stage_util = require("notify.stages.util")
 
 ---@type Notification[]
 local notifications = {}
@@ -158,7 +159,11 @@ function notify.instance(user_config, inherit)
   local instance_config = config.setup(user_config)
 
   local animator_stages = instance_config.stages()
-  animator_stages = type(animator_stages) == "string" and stages[animator_stages] or animator_stages
+  local direction = instance_config.top_down() and stage_util.DIRECTION.TOP_DOWN
+    or stage_util.DIRECTION.BOTTOM_UP
+
+  animator_stages = type(animator_stages) == "string" and stages[animator_stages](direction)
+    or animator_stages
   local animator = WindowAnimator(animator_stages, instance_config)
   local service = NotificationService(instance_config, animator)
 
