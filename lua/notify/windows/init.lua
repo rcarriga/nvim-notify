@@ -261,12 +261,11 @@ function WindowAnimator:apply_updates()
       self:remove_win(win)
     else
       local win_updated = false
-      local function set_field(field, round_field)
+      local function set_field(field, min, round_to)
         if not states[field] then
           return
         end
-        local new_value = round_field and max(round(states[field].position), 1)
-          or states[field].position
+        local new_value = max(round(states[field].position, round_to), min)
         if new_value == conf[field] then
           return
         end
@@ -274,10 +273,10 @@ function WindowAnimator:apply_updates()
         conf[field] = new_value
       end
 
-      set_field("row", false)
-      set_field("col", false)
-      set_field("width", true)
-      set_field("height", true)
+      set_field("row", 0, 2)
+      set_field("col", 0, 2)
+      set_field("width", 1)
+      set_field("height", 1)
 
       if win_updated then
         api.nvim_win_set_config(win, conf)
