@@ -1,3 +1,4 @@
+local max, min = math.max, math.min
 local util = require("notify.util")
 
 local M = {}
@@ -9,8 +10,16 @@ M.DIRECTION = {
   RIGHT_LEFT = "right_left",
 }
 
+local function is_increasing(direction)
+  return (direction == M.DIRECTION.TOP_DOWN or direction == M.DIRECTION.LEFT_RIGHT)
+end
+
+local function moves_vertically(direction)
+  return (direction == M.DIRECTION.TOP_DOWN or direction == M.DIRECTION.BOTTOM_UP)
+end
+
 function M.slot_name(direction)
-  if direction == M.DIRECTION.TOP_DOWN or direction == M.DIRECTION.BOTTOM_UP then
+  if moves_vertically(direction) then
     return "height"
   end
   return "width"
@@ -24,25 +33,23 @@ local function greater(a, b)
   return a > b
 end
 
-local function overlaps(x1, x2, y1, y2)
-  return math.min(x1, x2) <= math.max(y1, y2) and math.min(y1, y2) <= math.max(x1, x2)
+local function overlaps(xmin, xmax, ymin, ymax)
+  return xmin <= ymax and ymin <= xmax
 end
 
 local move_slot = function(direction, slot, delta)
-  if M.DIRECTION.TOP_DOWN == direction or M.DIRECTION.LEFT_RIGHT == direction then
+  if is_increasing(direction) then
     return slot + delta
   end
   return slot - delta
 end
 
 local function slot_key(direction)
-  return (direction == M.DIRECTION.LEFT_RIGHT or direction == M.DIRECTION.RIGHT_LEFT) and "col"
-    or "row"
+  return moves_vertically(direction) and "row" or "col"
 end
 
 local function space_key(direction)
-  return (direction == M.DIRECTION.LEFT_RIGHT or direction == M.DIRECTION.RIGHT_LEFT) and "width"
-    or "height"
+  return moves_vertically(direction) and "height" or "width"
 end
 
 ---@param windows number[]
@@ -54,13 +61,15 @@ local function window_intervals(windows, direction, cmp)
     if exists then
       local border_space = existing_conf.border and 2 or 0
       win_intervals[#win_intervals + 1] = {
-        existing_conf[slot_key(direction)],
-        existing_conf[slot_key(direction)] + existing_conf[space_key(direction)] + border_space,
+        min = existing_conf[slot_key(direction)],
+        max = existing_conf[slot_key(direction)]
+          + existing_conf[space_key(direction)]
+          + border_space,
       }
     end
   end
   table.sort(win_intervals, function(a, b)
-    return cmp(a[1], b[1])
+    return cmp(a.min, b.min)
   end)
   return win_intervals
 end
@@ -68,7 +77,7 @@ end
 function M.get_slot_range(direction)
   local top = vim.opt.tabline:get() == "" and 0 or 1
   local bottom = vim.opt.lines:get()
-    - (vim.opt.cmdheight:get() + (vim.opt.laststatus:get() > 0 and 2 or 1))
+    - (vim.opt.cmdheight:get() + (vim.opt.laststatus:get() > 0 and 1 or 0))
   local left = 1
   local right = vim.opt.columns:get()
   if M.DIRECTION.TOP_DOWN == direction then
@@ -88,32 +97,30 @@ end
 ---@param direction integer Direction to stack windows, one of M.DIRECTION
 ---@return number | nil Slot to place window at or nil if no slot available
 function M.available_slot(existing_wins, required_space, direction)
-  local cmp = (direction == M.DIRECTION.LEFT_RIGHT or direction == M.DIRECTION.TOP_DOWN) and less
-    or greater
-
+  local increasing = is_increasing(direction)
+  local cmp = increasing and less or greater
   local first_slot, last_slot = M.get_slot_range(direction)
 
   local next_slot = first_slot
 
   local next_end_slot = move_slot(direction, next_slot, required_space)
-  local window_found = false
+  next_slot, next_end_slot = min(next_slot, next_end_slot), max(next_slot, next_end_slot)
 
   local intervals = window_intervals(existing_wins, direction, cmp)
 
   for _, interval in ipairs(intervals) do
-    window_found = true
-    if overlaps(interval[1], interval[2], next_slot, next_end_slot) then
-      next_slot = next_slot > next_end_slot and interval[1] or interval[2]
+    if overlaps(interval.min, interval.max, next_slot, next_end_slot) then
+      next_slot = increasing and interval.max or interval.min
       next_end_slot = move_slot(direction, next_slot, required_space)
     end
+    next_slot, next_end_slot = min(next_slot, next_end_slot), max(next_slot, next_end_slot)
   end
 
-  if window_found and not cmp(next_end_slot, last_slot) then
+  if #intervals > 0 and not cmp(next_end_slot, last_slot) then
     return nil
   end
 
-  local res = math.min(next_slot, next_end_slot)
-  return res
+  return next_slot
 end
 
 local warned = false
@@ -145,8 +152,7 @@ end
 ---@param direction string
 function M.slot_after_previous(win, open_windows, direction)
   local key = slot_key(direction)
-  local cmp = (direction == M.DIRECTION.LEFT_RIGHT or direction == M.DIRECTION.TOP_DOWN) and less
-    or greater
+  local cmp = is_increasing(direction) and less or greater
   local exists, cur_win_conf = pcall(vim.api.nvim_win_get_config, win)
   if not exists then
     return 0
@@ -161,30 +167,38 @@ function M.slot_after_previous(win, open_windows, direction)
     end
   end
 
-  local higher_wins = vim.tbl_filter(function(open_win)
+  local preceding_wins = vim.tbl_filter(function(open_win)
     return win_confs[open_win] and cmp(win_confs[open_win][key][false], cur_slot)
   end, open_windows)
 
-  if #higher_wins == 0 then
-    local first_slot = M.get_slot_range(direction)
-    if direction == M.DIRECTION.RIGHT_LEFT or direction == M.DIRECTION.BOTTOM_UP then
-      return move_slot(direction, first_slot, cur_win_conf[space_key(direction)])
+  if #preceding_wins == 0 then
+    local start = M.get_slot_range(direction)
+    if is_increasing(direction) then
+      return start
     end
-    return first_slot
+    return move_slot(direction, start, cur_win_conf[space_key(direction)] + 2)
   end
 
-  table.sort(higher_wins, function(a, b)
+  table.sort(preceding_wins, function(a, b)
     return cmp(win_confs[a][key][false], win_confs[b][key][false])
   end)
 
-  local last_win = higher_wins[#higher_wins]
+  local last_win = preceding_wins[#preceding_wins]
   local last_win_conf = win_confs[last_win]
-  local res = move_slot(
-    direction,
-    last_win_conf[key][false],
-    last_win_conf[space_key(direction)] + (last_win_conf.border ~= "none" and 2 or 0)
-  )
-  return res
+
+  if is_increasing(direction) then
+    return move_slot(
+      direction,
+      last_win_conf[key][false],
+      last_win_conf[space_key(direction)] + (last_win_conf.border ~= "none" and 2 or 0)
+    )
+  else
+    return move_slot(
+      direction,
+      last_win_conf[key][false],
+      cur_win_conf[space_key(direction)] + (cur_win_conf.border ~= "none" and 2 or 0)
+    )
+  end
 end
 
 return M
