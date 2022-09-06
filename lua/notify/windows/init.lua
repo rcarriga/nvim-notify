@@ -273,8 +273,8 @@ function WindowAnimator:apply_updates()
         conf[field] = new_value
       end
 
-      set_field("row", 0, 2)
-      set_field("col", 0, 2)
+      set_field("row", 0, 1)
+      set_field("col", 0, 1)
       set_field("width", 1)
       set_field("height", 1)
 
