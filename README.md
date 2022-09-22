@@ -203,6 +203,10 @@ See `:help notify-render()` for details
 
 ![image](https://user-images.githubusercontent.com/24252670/141534952-bb0cf491-5bb4-473c-9a67-8adb5b23b232.png)
 
+3. "simple"
+
+![image](https://user-images.githubusercontent.com/24252670/191683325-220208a0-90bf-4daa-b375-01b573ca524c.png)
+
 Feel free to submit custom rendering functions to share with others!
 
 ### Animation Style
