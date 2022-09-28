@@ -8,14 +8,17 @@ return function(bufnr, notif, highlights, config)
   local title = notif.title[1]
   local title_accum = vim.str_utfindex(title)
 
-  local title_buffer = string.rep(" ", (math.max(max_message_width, title_accum, config.minimum_width()) - title_accum)/2)
+  local title_buffer = string.rep(
+    " ",
+    (math.max(max_message_width, title_accum, config.minimum_width()) - title_accum) / 2
+  )
 
   local namespace = base.namespace()
 
   api.nvim_buf_set_lines(bufnr, 0, 1, false, { "", "" })
   api.nvim_buf_set_extmark(bufnr, namespace, 0, 0, {
     virt_text = {
-      { title_buffer..title..title_buffer, highlights.title },
+      { title_buffer .. title .. title_buffer, highlights.title },
     },
     virt_text_win_col = 0,
     priority = 10,
@@ -23,10 +26,7 @@ return function(bufnr, notif, highlights, config)
   api.nvim_buf_set_extmark(bufnr, namespace, 1, 0, {
     virt_text = {
       {
-        string.rep(
-          "━",
-		  math.max(max_message_width, title_accum, config.minimum_width())
-        ),
+        string.rep("━", math.max(max_message_width, title_accum, config.minimum_width())),
         highlights.border,
       },
     },

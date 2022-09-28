@@ -27,6 +27,11 @@ function Notification:new(id, message, level, opts, config)
   if type(title) == "string" then
     title = { title, vim.fn.strftime("%H:%M", time) }
   end
+  vim.validate({
+    message = { message, "table" },
+    level = { level, { "string", "number" } },
+    title = { title, { "table", "string" } },
+  })
   local notif = {
     id = id,
     message = message,
