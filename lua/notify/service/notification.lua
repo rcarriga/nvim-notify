@@ -29,8 +29,8 @@ function Notification:new(id, message, level, opts, config)
   end
   vim.validate({
     message = { message, "table" },
-    level = { level, { "string", "number" } },
-    title = { title, { "table", "string" } },
+    level = { level, "string" },
+    title = { title, "table" },
   })
   local notif = {
     id = id,
