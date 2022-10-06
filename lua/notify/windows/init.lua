@@ -67,8 +67,8 @@ function WindowAnimator:push_pending(queue)
     self.win_stages[win] = 2
     self.win_states[win] = {}
     self.notif_bufs[win] = notif_buf
-    notif_buf:open(win)
     queue:pop()
+    notif_buf:open(win)
   end
 end
 
