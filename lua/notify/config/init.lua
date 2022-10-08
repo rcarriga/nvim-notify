@@ -66,8 +66,8 @@ local function validate_highlight(colour_or_group, needs_opacity)
     end
   end
   return function()
-    local group_bg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(colour_or_group)), "bg#")
-    if group_bg == "" or group_bg == "none" then
+    local group = vim.api.nvim_get_hl_by_name(colour_or_group, true)
+    if not group or not group.background then
       if needs_opacity and not opacity_warned then
         opacity_warned = true
         vim.schedule(function()
@@ -90,7 +90,7 @@ Defaulting to #000000]], "warn", {
       end
       return "#000000"
     end
-    return group_bg
+    return string.format("#%x", group.background)
   end
 end
 
