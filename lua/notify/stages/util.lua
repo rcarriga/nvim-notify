@@ -33,8 +33,8 @@ local function greater(a, b)
   return a > b
 end
 
-local function overlaps(xmin, xmax, ymin, ymax)
-  return xmin <= ymax and ymin <= xmax
+local function overlaps(a, b)
+  return a.min <= b.max and b.min <= a.max
 end
 
 local move_slot = function(direction, slot, delta)
@@ -52,19 +52,29 @@ local function space_key(direction)
   return moves_vertically(direction) and "height" or "width"
 end
 
+-- TODO: Use direction to check border lists
+local function border_padding(direction, win_conf)
+  if not win_conf.border or win_conf.border == "none" then
+    return 0
+  end
+  return 2
+end
+
 ---@param windows number[]
 ---@param direction integer
+---@return { max: integer, min: integer}[]
 local function window_intervals(windows, direction, cmp)
   local win_intervals = {}
-  for _, w in pairs(windows) do
+  for _, w in ipairs(windows) do
     local exists, existing_conf = util.get_win_config(w)
     if exists then
-      local border_space = existing_conf.border and 2 or 0
+      local border_space = border_padding(direction, existing_conf)
       win_intervals[#win_intervals + 1] = {
         min = existing_conf[slot_key(direction)],
         max = existing_conf[slot_key(direction)]
           + existing_conf[space_key(direction)]
-          + border_space,
+          + border_space
+          - 1,
       }
     end
   end
@@ -101,49 +111,28 @@ function M.available_slot(existing_wins, required_space, direction)
   local cmp = increasing and less or greater
   local first_slot, last_slot = M.get_slot_range(direction)
 
-  local next_slot = first_slot
+  local function create_interval(start_slot)
+    local end_slot = move_slot(direction, start_slot, required_space - 1)
+    return { min = min(start_slot, end_slot), max = max(start_slot, end_slot) }
+  end
 
-  local next_end_slot = move_slot(direction, next_slot, required_space)
-  next_slot, next_end_slot = min(next_slot, next_end_slot), max(next_slot, next_end_slot)
+  local interval = create_interval(first_slot)
 
   local intervals = window_intervals(existing_wins, direction, cmp)
 
-  for _, interval in ipairs(intervals) do
-    if overlaps(interval.min, interval.max, next_slot, next_end_slot) then
-      next_slot = increasing and interval.max or interval.min
-      next_end_slot = move_slot(direction, next_slot, required_space)
+  for _, next_interval in ipairs(intervals) do
+    if overlaps(next_interval, interval) then
+      interval = create_interval(
+        move_slot(direction, increasing and next_interval.max or next_interval.min, 1)
+      )
     end
-    next_slot, next_end_slot = min(next_slot, next_end_slot), max(next_slot, next_end_slot)
   end
 
-  if #intervals > 0 and not cmp(next_end_slot, last_slot) then
+  if #intervals > 0 and not cmp(is_increasing and interval.max or interval.min, last_slot) then
     return nil
   end
 
-  return next_slot
-end
-
-local warned = false
-function M.available_row(wins, required_space)
-  if not warned then
-    vim.notify(
-      [[`available_row` function for stages is deprecated, 
-use `available_slot` instead with a direction
-```lua
-available_slot(existing_wins, required_space, stages_util.DIRECTION.TOP_DOWN)
-```
-]],
-      "warn",
-      {
-        on_open = function(win)
-          vim.api.nvim_buf_set_option(vim.api.nvim_win_get_buf(win), "filetype", "markdown")
-        end,
-        title = "nvim-notify",
-      }
-    )
-    warned = true
-  end
-  return M.available_slot(wins, required_space, M.DIRECTION.TOP_DOWN)
+  return interval.min
 end
 
 ---Gets the next slow available for the given window while maintaining its position using the given list.
@@ -176,7 +165,11 @@ function M.slot_after_previous(win, open_windows, direction)
     if is_increasing(direction) then
       return start
     end
-    return move_slot(direction, start, cur_win_conf[space_key(direction)] + 2)
+    return move_slot(
+      direction,
+      start,
+      cur_win_conf[space_key(direction)] + border_padding(direction, cur_win_conf)
+    )
   end
 
   table.sort(preceding_wins, function(a, b)
@@ -190,13 +183,13 @@ function M.slot_after_previous(win, open_windows, direction)
     return move_slot(
       direction,
       last_win_conf[key][false],
-      last_win_conf[space_key(direction)] + (last_win_conf.border ~= "none" and 2 or 0)
+      last_win_conf[space_key(direction)] + border_padding(direction, last_win_conf)
     )
   else
     return move_slot(
       direction,
       last_win_conf[key][false],
-      cur_win_conf[space_key(direction)] + (cur_win_conf.border ~= "none" and 2 or 0)
+      cur_win_conf[space_key(direction)] + border_padding(direction, cur_win_conf)
     )
   end
 end

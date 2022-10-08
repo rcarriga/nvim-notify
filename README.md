@@ -216,6 +216,10 @@ See `:help notify-render()` for details
 
 ![image](https://user-images.githubusercontent.com/24252670/191683325-220208a0-90bf-4daa-b375-01b573ca524c.png)
 
+4. "compact"
+
+![image](https://user-images.githubusercontent.com/24252670/212632432-86621888-f885-4074-aed4-d12b5e291ab2.png)
+
 Feel free to submit custom rendering functions to share with others!
 
 ### Animation Style
