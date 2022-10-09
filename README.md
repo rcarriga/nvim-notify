@@ -19,18 +19,12 @@ Credit to [sunjon](https://github.com/sunjon) for [the design](https://neovim.di
 
 ## Installation
 
-### Prerequisites
-
-* If you are using iTerm2 on MacOS, make sure to use a font which supported glyphs (icons), font can be found [here](https://github.com/ryanoasis/nerd-fonts).
-
-* Enable NeoVim show different colors in your `.vimrc` file or `.config/nvim/init.vim` file:
-```vim
-set termguicolor
+24-bit colour is required, which can be enabled by adding this to your init.lua
+```lua
+vim.opt.termguicolor = true
 ```
 
----
-
-You can install nvim-notify with the package manager of your choice.
+Then you can install nvim-notify with the package manager of your choice.
 
 [**dein**](https://github.com/Shougo/dein.vim):
 
