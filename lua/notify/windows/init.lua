@@ -79,10 +79,12 @@ function WindowAnimator:advance_stages(goals)
     local win_state = self.win_states[win]
     for field, goal in pairs(win_goals) do
       if field ~= "time" then
-        if goal.complete then
-          complete = goal.complete(win_state[field].position)
-        else
-          complete = goal[1] == round(win_state[field].position, 2)
+        if type(goal) == "table" then
+          if goal.complete then
+            complete = goal.complete(win_state[field].position)
+          else
+            complete = goal[1] == round(win_state[field].position, 2)
+          end
         end
         if not complete then
           break
