@@ -19,6 +19,10 @@ Credit to [sunjon](https://github.com/sunjon) for [the design](https://neovim.di
 
 ## Installation
 
+### Prerequisites
+
+Make sure to use a font which supported glyphs (icons), font can be found [here](https://github.com/ryanoasis/nerd-fonts).
+
 24-bit colour is required, which can be enabled by adding this to your init.lua
 ```lua
 vim.opt.termguicolor = true
