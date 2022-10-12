@@ -117,4 +117,14 @@ function M.highlight(name, fields)
   end
 end
 
+local function split_string(string, size)
+  local lines = {}
+
+  for i = 1, #string, size do
+    lines[#lines + 1] = string:sub(i, i + size - 1)
+  end
+
+  return lines
+end
+
 return M
