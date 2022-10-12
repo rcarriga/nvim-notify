@@ -37,6 +37,7 @@ local default_config = {
     DEBUG = "",
     TRACE = "✎",
   },
+  wrap_message = false,
 }
 
 ---@class notify.Config
@@ -53,6 +54,7 @@ local default_config = {
 ---@field minimum_width integer: Minimum width for notification windows
 ---@field fps integer: Frames per second for animation stages, higher value means smoother animations but more CPU usage
 ---@field top_down boolean: whether or not to position the notifications at the top or not
+---@field wrap_message boolean: whether or not to wrap the message at max_width
 
 local opacity_warned = false
 
