@@ -127,4 +127,8 @@ local function split_string(string, size)
   return lines
 end
 
+function M.wrap_message(message, size)
+  return split_string(message, size)
+end
+
 return M
