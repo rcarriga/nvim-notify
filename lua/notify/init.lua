@@ -10,6 +10,7 @@ local Notification = require("notify.service.notification")
 local WindowAnimator = require("notify.windows")
 local NotificationService = require("notify.service")
 local stage_util = require("notify.stages.util")
+local util = require("notify.util")
 
 ---@type Notification[]
 local notifications = {}
@@ -81,6 +82,11 @@ function notify.notify(message, level, opts)
   if not global_instance then
     notify.setup()
   end
+
+  if global_config.wrap_message == true then
+    return global_instance.notify(util.wrap_message(message, global_config.max_width), level, opts)
+  end
+
   return global_instance.notify(message, level, opts)
 end
 
@@ -99,6 +105,11 @@ function notify.async(message, level, opts)
   if not global_instance then
     notify.setup()
   end
+
+  if global_config.wrap_message == true then
+    return global_instance.notify(util.wrap_message(message, global_config.max_width), level, opts)
+  end
+
   return global_instance.async(message, level, opts)
 end
 
