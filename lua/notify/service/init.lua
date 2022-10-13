@@ -106,6 +106,10 @@ function NotificationService:dismiss(opts)
   end
 end
 
+function NotificationService:pending()
+  return self._pending:length()
+end
+
 ---@return NotificationService
 return function(config, animator)
   return NotificationService:new(config, animator)

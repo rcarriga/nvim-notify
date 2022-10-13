@@ -23,7 +23,7 @@ local global_instance, global_config
 ---    See: ~
 ---        |notify.Config|
 ---</pre>
----@param user_config notify.Config
+---@param user_config notify.Config | nil
 ---@eval { ['description'] = require('notify.config')._format_default() }
 ---@see notify-render
 function notify.setup(user_config)
@@ -124,6 +124,15 @@ function notify.dismiss(opts)
     notify.setup()
   end
   return global_instance.dismiss(opts)
+end
+
+---Number of notifications currently waiting to be displayed
+---@return table<integer, integer>
+function notify.pending()
+  if not global_instance then
+    notify.setup()
+  end
+  return global_instance.pending()
 end
 
 function notify._print_history()
@@ -252,6 +261,10 @@ function notify.instance(user_config, inherit)
     if service then
       service:dismiss(opts or {})
     end
+  end
+
+  function instance.pending()
+    return service and service:pending() or {}
   end
 
   setmetatable(instance, {

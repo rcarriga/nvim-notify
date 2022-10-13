@@ -91,7 +91,7 @@ notify.setup({user_config})                                   *notify.setup()*
       }
 
     Parameters: ~
-        {user_config} (notify.Config)
+        {user_config} (notify.Config|nil)
 
     See: ~
         |notify-render()|
@@ -162,6 +162,14 @@ notify.dismiss({opts})                                      *notify.dismiss()*
         {pending} (boolean)  Clear pending notifications
         {silent}  (boolean)  Suppress notification that pending notifications
                              were dismissed.
+
+
+notify.pending()                                            *notify.pending()*
+    Number of notifications currently waiting to be displayed
+
+
+    Return: ~
+        table<integer, integer>
 
 
 notify.instance({user_config}, {inherit})                  *notify.instance()*
