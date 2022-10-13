@@ -282,6 +282,11 @@ function WindowAnimator:apply_updates()
       set_field("height", 1)
 
       if win_updated then
+        if new_conf.row or new_conf.col then
+          new_conf.relative = conf.relative
+          new_conf.row = new_conf.row or conf.row
+          new_conf.col = new_conf.col or conf.col
+        end
         api.nvim_win_set_config(win, new_conf)
       end
     end
