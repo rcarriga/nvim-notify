@@ -259,6 +259,7 @@ function WindowAnimator:apply_updates()
       )
     end
     local exists, conf = util.get_win_config(win)
+    local new_conf = {}
     if not exists then
       self:remove_win(win)
     else
@@ -272,7 +273,7 @@ function WindowAnimator:apply_updates()
           return
         end
         win_updated = true
-        conf[field] = new_value
+        new_conf[field] = new_value
       end
 
       set_field("row", 0, 1)
@@ -281,7 +282,7 @@ function WindowAnimator:apply_updates()
       set_field("height", 1)
 
       if win_updated then
-        api.nvim_win_set_config(win, conf)
+        api.nvim_win_set_config(win, new_conf)
       end
     end
   end
