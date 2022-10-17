@@ -49,7 +49,7 @@ local telescope_notifications = function(opts)
                 { entry.value.title[1], "NotifyLogTitle" },
                 { entry.value.icon, "Notify" .. entry.value.level .. "Title" },
                 { entry.value.level, "Notify" .. entry.value.level .. "Title" },
-                { entry.value.message[1], "Normal" },
+                { entry.value.message[1], "Notify" .. entry.value.level .. "Body"  },
               })
             end,
             ordinal = notif.title[1] .. " " .. notif.title[2] .. " " .. table.concat(
