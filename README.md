@@ -25,7 +25,7 @@ Make sure to use a font which supported glyphs (icons), font can be found [here]
 
 24-bit colour is required, which can be enabled by adding this to your init.lua
 ```lua
-vim.opt.termguicolor = true
+vim.opt.termguicolors = true
 ```
 
 Then you can install nvim-notify with the package manager of your choice.
