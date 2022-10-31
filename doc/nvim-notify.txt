@@ -35,6 +35,11 @@ notify.Options                                                *notify.Options*
                                                      level.
         {hide_from_history} (boolean)                Hide this notification
                                                      from the history
+        {animate}           (boolean)                If false, the window will
+                                                     jump to the timed stage.
+                                                     Intended for use in
+                                                     blocking events (e.g.
+                                                     vim.fn.input)
 
 
 NotificationEvents                                        *NotificationEvents*
