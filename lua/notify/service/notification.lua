@@ -7,6 +7,7 @@
 ---@field icon string
 ---@field time number
 ---@field width number
+---@field animate boolean
 ---@field hide_from_history boolean
 ---@field keep fun(): boolean
 ---@field on_open fun(win: number) | nil
@@ -43,6 +44,7 @@ function Notification:new(id, message, level, opts, config)
     keep = opts.keep,
     on_open = opts.on_open,
     on_close = opts.on_close,
+    animate = opts.animate ~= false,
     render = opts.render,
     hide_from_history = opts.hide_from_history,
   }
