@@ -206,6 +206,7 @@ function notify.instance(user_config, inherit)
         "on_close",
         "render",
         "hide_from_history",
+        "animate",
       }
       message = message or existing.message
       level = level or existing.level
