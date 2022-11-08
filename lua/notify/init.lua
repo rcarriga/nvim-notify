@@ -50,6 +50,7 @@ end
 ---@field render function: Function to render a notification buffer.
 ---@field replace integer | notify.Record: Notification record or the record `id` field. Replace an existing notification if still open. All arguments not given are inherited from the replaced notification including message and level.
 ---@field hide_from_history boolean: Hide this notification from the history
+---@field animate boolean: If false, the window will jump to the timed stage. Intended for use in blocking events (e.g. vim.fn.input)
 
 ---@class NotificationEvents @Async events for a notification
 ---@field open function: Resolves when notification is opened
@@ -225,6 +226,7 @@ function notify.instance(user_config, inherit)
         "on_close",
         "render",
         "hide_from_history",
+        "animate",
       }
       message = message or existing.message
       level = level or existing.level

@@ -59,6 +59,10 @@ function NotificationBuf:open(win)
   end
 end
 
+function NotificationBuf:should_animate()
+  return self._notif.animate
+end
+
 function NotificationBuf:close(win)
   if self._state ~= BufState.OPEN then
     return
