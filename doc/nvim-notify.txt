@@ -66,6 +66,19 @@ notify.AsyncRecord                                        *notify.AsyncRecord*
         {events} (NotificationEvents)
 
 
+notify.OpenedBuffer                                      *notify.OpenedBuffer*
+
+
+    Fields: ~
+        {buffer}     (integer)                Created buffer number
+        {height}     (integer)                Height of the buffer content
+                                              including extmarks
+        {width}      (integer)                width of the buffer content
+                                              including extmarks
+        {highlights} (table<string, string>)  Highlights used for the buffer
+                                              contents
+
+
 notify.setup({user_config})                                   *notify.setup()*
     Configure nvim-notify
        See: ~
@@ -162,6 +175,23 @@ notify.dismiss({opts})                                      *notify.dismiss()*
         {pending} (boolean)  Clear pending notifications
         {silent}  (boolean)  Suppress notification that pending notifications
                              were dismissed.
+
+
+notify.open({notif_id}, {opts})                                *notify.open()*
+    Open a notification in a new buffer
+
+
+    Parameters: ~
+        {notif_id} (integer|notify.Record)
+        {opts}     (table)
+
+    Fields: ~
+        {buffer}    (integer)  Use this buffer, instead of creating a new one
+        {max_width} (integer)  Render message to this width (used to limit
+                               window decoration sizes)
+
+    Return: ~
+        notify.OpenedBuffer
 
 
 notify.pending()                                            *notify.pending()*
