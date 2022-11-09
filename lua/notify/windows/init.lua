@@ -30,15 +30,13 @@ end
 function WindowAnimator:render(queue, time)
   self:push_pending(queue)
   if vim.tbl_isempty(self.win_stages) then
-    return nil
+    return false
   end
-  local updated = false
   local open_windows = vim.tbl_keys(self.win_stages)
   for win, _ in pairs(self.win_stages) do
-    local res = self:_update_window(time, win, open_windows)
-    updated = updated or res
+    self:_update_window(time, win, open_windows)
   end
-  return updated
+  return true
 end
 
 function WindowAnimator:push_pending(queue)
@@ -152,7 +150,6 @@ function WindowAnimator:_update_window(time, win, open_windows)
 
   if not win_goals then
     self:_remove_win(win)
-    return true
   end
 
   -- If we don't animate, then we move to all goals instantly.
@@ -177,13 +174,11 @@ function WindowAnimator:_update_window(time, win, open_windows)
     self:_start_timer(win)
   end
 
-  local updated = self:_advance_win_state(win, win_goals, time)
+  self:_advance_win_state(win, win_goals, time)
 
   if self:_is_complete(win, win_goals) and not win_goals.time then
     self:_advance_win_stage(win)
   end
-
-  return updated
 end
 
 function WindowAnimator:_is_complete(win, goals)
