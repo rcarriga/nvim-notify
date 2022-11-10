@@ -273,7 +273,7 @@ function notify.instance(user_config, inherit)
       buffer = buf,
       height = notif_buf:height(),
       width = notif_buf:width(),
-      highlight = {
+      highlights = {
         body = notif_buf.highlights.body,
         border = notif_buf.highlights.border,
         title = notif_buf.highlights.title,
