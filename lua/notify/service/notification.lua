@@ -55,6 +55,7 @@ end
 
 function Notification:record()
   return {
+    id = self.id,
     message = self.message,
     level = self.level,
     time = self.time,

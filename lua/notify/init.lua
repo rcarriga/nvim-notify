@@ -144,7 +144,7 @@ function notify.open(notif_id, opts)
   if not global_instance then
     notify.setup()
   end
-  return global_instance.open(notif_id)
+  return global_instance.open(notif_id, opts)
 end
 
 ---Number of notifications currently waiting to be displayed
