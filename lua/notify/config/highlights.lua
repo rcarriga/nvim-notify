@@ -2,6 +2,7 @@ local M = {}
 
 function M.setup()
   vim.cmd([[
+    hi default link NotifyBackground Normal
     hi default NotifyERRORBorder guifg=#8A1F1F
     hi default NotifyWARNBorder guifg=#79491D
     hi default NotifyINFOBorder guifg=#4F6752
