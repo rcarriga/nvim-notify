@@ -17,7 +17,7 @@ local Notification = {}
 
 function Notification:new(id, message, level, opts, config)
   if type(level) == "number" then
-    level = vim.lsp.log_levels[level]
+    level = vim.log.levels[level]
   end
   if type(message) == "string" then
     message = vim.split(message, "\n")

@@ -114,9 +114,9 @@ function Config.setup(custom_config)
   function config.level()
     local level = user_config.level
     if type(level) == "number" then
-      level = vim.lsp.log_levels[level] or vim.lsp.log_levels.INFO
+      level = vim.log.levels[level] or vim.log.levels.INFO
     end
-    return vim.lsp.log_levels[vim.fn.toupper(level)] or vim.lsp.log_levels.INFO
+    return vim.log.levels[vim.fn.toupper(level)] or vim.log.levels.INFO
   end
 
   function config.fps()

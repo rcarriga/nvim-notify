@@ -238,7 +238,7 @@ function notify.instance(user_config, inherit)
     local id = #notifications + 1
     local notification = Notification(id, message, level, opts, instance_config)
     table.insert(notifications, notification)
-    local level_num = vim.lsp.log_levels[notification.level]
+    local level_num = vim.log.levels[notification.level]
     if opts.replace then
       service:replace(opts.replace, notification)
     elseif not level_num or level_num >= instance_config.level() then
