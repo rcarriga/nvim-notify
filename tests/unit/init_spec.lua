@@ -22,6 +22,7 @@ describe("checking public interface", function()
       assert.are.same({
         {
           icon = "",
+          id = 1,
           level = "ERROR",
           message = { "test" },
           render = notifs[1].render,

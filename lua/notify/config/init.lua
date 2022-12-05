@@ -114,7 +114,7 @@ function Config.setup(custom_config)
   function config.level()
     local level = user_config.level
     if type(level) == "number" then
-      level = vim.log.levels[level] or vim.log.levels.INFO
+      return level
     end
     return vim.log.levels[vim.fn.toupper(level)] or vim.log.levels.INFO
   end
