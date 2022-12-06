@@ -15,9 +15,12 @@
 ---@field render fun(buf: integer, notification: Notification, highlights: table<string, string>)
 local Notification = {}
 
+local level_maps = vim.tbl_extend("keep", {}, vim.log.levels)
+vim.tbl_add_reverse_lookup(level_maps)
+
 function Notification:new(id, message, level, opts, config)
   if type(level) == "number" then
-    level = vim.log.levels[level]
+    level = level_maps[level]
   end
   if type(message) == "string" then
     message = vim.split(message, "\n")
