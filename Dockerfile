@@ -12,7 +12,7 @@ RUN git clone --depth 1 https://github.com/tjdevries/tree-sitter-lua
 
 WORKDIR tree-sitter-lua
 RUN mkdir -p build parser; \
-    cc -o ./build/parser.so -I ./src src/parser.c src/scanner.cc -shared -Os -lstdc++ -fPIC; \
+    cc -o ./build/parser.so -I ./src src/parser.c src/scanner.c -shared -Os -lstdc++ -fPIC; \
     ln -s ../build/parser.so parser/lua.so;
 
 RUN mkdir /notify
