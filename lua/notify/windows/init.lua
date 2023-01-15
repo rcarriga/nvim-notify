@@ -46,30 +46,34 @@ function WindowAnimator:push_pending(queue)
   while not queue:is_empty() do
     ---@type NotificationBuf
     local notif_buf = queue:peek()
-    local windows = vim.tbl_keys(self.win_stages)
-    local win_opts = self.stages[1]({
-      message = self:_get_dimensions(notif_buf),
-      open_windows = windows,
-    })
-    if not win_opts then
-      return
+    if not notif_buf:is_valid() then
+      queue:pop()
+    else
+      local windows = vim.tbl_keys(self.win_stages)
+      local win_opts = self.stages[1]({
+        message = self:_get_dimensions(notif_buf),
+        open_windows = windows,
+      })
+      if not win_opts then
+        return
+      end
+      local opacity = util.pop(win_opts, "opacity")
+      if opacity then
+        notif_buf.highlights:set_opacity(opacity)
+      end
+      win_opts.noautocmd = true
+      local win = util.open_win(notif_buf, false, win_opts)
+      vim.fn.setwinvar(
+        win,
+        "&winhl",
+        "Normal:" .. notif_buf.highlights.body .. ",FloatBorder:" .. notif_buf.highlights.border
+      )
+      self.win_stages[win] = 2
+      self.win_states[win] = {}
+      self.notif_bufs[win] = notif_buf
+      queue:pop()
+      notif_buf:open(win)
     end
-    local opacity = util.pop(win_opts, "opacity")
-    if opacity then
-      notif_buf.highlights:set_opacity(opacity)
-    end
-    win_opts.noautocmd = true
-    local win = util.open_win(notif_buf, false, win_opts)
-    vim.fn.setwinvar(
-      win,
-      "&winhl",
-      "Normal:" .. notif_buf.highlights.body .. ",FloatBorder:" .. notif_buf.highlights.border
-    )
-    self.win_stages[win] = 2
-    self.win_states[win] = {}
-    self.notif_bufs[win] = notif_buf
-    queue:pop()
-    notif_buf:open(win)
   end
 end
 
@@ -273,13 +277,14 @@ function WindowAnimator:_apply_win_state(win, win_state)
   if win_state.opacity then
     win_updated = true
     local notif_buf = self.notif_bufs[win]
-    notif_buf.highlights:set_opacity(win_state.opacity.position)
-
-    vim.fn.setwinvar(
-      win,
-      "&winhl",
-      "Normal:" .. notif_buf.highlights.body .. ",FloatBorder:" .. notif_buf.highlights.border
-    )
+    if notif_buf:is_valid() then
+      notif_buf.highlights:set_opacity(win_state.opacity.position)
+      vim.fn.setwinvar(
+        win,
+        "&winhl",
+        "Normal:" .. notif_buf.highlights.body .. ",FloatBorder:" .. notif_buf.highlights.border
+      )
+    end
   end
   local exists, conf = util.get_win_config(win)
   local new_conf = {}
