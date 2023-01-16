@@ -140,6 +140,10 @@ function NotificationBuf:buffer()
   return self._buffer
 end
 
+function NotificationBuf:is_valid()
+  return self._buffer and vim.api.nvim_buf_is_valid(self._buffer)
+end
+
 function NotificationBuf:level()
   return self._notif.level
 end
