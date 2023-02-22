@@ -201,7 +201,7 @@ highlight link NotifyTRACEBody Normal
 
 ### Render Style
 
-The appearance of the notifications can be configured, using either built-in methods or custome functions.
+The appearance of the notifications can be configured, using either built-in methods or custom functions.
 See `:help notify-render()` for details
 
 1. "default"
