@@ -1,3 +1,4 @@
+*nvim-notify.txt*  A fancy, configurable notification manager for NeoVim
 ================================================================================
 NVIM-NOTIFY                                                        *nvim-notify*
 
