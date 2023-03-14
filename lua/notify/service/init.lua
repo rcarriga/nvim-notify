@@ -45,7 +45,7 @@ function NotificationService:_run()
   end, 1000 / self._fps)
 end
 
----@param notif Notification
+---@param notif notify.Notification;q
 ---@return integer
 function NotificationService:push(notif)
   local buf = vim.api.nvim_create_buf(false, true)

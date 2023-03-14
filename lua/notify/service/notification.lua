@@ -1,4 +1,4 @@
----@class Notification
+---@class notify.Notification
 ---@field id integer
 ---@field level string
 ---@field message string[]
@@ -12,7 +12,7 @@
 ---@field keep fun(): boolean
 ---@field on_open fun(win: number) | nil
 ---@field on_close fun(win: number) | nil
----@field render fun(buf: integer, notification: Notification, highlights: table<string, string>)
+---@field render fun(buf: integer, notification: notify.Notification, highlights: table<string, string>)
 local Notification = {}
 
 local level_maps = vim.tbl_extend("keep", {}, vim.log.levels)

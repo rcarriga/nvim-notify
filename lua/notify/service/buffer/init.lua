@@ -5,7 +5,7 @@ local NotifyBufHighlights = require("notify.service.buffer.highlights")
 ---@class NotificationBuf
 ---@field highlights NotifyBufHighlights
 ---@field _config table
----@field _notif Notification
+---@field _notif notify.Notification;q
 ---@field _state "open" | "closed"
 ---@field _buffer number
 ---@field _height number
@@ -149,7 +149,7 @@ function NotificationBuf:level()
 end
 
 ---@param buf number
----@param notification Notification
+---@param notification notify.Notification;q
 ---@return NotificationBuf
 return function(buf, notification, opts)
   return NotificationBuf:new(

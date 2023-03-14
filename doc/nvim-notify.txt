@@ -1,287 +1,215 @@
-================================================================================
-NVIM-NOTIFY                                                        *nvim-notify*
+*nvim-notify.txt*   A fancy, configurable notification manager for NeoVim
+
+==============================================================================
 
 A fancy, configurable notification manager for NeoVim
 
-notify.Options                                                *notify.Options*
-    Options for an individual notification
-
-    Fields: ~
-        {title}             (string)
-        {icon}              (string)
-        {timeout}           (number|boolean)         Time to show notification
-                                                     in milliseconds, set to
-                                                     false to disable timeout.
-        {on_open}           (function)               Callback for when window
-                                                     opens, receives window as
-                                                     argument.
-        {on_close}          (function)               Callback for when window
-                                                     closes, receives window
-                                                     as argument.
-        {keep}              (function)               Function to keep the
-                                                     notification window open
-                                                     after timeout, should
-                                                     return boolean.
-        {render}            (function)               Function to render a
-                                                     notification buffer.
-        {replace}           (integer|notify.Record)  Notification record or
-                                                     the record `id` field.
-                                                     Replace an existing
-                                                     notification if still
-                                                     open. All arguments not
-                                                     given are inherited from
-                                                     the replaced notification
-                                                     including message and
-                                                     level.
-        {hide_from_history} (boolean)                Hide this notification
-                                                     from the history
-        {animate}           (boolean)                If false, the window will
-                                                     jump to the timed stage.
-                                                     Intended for use in
-                                                     blocking events (e.g.
-                                                     vim.fn.input)
+notify                                                                  *notify*
 
 
-NotificationEvents                                        *NotificationEvents*
-    Async events for a notification
+                                                                *notify.setup()*
+`setup`({user_config})
 
-    Fields: ~
-        {open}  (function)  Resolves when notification is opened
-        {close} (function)  Resolved when notification is closed
+Configure nvim-notify
+   See: ~
+       |notify.Config|
+       |notify-render|
 
-
-notify.Record                                                  *notify.Record*
-    Record of a previously sent notification
-
-    Fields: ~
-        {id}      (integer)
-        {message} (string[])        Lines of the message
-        {level}   (string|integer)  Log level. See vim.log.levels
-        {title}   (string[])        Left and right sections of the title
-        {icon}    (string)          Icon used for notification
-        {time}    (number)          Time of message, as returned by
-                                    `vim.fn.localtime()`
-        {render}  (function)        Function to render notification buffer
-
-
-notify.AsyncRecord                                        *notify.AsyncRecord*
-    notify.Record
-
-    Fields: ~
-        {events} (NotificationEvents)
-
-
-notify.OpenedBuffer                                      *notify.OpenedBuffer*
-
-
-    Fields: ~
-        {buffer}     (integer)                Created buffer number
-        {height}     (integer)                Height of the buffer content
-                                              including extmarks
-        {width}      (integer)                width of the buffer content
-                                              including extmarks
-        {highlights} (table<string, string>)  Highlights used for the buffer
-                                              contents
-
-
-notify.setup({user_config})                                   *notify.setup()*
-    Configure nvim-notify
-       See: ~
-           |notify.Config|
-
-    Default values:
-      {
-        background_colour = "Normal",
-        fps = 30,
-        icons = {
-          DEBUG = "",
-          ERROR = "",
-          INFO = "",
-          TRACE = "✎",
-          WARN = ""
-        },
-        level = 2,
-        minimum_width = 50,
-        render = "default",
-        stages = "fade_in_slide_out",
-        timeout = 5000,
-        top_down = true
-      }
-
-    Parameters: ~
-        {user_config} (notify.Config|nil)
-
-    See: ~
-        |notify-render()|
-
-
-notify.notify({message}, {level}, {opts})                    *notify.notify()*
-    Display a notification.
-
-    You can call the module directly rather than using this:
-    >
-     require("notify")(message, level, opts)
+Parameters~
+{user_config} `(notify.Config|nil)`
+Default values:
+>lua
+  {
+    background_colour = "NotifyBackground",
+    fps = 30,
+    icons = {
+      DEBUG = "",
+      ERROR = "",
+      INFO = "",
+      TRACE = "✎",
+      WARN = ""
+    },
+    level = 2,
+    minimum_width = 50,
+    render = "default",
+    stages = "fade_in_slide_out",
+    timeout = 5000,
+    top_down = true
+  }
 <
 
+                                                                *notify.Options*
+Options for an individual notification
+Fields~
+{title} `(string)`
+{icon} `(string)`
+{timeout} `(number|boolean)` Time to show notification in milliseconds, set to false to disable timeout.
+{on_open} `(function)` Callback for when window opens, receives window as argument.
+{on_close} `(function)` Callback for when window closes, receives window as argument.
+{keep} `(function)` Function to keep the notification window open after timeout, should return boolean.
+{render} `(function|string)` Function to render a notification buffer.
+{replace} `(integer|notify.Record)` Notification record or the record `id` field. Replace an existing notification if still open. All arguments not given are inherited from the replaced notification including message and level.
+{hide_from_history} `(boolean)` Hide this notification from the history
+{animate} `(boolean)` If false, the window will jump to the timed stage. Intended for use in blocking events (e.g. vim.fn.input)
 
-    Parameters: ~
-        {message} (string|string[])  Notification message
-        {level}   (string|number)    Log level. See vim.log.levels
-        {opts}    (notify.Options)   Notification options
+                                                                 *notify.Events*
+Async events for a notification
+Fields~
+{open} `(function)` Resolves when notification is opened
+{close} `(function)` Resolved when notification is closed
 
-    Return: ~
-        notify.Record
+                                                                 *notify.Record*
+Record of a previously sent notification
+Fields~
+{id} `(integer)`
+{message} `(string[])` Lines of the message
+{level} `(string|integer)` Log level. See vim.log.levels
+{title} `(string[])` Left and right sections of the title
+{icon} `(string)` Icon used for notification
+{time} `(number)` Time of message, as returned by `vim.fn.localtime()`
+{render} `(function)` Function to render notification buffer
 
+                                                            *notify.AsyncRecord*
+Inherits: `notify.Record`
 
-notify.async({message}, {level}, {opts})                      *notify.async()*
-    Display a notification asynchronously
+Fields~
+{events} `(notify.Events)`
 
-    This uses plenary's async library, allowing a cleaner interface for
-    open/close events. You must call this function within an async context.
+                                                               *notify.notify()*
+`notify`({message}, {level}, {opts})
 
-    The `on_close` and `on_open` options are not used.
+Display a notification.
 
+You can call the module directly rather than using this:
+>lua
+ require("notify")(message, level, opts)
+<
+Parameters~
+{message} `(string|string[])` Notification message
+{level} `(string|number)` Log level. See vim.log.levels
+{opts} `(notify.Options)` Notification options
+Return~
+`(notify.Record)`
 
+                                                                *notify.async()*
+`async`({message}, {level}, {opts})
 
-    Parameters: ~
-        {message} (string|string[])  Notification message
-        {level}   (string|number)    Log level. See vim.log.levels
-        {opts}    (notify.Options)   Notification options
+Display a notification asynchronously
 
-    Return: ~
-        notify.AsyncRecord
+This uses plenary's async library, allowing a cleaner interface for
+open/close events. You must call this function within an async context.
 
+The `on_close` and `on_open` options are not used.
 
-notify.history({args})                                      *notify.history()*
-    Get records of all previous notifications
+Parameters~
+{message} `(string|string[])` Notification message
+{level} `(string|number)` Log level. See vim.log.levels
+{opts} `(notify.Options)` Notification options
+Return~
+`(notify.AsyncRecord)`
 
-    You can use the `:Notifications` command to display a log of previous
-    notifications
+                                                              *notify.history()*
+`history`({opts})
 
+Get records of all previous notifications
 
-    Parameters: ~
-        {args} (table)
+You can use the `:Notifications` command to display a log of previous notifications
+Parameters~
+{opts} `(notify.HistoryOpts)`
+Return~
+`(notify.Record[])`
 
-    Fields: ~
-        {include_hidden} (boolean)  Include notifications hidden from history
+                                                            *notify.HistoryOpts*
+Fields~
+{include_hidden} `(boolean)` Include notifications hidden from history
 
-    Return: ~
-        notify.Record[]
+                                                              *notify.dismiss()*
+`dismiss`({opts})
 
+Dismiss all notification windows currently displayed
+Parameters~
+{opts} `(notify.DismissOpts)`
 
-notify.dismiss({opts})                                      *notify.dismiss()*
-    Dismiss all notification windows currently displayed
+                                                            *notify.DismissOpts*
+Fields~
+{pending} `(boolean)` Clear pending notifications
+{silent} `(boolean)` Suppress notification that pending notifications were dismissed.
 
+                                                                 *notify.open()*
+`open`({notif_id}, {opts})
 
-    Parameters: ~
-        {opts} (table)
+Open a notification in a new buffer
+Parameters~
+{notif_id} `(integer|notify.Record)`
+{opts} `(notify.OpenOpts)`
+Return~
+`(notify.OpenedBuffer)`
 
-    Fields: ~
-        {pending} (boolean)  Clear pending notifications
-        {silent}  (boolean)  Suppress notification that pending notifications
-                             were dismissed.
+                                                               *notify.OpenOpts*
+Fields~
+{buffer} `(integer)` Use this buffer, instead of creating a new one
+{max_width} `(integer)` Render message to this width (used to limit window decoration sizes)
 
+                                                           *notify.OpenedBuffer*
+Fields~
+{buffer} `(integer)` Created buffer number
+{height} `(integer)` Height of the buffer content including extmarks
+{width} `(integer)` width of the buffer content including extmarks
+{highlights} `(table<string, string>)` Highlights used for the buffer contents
 
-notify.open({notif_id}, {opts})                                *notify.open()*
-    Open a notification in a new buffer
+                                                              *notify.pending()*
+`pending`()
 
+Number of notifications currently waiting to be displayed
+Return~
+`(integer[])`
 
-    Parameters: ~
-        {notif_id} (integer|notify.Record)
-        {opts}     (table)
+                                                             *notify.instance()*
+`instance`({user_config}, {inherit})
 
-    Fields: ~
-        {buffer}    (integer)  Use this buffer, instead of creating a new one
-        {max_width} (integer)  Render message to this width (used to limit
-                               window decoration sizes)
-
-    Return: ~
-        notify.OpenedBuffer
-
-
-notify.pending()                                            *notify.pending()*
-    Number of notifications currently waiting to be displayed
-
-
-    Return: ~
-        table<integer, integer>
-
-
-notify.instance({user_config}, {inherit})                  *notify.instance()*
-    Configure an instance of nvim-notify. You can use this to manage a separate
-    instance of nvim-notify with completely different configuration. The
-    returned instance will have the same functions as the notify module.
-
-
-    Parameters: ~
-        {user_config} (notify.Config)
-        {inherit}     (boolean)        Inherit the global configuration,
-                                       default true
-
-
-
-================================================================================
-CONFIG                                                           *notify.config*
-
-notify.Config                                                  *notify.Config*
-
-
-    Fields: ~
-        {level}             (string|integer)     Minimum log level to display.
-                                                 See vim.log.levels.
-        {timeout}           (number)             Default timeout for
-                                                 notification
-        {max_width}         (number|function)    Max number of columns for
-                                                 messages
-        {max_height}        (number|function)    Max number of lines for a
-                                                 message
-        {stages}            (string|function[])  Animation stages
-        {background_colour} (string)             For stages that change
-                                                 opacity this is treated as
-                                                 the highlight behind the
-                                                 window. Set this to either a
-                                                 highlight group, an RGB hex
-                                                 value e.g. "#000000" or a
-                                                 function returning an RGB
-                                                 code for dynamic values
-        {icons}             (table)              Icons for each level (upper
-                                                 case names)
-        {on_open}           (function)           Function called when a new
-                                                 window is opened, use for
-                                                 changing win settings/config
-        {on_close}          (function)           Function called when a window
-                                                 is closed
-        {render}            (function|string)    Function to render a
-                                                 notification buffer or a
-                                                 built-in renderer name
-        {minimum_width}     (integer)            Minimum width for
-                                                 notification windows
-        {fps}               (integer)            Frames per second for
-                                                 animation stages, higher
-                                                 value means smoother
-                                                 animations but more CPU usage
-        {top_down}          (boolean)            whether or not to position
-                                                 the notifications at the top
-                                                 or not
+Configure an instance of nvim-notify.
+You can use this to manage a separate instance of nvim-notify with completely different configuration.
+The returned instance will have the same functions as the notify module.
+Parameters~
+{user_config} `(notify.Config)`
+{inherit?} `(boolean)` Inherit the global configuration, default true
 
 
+==============================================================================
+notify.config                                                    *notify.config*
 
-================================================================================
-NOTIFY-RENDER()                                                *notify-render()*
+                                                                 *notify.Config*
+Fields~
+{level} `(string|integer)` Minimum log level to display. See vim.log.levels.
+{timeout} `(number)` Default timeout for notification
+{max_width} `(number|function)` Max number of columns for messages
+{max_height} `(number|function)` Max number of lines for a message
+{stages} `(string|function[])` Animation stages
+{background_colour} `(string)` For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group, an RGB hex value e.g. "#000000" or a function returning an RGB code for dynamic values
+{icons} `(table)` Icons for each level (upper case names)
+{on_open} `(function)` Function called when a new window is opened, use for changing win settings/config
+{on_close} `(function)` Function called when a window is closed
+{render} `(function|string)` Function to render a notification buffer or a built-in renderer name
+{minimum_width} `(integer)` Minimum width for notification windows
+{fps} `(integer)` Frames per second for animation stages, higher value means smoother animations but more CPU usage
+{top_down} `(boolean)` whether or not to position the notifications at the top or not
+
+
+==============================================================================
+notify-render                                                    *notify-render*
 
 Notification buffer rendering
 
-Custom rendering can be provided by both the user config in the setup or on an
-individual notification using the `render` key. The key can either be the name
-of a built-in renderer or a custom function.
+Custom rendering can be provided by both the user config in the setup or on
+an individual notification using the `render` key.
+The key can either be the name of a built-in renderer or a custom function.
 
 Built-in renderers:
 - `"default"`
 - `"minimal"`
 - `"simple"`
 
-Custom functions should accept a buffer, a notification record and a highlights
-table
+Custom functions should accept a buffer, a notification record and a highlights table
 
 >
     render: fun(buf: integer, notification: notify.Record, highlights: notify.Highlights, config)
@@ -289,15 +217,12 @@ table
 You should use the provided highlight groups to take advantage of opacity
 changes as they will be updated as the notification is animated
 
-notify.Highlights                                          *notify.Highlights*
+                                                             *notify.Highlights*
+Fields~
+{title} `(string)`
+{icon} `(string)`
+{border} `(string)`
+{body} `(string)`
 
 
-    Fields: ~
-        {title}  (string)
-        {icon}   (string)
-        {border} (string)
-        {body}   (string)
-
-
-
- vim:tw=78:ts=8:ft=help:norl:
+ vim:tw=78:ts=8:noet:ft=help:norl:
