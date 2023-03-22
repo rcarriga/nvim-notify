@@ -61,7 +61,7 @@ local function border_padding(direction, win_conf)
 end
 
 ---@param windows number[]
----@param direction integer
+---@param direction string
 ---@return { max: integer, min: integer}[]
 local function window_intervals(windows, direction, cmp)
   local win_intervals = {}
@@ -104,7 +104,7 @@ end
 
 ---@param existing_wins number[] Windows to avoid overlapping
 ---@param required_space number Window height or width including borders
----@param direction integer Direction to stack windows, one of M.DIRECTION
+---@param direction string Direction to stack windows, one of M.DIRECTION
 ---@return number | nil Slot to place window at or nil if no slot available
 function M.available_slot(existing_wins, required_space, direction)
   local increasing = is_increasing(direction)
