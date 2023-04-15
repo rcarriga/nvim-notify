@@ -36,10 +36,16 @@ Then you can install nvim-notify with the package manager of your choice.
 call dein#add("rcarriga/nvim-notify")
 ```
 
-[**vim-plug**](https://github.com/junegunn/vim-plug)
+[**vim-plug**](https://github.com/junegunn/vim-plug):
 
 ```vim
 Plug 'rcarriga/nvim-notify'
+```
+
+[**packer**](https://github.com/wbthomason/packer.nvim):
+
+```lua
+use 'rcarriga/nvim-notify'
 ```
 
 ## Usage
