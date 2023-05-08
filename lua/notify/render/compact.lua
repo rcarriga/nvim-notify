@@ -5,7 +5,12 @@ return function(bufnr, notif, highlights)
   local icon = notif.icon
   local title = notif.title[1]
 
-  local prefix = string.format("%s | %s:", icon, title)
+  local prefix
+  if type(title) == "string" and #title > 0 then
+    prefix = string.format("%s | %s:", icon, title)
+  else
+    prefix = string.format("%s |", icon)
+  end
   notif.message[1] = string.format("%s %s", prefix, notif.message[1])
 
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, notif.message)
