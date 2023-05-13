@@ -214,7 +214,7 @@ See `:help notify-render()` for details
 
 ![default](https://user-images.githubusercontent.com/24252670/141534868-fdcc9d03-9f7b-47fd-acfc-5a20b98e4e0a.png)
 
-2. "minimal
+2. "minimal"
 
 ![image](https://user-images.githubusercontent.com/24252670/141534952-bb0cf491-5bb4-473c-9a67-8adb5b23b232.png)
 
