@@ -5,7 +5,7 @@ local NotifyBufHighlights = require("notify.service.buffer.highlights")
 ---@class NotificationBuf
 ---@field highlights NotifyBufHighlights
 ---@field _config table
----@field _notif notify.Notification;q
+---@field _notif notify.Notification
 ---@field _state "open" | "closed"
 ---@field _buffer number
 ---@field _height number
@@ -51,11 +51,12 @@ function NotificationBuf:open(win)
     return
   end
   self._state = BufState.OPEN
+  local record = self._notif:record()
   if self._notif.on_open then
-    self._notif.on_open(win)
+    self._notif.on_open(win, record)
   end
   if self._config.on_open() then
-    self._config.on_open()(win)
+    self._config.on_open()(win, record)
   end
 end
 

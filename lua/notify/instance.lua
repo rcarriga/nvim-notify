@@ -22,10 +22,10 @@ return function(user_config, inherit, global_config)
 
   local animator_stages = instance_config.stages()
   local direction = instance_config.top_down() and stage_util.DIRECTION.TOP_DOWN
-      or stage_util.DIRECTION.BOTTOM_UP
+    or stage_util.DIRECTION.BOTTOM_UP
 
   animator_stages = type(animator_stages) == "string" and stages[animator_stages](direction)
-      or animator_stages
+    or animator_stages
   local animator = WindowAnimator(animator_stages, instance_config)
   local service = NotificationService(instance_config, animator)
 
@@ -99,7 +99,7 @@ return function(user_config, inherit, global_config)
     end
     local buf = opts.buffer or vim.api.nvim_create_buf(false, true)
     local notif_buf =
-    NotificationBuf(buf, notif, vim.tbl_extend("keep", opts, { config = instance_config }))
+      NotificationBuf(buf, notif, vim.tbl_extend("keep", opts, { config = instance_config }))
     notif_buf:render()
     return {
       buffer = buf,

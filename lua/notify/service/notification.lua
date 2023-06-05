@@ -10,8 +10,8 @@
 ---@field animate boolean
 ---@field hide_from_history boolean
 ---@field keep fun(): boolean
----@field on_open fun(win: number) | nil
----@field on_close fun(win: number) | nil
+---@field on_open fun(win: number, record: notify.Record) | nil
+---@field on_close fun(win: number, record: notify.Record) | nil
 ---@field render fun(buf: integer, notification: notify.Notification, highlights: table<string, string>)
 local Notification = {}
 
