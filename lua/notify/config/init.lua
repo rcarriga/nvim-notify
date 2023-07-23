@@ -30,6 +30,10 @@ local default_config = {
   minimum_width = 50,
   fps = 30,
   top_down = true,
+  time_formats = {
+    notification_history = "%FT%T",
+    notification = "%T",
+  },
   icons = {
     ERROR = "",
     WARN = "",
@@ -47,6 +51,7 @@ local default_config = {
 ---@field stages string|function[] Animation stages
 ---@field background_colour string For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group, an RGB hex value e.g. "#000000" or a function returning an RGB code for dynamic values
 ---@field icons table Icons for each level (upper case names)
+---@field time_formats table Time formats for different kind of notifications
 ---@field on_open function Function called when a new window is opened, use for changing win settings/config
 ---@field on_close function Function called when a window is closed
 ---@field render function|string Function to render a notification buffer or a built-in renderer name
@@ -125,6 +130,10 @@ function Config.setup(custom_config)
 
   function config.background_colour()
     return tonumber(user_config.background_colour():gsub("#", "0x"), 16)
+  end
+
+  function config.time_formats()
+    return user_config.time_formats
   end
 
   function config.icons()
