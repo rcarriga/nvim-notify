@@ -58,7 +58,7 @@ return function (bufnr, notif, highlights, config)
 		table.insert(notif.message, 1, prefix)
 	else
 		-- no title = prefix the icon
-		prefix = string.format(" %s ", icon)
+		prefix = string.format(" %s", icon)
 		notif.message[1] = string.format("%s %s", prefix, notif.message[1])
 	end
 
