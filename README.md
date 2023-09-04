@@ -226,6 +226,12 @@ See `:help notify-render()` for details
 
 ![image](https://user-images.githubusercontent.com/24252670/212632432-86621888-f885-4074-aed4-d12b5e291ab2.png)
 
+5. "wrapped-compact"
+
+Mostly same as `compact`, but lines are wrapped based on `max_width`, some padding is added.
+
+![image](https://github.com/rcarriga/nvim-notify/assets/73286100/72237d45-6e3b-4c2a-8010-513a26871682)
+
 Feel free to submit custom rendering functions to share with others!
 
 ### Animation Style
