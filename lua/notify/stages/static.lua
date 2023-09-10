@@ -21,7 +21,7 @@ return function(direction)
     end,
     function()
       return {
-        col = { vim.opt.columns:get() },
+        col = vim.opt.columns:get(),
         time = true,
       }
     end,
