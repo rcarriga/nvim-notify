@@ -183,7 +183,7 @@ end
 
 setmetatable(notify, {
   __call = function(_, m, l, o)
-    if vim.in_fast_event() then
+    if vim.in_fast_event() or vim.fn.has("vim_starting") then
       vim.schedule(function()
         notify.notify(m, l, o)
       end)
