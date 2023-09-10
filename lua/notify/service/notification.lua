@@ -29,7 +29,7 @@ function Notification:new(id, message, level, opts, config)
   local time = vim.fn.localtime()
   local title = opts.title or ""
   if type(title) == "string" then
-    title = { title, vim.fn.strftime("%H:%M", time) }
+    title = { title, vim.fn.strftime(config.time_formats().notification, time) }
   end
   vim.validate({
     message = { message, "table" },

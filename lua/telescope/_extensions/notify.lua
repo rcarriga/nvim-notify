@@ -27,6 +27,7 @@ local displayer = entry_display.create({
 })
 
 local telescope_notifications = function(opts)
+  local time_format = require("notify")._config().time_formats().notification
   local notifs = require("notify").history()
   local reversed = {}
   for i, notif in ipairs(notifs) do
@@ -43,7 +44,7 @@ local telescope_notifications = function(opts)
             value = notif,
             display = function(entry)
               return displayer({
-                { vim.fn.strftime("%T", entry.value.time), "NotifyLogTime" },
+                { vim.fn.strftime(time_format, entry.value.time), "NotifyLogTime" },
                 { entry.value.title[1], "NotifyLogTitle" },
                 { entry.value.icon, "Notify" .. entry.value.level .. "Title" },
                 { entry.value.level, "Notify" .. entry.value.level .. "Title" },

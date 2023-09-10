@@ -159,7 +159,10 @@ function notify._print_history()
   end
   for _, notif in ipairs(global_instance.history()) do
     vim.api.nvim_echo({
-      { vim.fn.strftime("%FT%T", notif.time), "NotifyLogTime" },
+      {
+        vim.fn.strftime(notify._config().time_formats().notification_history, notif.time),
+        "NotifyLogTime",
+      },
       { " ", "MsgArea" },
       { notif.title[1], "NotifyLogTitle" },
       { #notif.title[1] > 0 and " " or "", "MsgArea" },
