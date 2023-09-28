@@ -46,6 +46,9 @@ return function(bufnr, notif, highlights, config)
 
   -- wrap the text & add spacing
   local max_width = config.max_width()
+  if max_width == nil then
+    max_width = 80
+  end
   notif.message = custom_wrap(notif.message, max_width)
 
   local default_titles = { "Error", "Warning", "Notify" }
