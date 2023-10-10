@@ -62,6 +62,8 @@ describe("checking public interface", function()
       it("inherits options", function()
         local orig = notify("first", "info", { title = "test", icon = "x" })
         local next = notify("second", nil, { replace = orig })
+        assert.Not.Nil(orig)
+        assert.Not.Nil(next)
 
         assert.are.same(
           next,
@@ -71,6 +73,7 @@ describe("checking public interface", function()
 
       a.it("uses same window", function()
         local orig = async_notify("first", "info", { timeout = false })
+        assert.Not.Nil(orig)
         local win = orig.events.open()
         async_notify("second", nil, { replace = orig, timeout = 100 })
         async.util.scheduler()
