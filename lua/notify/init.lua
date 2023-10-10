@@ -3,6 +3,7 @@
 
 local config = require("notify.config")
 local instance = require("notify.instance")
+local headless = (#vim.api.nvim_list_uis() == 0)
 
 ---@class notify
 local notify = {}
@@ -186,7 +187,7 @@ end
 
 setmetatable(notify, {
   __call = function(_, m, l, o)
-    if vim.in_fast_event() or vim.fn.has("vim_starting") == 1 then
+    if vim.in_fast_event() or (not headless and vim.fn.has("vim_starting") == 1) then
       vim.schedule(function()
         notify.notify(m, l, o)
       end)
