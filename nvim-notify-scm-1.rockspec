@@ -8,6 +8,7 @@ description = {
    labels = {
      'neovim',
      'plugin'
+     'nvim'
    },
    homepage = 'http://github.com/rcarriga/nvim-notify',
    license = 'MIT',
@@ -18,7 +19,7 @@ dependencies = {
 }
 
 source = {
-   url = 'git://github.com/nvim-notify',
+   url = 'git://github.com/rcarriga/nvim-notify',
 }
 
 build = {
