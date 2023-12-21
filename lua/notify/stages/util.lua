@@ -135,7 +135,7 @@ function M.available_slot(existing_wins, required_space, direction)
   return interval.min
 end
 
----Gets the next slow available for the given window while maintaining its position using the given list.
+---Gets the next slot available for the given window while maintaining its position using the given list.
 ---@param win number
 ---@param open_windows number[]
 ---@param direction string
