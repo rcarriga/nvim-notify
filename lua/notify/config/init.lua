@@ -183,7 +183,7 @@ function Config.setup(custom_config)
   local needs_opacity =
     vim.tbl_contains({ BUILTIN_STAGES.FADE_IN_SLIDE_OUT, BUILTIN_STAGES.FADE }, stages)
 
-  if needs_opacity and not vim.opt.termguicolors:get() then
+  if needs_opacity and not vim.opt.termguicolors:get() and vim.version().minor < 10 then
     user_config.stages = BUILTIN_STAGES.STATIC
     vim.schedule(function()
       vim.notify(
