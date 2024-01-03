@@ -10,6 +10,8 @@
 --- - `"default"`
 --- - `"minimal"`
 --- - `"simple"`
+--- - `"compact"`
+--- - `"wrapped-compact"`
 ---
 --- Custom functions should accept a buffer, a notification record and a highlights table
 ---

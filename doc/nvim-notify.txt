@@ -33,6 +33,10 @@ Default values:
     minimum_width = 50,
     render = "default",
     stages = "fade_in_slide_out",
+    time_formats = {
+      notification = "%T",
+      notification_history = "%FT%T"
+    },
     timeout = 5000,
     top_down = true
   }
@@ -115,7 +119,7 @@ Get records of all previous notifications
 
 You can use the `:Notifications` command to display a log of previous notifications
 Parameters~
-{opts} `(notify.HistoryOpts)`
+{opts?} `(notify.HistoryOpts)`
 Return~
 `(notify.Record[])`
 
@@ -187,6 +191,7 @@ Fields~
 {stages} `(string|function[])` Animation stages
 {background_colour} `(string)` For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group, an RGB hex value e.g. "#000000" or a function returning an RGB code for dynamic values
 {icons} `(table)` Icons for each level (upper case names)
+{time_formats} `(table)` Time formats for different kind of notifications
 {on_open} `(function)` Function called when a new window is opened, use for changing win settings/config
 {on_close} `(function)` Function called when a window is closed
 {render} `(function|string)` Function to render a notification buffer or a built-in renderer name
@@ -208,6 +213,7 @@ Built-in renderers:
 - `"default"`
 - `"minimal"`
 - `"simple"`
+- `"compact"`
 - `"wrapped-compact"`
 
 Custom functions should accept a buffer, a notification record and a highlights table

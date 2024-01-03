@@ -98,7 +98,7 @@ end
 --- Get records of all previous notifications
 ---
 --- You can use the `:Notifications` command to display a log of previous notifications
----@param opts notify.HistoryOpts
+---@param opts? notify.HistoryOpts
 ---@return notify.Record[]
 function notify.history(opts)
   if not global_instance then
