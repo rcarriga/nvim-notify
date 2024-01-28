@@ -157,4 +157,43 @@ describe("checking public interface", function()
     a.util.scheduler()
     assert(vim.api.nvim_win_is_valid(win))
   end)
+
+  describe("notification width", function()
+    a.it("handles multibyte characters correctly", function()
+      local instance = notify.instance({
+        background_colour = "#000000",
+        minimum_width = 1,
+        render = "minimal",
+      }, false)
+      local win = instance.async("\u{1D4AF}\u{212F}\u{1D4C8}\u{1D4C9}").events.open() -- "𝒯ℯ𝓈𝓉"
+      assert.equal(4, vim.api.nvim_win_get_width(win))
+    end)
+
+    a.it("handles combining character sequences correctly", function()
+      local instance = notify.instance({
+        background_colour = "#000000",
+        minimum_width = 1,
+        render = "minimal",
+      }, false)
+      local win = instance
+        .async(
+          "T\u{0336}\u{0311}\u{0349}"
+            .. "e\u{0336}\u{030E}\u{0332}"
+            .. "s\u{0334}\u{0301}\u{0329}"
+            .. "t\u{0337}\u{0301}\u{031C}" -- "T̶͉̑e̶̲̎ś̴̩t̷̜́"
+        ).events
+        .open()
+      assert.equal(4, vim.api.nvim_win_get_width(win))
+    end)
+
+    a.it("respects East Asian Width Class", function()
+      local instance = notify.instance({
+        background_colour = "#000000",
+        minimum_width = 1,
+        render = "minimal",
+      }, false)
+      local win = instance.async("\u{FF34}\u{FF45}\u{FF53}\u{FF54}").events.open() -- "Ｔｅｓｔ"
+      assert.equal(8, vim.api.nvim_win_get_width(win))
+    end)
+  end)
 end)
