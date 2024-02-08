@@ -142,7 +142,7 @@ end
 function M.slot_after_previous(win, open_windows, direction)
   local key = slot_key(direction)
   local cmp = is_increasing(direction) and less or greater
-  local exists, cur_win_conf = pcall(vim.api.nvim_win_get_config, win)
+  local exists, cur_win_conf = pcall(M.get_win_config, win)
   if not exists then
     return 0
   end
