@@ -137,6 +137,9 @@ end
 
 local function get_win_config_value(cur_win_conf, key)
   if type(cur_win_conf[key]) == "table" then
+    -- this indexing was needed due a conversion error in Nvim,
+    -- which is now fixed in https://github.com/neovim/neovim/commit/f9d81c43d2296d212c9cebcbdce401cd76cf0f1f
+    -- let's keep it here to keep backwards-compatibility
     return cur_win_conf[key][false]
   else
     return cur_win_conf[key]
