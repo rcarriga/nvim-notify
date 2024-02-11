@@ -134,18 +134,6 @@ function M.available_slot(existing_wins, required_space, direction)
 
   return interval.min
 end
-
-local function get_win_config_value(cur_win_conf, key)
-  if type(cur_win_conf[key]) == "table" then
-    -- this indexing was needed due a conversion error in Nvim,
-    -- which is now fixed in https://github.com/neovim/neovim/commit/f9d81c43d2296d212c9cebcbdce401cd76cf0f1f
-    -- let's keep it here for backwards-compatibility
-    return cur_win_conf[key][false]
-  else
-    return cur_win_conf[key]
-  end
-end
-
 ---Gets the next slot available for the given window while maintaining its position using the given list.
 ---@param win number
 ---@param open_windows number[]
@@ -153,13 +141,12 @@ end
 function M.slot_after_previous(win, open_windows, direction)
   local key = slot_key(direction)
   local cmp = is_increasing(direction) and less or greater
-  local exists, cur_win_conf = pcall(vim.api.nvim_win_get_config, win)
+  local exists, cur_win_conf = util.get_win_config(win)
   if not exists then
     return 0
   end
 
-  local cur_slot = get_win_config_value(cur_win_conf, key)
-
+  local cur_slot = cur_win_conf[key]
   local win_confs = {}
   for _, w in ipairs(open_windows) do
     local success, conf = pcall(vim.api.nvim_win_get_config, w)
@@ -169,7 +156,7 @@ function M.slot_after_previous(win, open_windows, direction)
   end
 
   local preceding_wins = vim.tbl_filter(function(open_win)
-    return win_confs[open_win] and cmp(get_win_config_value(win_confs[open_win], key), cur_slot)
+    return win_confs[open_win] and cmp(win_confs[open_win][key], cur_slot)
   end, open_windows)
 
   if #preceding_wins == 0 then
@@ -185,7 +172,7 @@ function M.slot_after_previous(win, open_windows, direction)
   end
 
   table.sort(preceding_wins, function(a, b)
-    return cmp(get_win_config_value(win_confs[a], key), get_win_config_value(win_confs[b], key))
+    return cmp(win_confs[a][key], win_confs[b][key])
   end)
 
   local last_win = preceding_wins[#preceding_wins]
@@ -194,13 +181,13 @@ function M.slot_after_previous(win, open_windows, direction)
   if is_increasing(direction) then
     return move_slot(
       direction,
-      get_win_config_value(last_win_conf, key),
+      last_win_conf[key],
       last_win_conf[space_key(direction)] + border_padding(direction, last_win_conf)
     )
   else
     return move_slot(
       direction,
-      get_win_config_value(last_win_conf, key),
+      last_win_conf[key],
       cur_win_conf[space_key(direction)] + border_padding(direction, cur_win_conf)
     )
   end
