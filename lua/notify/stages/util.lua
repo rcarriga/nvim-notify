@@ -185,7 +185,7 @@ function M.slot_after_previous(win, open_windows, direction)
   end
 
   table.sort(preceding_wins, function(a, b)
-    return cmp(win_confs[a][key][false], win_confs[b][key][false])
+    return cmp(get_win_config_value(win_confs[a], key), get_win_config_value(win_confs[b], key))
   end)
 
   local last_win = preceding_wins[#preceding_wins]
@@ -194,13 +194,13 @@ function M.slot_after_previous(win, open_windows, direction)
   if is_increasing(direction) then
     return move_slot(
       direction,
-      last_win_conf[key][false],
+      get_win_config_value(last_win_conf, key),
       last_win_conf[space_key(direction)] + border_padding(direction, last_win_conf)
     )
   else
     return move_slot(
       direction,
-      last_win_conf[key][false],
+      get_win_config_value(last_win_conf, key),
       cur_win_conf[space_key(direction)] + border_padding(direction, cur_win_conf)
     )
   end
