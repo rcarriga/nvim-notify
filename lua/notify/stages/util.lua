@@ -135,6 +135,14 @@ function M.available_slot(existing_wins, required_space, direction)
   return interval.min
 end
 
+local function get_win_config_value(cur_win_conf, key)
+  if type(cur_win_conf[key]) == "table" then
+    return cur_win_conf[key][false]
+  else
+    return cur_win_conf[key]
+  end
+end
+
 ---Gets the next slot available for the given window while maintaining its position using the given list.
 ---@param win number
 ---@param open_windows number[]
@@ -147,7 +155,8 @@ function M.slot_after_previous(win, open_windows, direction)
     return 0
   end
 
-  local cur_slot = cur_win_conf[key][false]
+  local cur_slot = get_win_config_value(cur_win_conf, key)
+
   local win_confs = {}
   for _, w in ipairs(open_windows) do
     local success, conf = pcall(vim.api.nvim_win_get_config, w)
@@ -157,7 +166,7 @@ function M.slot_after_previous(win, open_windows, direction)
   end
 
   local preceding_wins = vim.tbl_filter(function(open_win)
-    return win_confs[open_win] and cmp(win_confs[open_win][key][false], cur_slot)
+    return win_confs[open_win] and cmp(get_win_config_value(win_confs[open_win], key), cur_slot)
   end, open_windows)
 
   if #preceding_wins == 0 then
