@@ -142,12 +142,17 @@ end
 function M.slot_after_previous(win, open_windows, direction)
   local key = slot_key(direction)
   local cmp = is_increasing(direction) and less or greater
-  local exists, cur_win_conf = util.get_win_config(win)
+  local exists, cur_win_conf
+  if vim.version().minor < 10 then
+    exists, cur_win_conf = util.get_win_config(win)
+  else
+    exists, cur_win_conf = pcall(vim.api.nvim_win_get_config, win)
+  end
   if not exists then
     return 0
   end
 
-  local cur_slot = cur_win_conf[key]
+  local cur_slot = vim.version().minor < 10 and cur_win_conf[key] or cur_win_conf[key][false]
   local win_confs = {}
   for _, w in ipairs(open_windows) do
     local success, conf = pcall(vim.api.nvim_win_get_config, w)
@@ -157,7 +162,11 @@ function M.slot_after_previous(win, open_windows, direction)
   end
 
   local preceding_wins = vim.tbl_filter(function(open_win)
-    return win_confs[open_win] and cmp(win_confs[open_win][key], cur_slot)
+    return win_confs[open_win]
+      and cmp(
+        vim.version().minor < 10 and win_confs[open_win][key] or win_confs[open_win][key][false],
+        cur_slot
+      )
   end, open_windows)
 
   if #preceding_wins == 0 then
@@ -173,7 +182,10 @@ function M.slot_after_previous(win, open_windows, direction)
   end
 
   table.sort(preceding_wins, function(a, b)
-    return cmp(win_confs[a][key], win_confs[b][key])
+    return cmp(
+      vim.version().minor < 10 and win_confs[a][key] or win_confs[a][key][false],
+      vim.version().minor < 10 and win_confs[b][key] or win_confs[b][key][false]
+    )
   end)
 
   local last_win = preceding_wins[#preceding_wins]
@@ -182,13 +194,13 @@ function M.slot_after_previous(win, open_windows, direction)
   if is_increasing(direction) then
     return move_slot(
       direction,
-      last_win_conf[key],
+      vim.version().minor < 10 and last_win_conf[key] or last_win_conf[key][false],
       last_win_conf[space_key(direction)] + border_padding(direction, last_win_conf)
     )
   else
     return move_slot(
       direction,
-      last_win_conf[key],
+      vim.version().minor < 10 and last_win_conf[key] or last_win_conf[key][false],
       cur_win_conf[space_key(direction)] + border_padding(direction, cur_win_conf)
     )
   end
