@@ -142,7 +142,7 @@ end
 function M.slot_after_previous(win, open_windows, direction)
   local key = slot_key(direction)
   local cmp = is_increasing(direction) and less or greater
-local exists, cur_win_conf = pcall(vim.api.nvim_win_get_config, win)
+  local exists, cur_win_conf = util.get_win_config(win)
   if not exists then
     return 0
   end
@@ -150,18 +150,14 @@ local exists, cur_win_conf = pcall(vim.api.nvim_win_get_config, win)
   local cur_slot = vim.version().minor < 10 and cur_win_conf[key][false] or cur_win_conf[key]
   local win_confs = {}
   for _, w in ipairs(open_windows) do
-    local success, conf = pcall(vim.api.nvim_win_get_config, w)
+    local success, conf = util.get_win_config(w)
     if success then
       win_confs[w] = conf
     end
   end
 
   local preceding_wins = vim.tbl_filter(function(open_win)
-    return win_confs[open_win]
-      and cmp(
-        vim.version().minor < 10 and win_confs[open_win][key][false] or win_confs[open_win][key],
-        cur_slot
-      )
+    return win_confs[open_win] and cmp(util.get_safe_slot(win_confs[open_win], key), cur_slot)
   end, open_windows)
 
   if #preceding_wins == 0 then
@@ -177,10 +173,7 @@ local exists, cur_win_conf = pcall(vim.api.nvim_win_get_config, win)
   end
 
   table.sort(preceding_wins, function(a, b)
-    return cmp(
-      vim.version().minor < 10 and win_confs[a][key][false] or win_confs[a][key],
-      vim.version().minor < 10 and win_confs[b][key][false] or win_confs[b][key]
-    )
+    return cmp(util.get_safe_slot(win_confs[a], key), util.get_safe_slot(win_confs[b], key))
   end)
 
   local last_win = preceding_wins[#preceding_wins]
@@ -189,13 +182,13 @@ local exists, cur_win_conf = pcall(vim.api.nvim_win_get_config, win)
   if is_increasing(direction) then
     return move_slot(
       direction,
-      vim.version().minor < 10 and last_win_conf[key][false] or last_win_conf[key],
+      util.get_safe_slot(last_win_conf, key),
       last_win_conf[space_key(direction)] + border_padding(direction, last_win_conf)
     )
   else
     return move_slot(
       direction,
-      vim.version().minor < 10 and last_win_conf[key][false] or last_win_conf[key],
+      util.get_safe_slot(last_win_conf, key),
       cur_win_conf[space_key(direction)] + border_padding(direction, cur_win_conf)
     )
   end
