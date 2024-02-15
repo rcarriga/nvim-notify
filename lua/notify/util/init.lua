@@ -117,4 +117,8 @@ function M.highlight(name, fields)
   end
 end
 
+function M.get_safe_slot(conf, key)
+  return vim.fn.has("nvim-0.10") == 1 and conf[key] or conf[key][false]
+end
+
 return M
