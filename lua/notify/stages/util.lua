@@ -147,7 +147,7 @@ function M.slot_after_previous(win, open_windows, direction)
     return 0
   end
 
-  local cur_slot = vim.version().minor < 10 and cur_win_conf[key][false] or cur_win_conf[key]
+  local cur_slot = util.get_safe_slot(cur_win_conf, key)
   local win_confs = {}
   for _, w in ipairs(open_windows) do
     local success, conf = util.get_win_config(w)
