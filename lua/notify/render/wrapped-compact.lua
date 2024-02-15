@@ -44,17 +44,26 @@ return function(bufnr, notif, highlights, config)
   local title = notif.title[1]
   local prefix
 
+  local default_titles = { "Error", "Warning", "Notify" }
+  local has_valid_manual_title = type(title) == "string"
+    and #title > 0
+    and not vim.tbl_contains(default_titles, title)
+
+  -- If message has a `[plugin-name]` prefix but has no title, remove the prefix
+  -- and use it as title instead.
+  local pseudo_title = notif.message[1]:match("^%[.-%] ?")
+  if pseudo_title and not has_valid_manual_title then
+    notif.message[1] = notif.message[1]:sub(#pseudo_title + 1)
+    title = vim.trim(pseudo_title):sub(2, -2)
+    has_valid_manual_title = true
+  end
+
   -- wrap the text & add spacing
   local max_width = config.max_width()
   if max_width == nil then
     max_width = 80
   end
   local message = custom_wrap(notif.message, max_width)
-
-  local default_titles = { "Error", "Warning", "Notify" }
-  local has_valid_manual_title = type(title) == "string"
-    and #title > 0
-    and not vim.tbl_contains(default_titles, title)
 
   if has_valid_manual_title then
     -- has title = icon + title as header row
