@@ -165,6 +165,18 @@ You can get a list of past notifications with the history function
 require("notify").history()
 ```
 
+There is another command to clear the history.
+
+```vim
+:NotificationsClear
+```
+
+You can clear the notifications with the clear history function
+
+```lua
+require("notify").clear_history()
+```
+
 ## Configuration
 
 ### Setup

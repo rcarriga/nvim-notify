@@ -23,6 +23,7 @@ function notify.setup(user_config)
     require("telescope").load_extension("notify")
   end
   vim.cmd([[command! Notifications :lua require("notify")._print_history()<CR>]])
+  vim.cmd([[command! NotificationsClear :lua require("notify").clear_history()<CR>]])
 end
 
 function notify._config()
@@ -109,6 +110,16 @@ end
 
 ---@class notify.HistoryOpts
 ---@field include_hidden boolean Include notifications hidden from history
+
+--- Clear records of all previous notifications
+---
+--- You can use the `:NotificationsClear` command to clear the log of previous notifications
+function notify.clear_history()
+  if not global_instance then
+    notify.setup()
+  end
+  return global_instance.clear_history()
+end
 
 --- Dismiss all notification windows currently displayed
 ---@param opts notify.DismissOpts
