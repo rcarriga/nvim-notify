@@ -129,6 +129,10 @@ vim.notify(text, "info", {
 })
 ```
 
+To dismiss all notifications:
+```
+require("notify").dismiss()
+```
 
 Check out the wiki for more examples!
 
