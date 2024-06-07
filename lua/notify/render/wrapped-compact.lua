@@ -20,12 +20,12 @@ end
 ---@param max_width number
 ---@return string[]
 local function custom_wrap(lines, max_width)
-  local rightPad = "  "
+  local right_pad = "  "
   local wrapped_lines = {}
   for _, line in pairs(lines) do
-    local new_lines = split_length(line, max_width - #rightPad)
+    local new_lines = split_length(line, max_width - #right_pad)
     for _, nl in ipairs(new_lines) do
-      table.insert(wrapped_lines, nl:gsub("^%s+", "") .. rightPad)
+      table.insert(wrapped_lines, nl:gsub("^%s+", "") .. right_pad)
     end
   end
   return wrapped_lines
@@ -49,7 +49,7 @@ return function(bufnr, notif, highlights, config)
     and not vim.tbl_contains(default_titles, title)
 
   if has_valid_manual_title then
-    prefix = string.format("%s %s", icon, title)
+    prefix = string.format("%s %s ", icon, title)
     prefix_length = vim.str_utfindex(prefix) + 2
     table.insert(message, 1, prefix)
   end
