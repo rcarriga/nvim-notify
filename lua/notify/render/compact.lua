@@ -11,9 +11,12 @@ return function(bufnr, notif, highlights)
   else
     prefix = string.format("%s |", icon)
   end
-  notif.message[1] = string.format("%s %s", prefix, notif.message[1])
+  local message = {
+    string.format("%s %s", prefix, notif.message[1]),
+    unpack(notif.message, 2)
+  }
 
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, notif.message)
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, message)
 
   local icon_length = vim.str_utfindex(icon)
   local prefix_length = vim.str_utfindex(prefix)
@@ -30,7 +33,8 @@ return function(bufnr, notif, highlights)
   })
   vim.api.nvim_buf_set_extmark(bufnr, namespace, 0, prefix_length + 1, {
     hl_group = highlights.body,
-    end_line = #notif.message,
+    end_line = #message,
     priority = 50,
   })
 end
+
