@@ -6,6 +6,9 @@ return function(bufnr, notif, highlights, config)
     return vim.fn.strchars(line)
   end, notif.message))))
   local title = notif.title[1]
+  if notif.duplicates then
+    title = string.format('%s (x%d)', title, #notif.duplicates)
+  end
   local title_accum = vim.str_utfindex(title)
 
   local title_buffer = string.rep(

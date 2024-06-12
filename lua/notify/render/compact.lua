@@ -5,6 +5,10 @@ return function(bufnr, notif, highlights)
   local icon = notif.icon
   local title = notif.title[1]
 
+  if type(title) == "string" and notif.duplicates then
+    title = string.format('%s x%d', title, #notif.duplicates)
+  end
+
   local prefix
   if type(title) == "string" and #title > 0 then
     prefix = string.format("%s | %s:", icon, title)
@@ -37,4 +41,3 @@ return function(bufnr, notif, highlights)
     priority = 50,
   })
 end
-
