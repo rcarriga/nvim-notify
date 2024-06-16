@@ -26,7 +26,7 @@ local function custom_wrap(lines, max_width)
 			table.insert(wrapped_lines, nl:gsub("^%s+", "") .. right_pad)
 		end
 	end
-	wrapped_lines[1] = " " .. wrapped_lines[1]
+	wrapped_lines[1] = " " .. (wrapped_lines[1] or "")
 	return wrapped_lines
 end
 
@@ -39,12 +39,6 @@ return function(bufnr, notif, highlights, config)
 	local message = custom_wrap(notif.message, config.max_width() or 80)
 
 	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, message)
-
-	vim.api.nvim_buf_set_extmark(bufnr, namespace, 0, 1, {
-		hl_group = highlights.body,
-		end_line = #message,
-		priority = 50,
-	})
 
 	-- add padding to the left/right
 	for ln = 1, #message do
