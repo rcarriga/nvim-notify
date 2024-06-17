@@ -1,3 +1,4 @@
+-- PENDING https://github.com/rcarriga/nvim-notify/pull/280
 -- Like `minimal`, but wrapped.
 --------------------------------------------------------------------------------
 
@@ -36,8 +37,8 @@ end
 ---@param config notify.Config
 return function(bufnr, notif, highlights, config)
 	local namespace = require("notify.render.base").namespace()
-	local message = custom_wrap(notif.message, config.max_width() or 80)
-
+	local max_width = config.max_width() or 80
+	local message = custom_wrap(notif.message, max_width)
 	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, message)
 
 	-- add padding to the left/right
@@ -45,10 +46,12 @@ return function(bufnr, notif, highlights, config)
 		vim.api.nvim_buf_set_extmark(bufnr, namespace, ln, 0, {
 			virt_text = { { " ", highlights.body } },
 			virt_text_pos = "inline",
+			priority = 50,
 		})
 		vim.api.nvim_buf_set_extmark(bufnr, namespace, ln, 0, {
 			virt_text = { { " ", highlights.body } },
 			virt_text_pos = "right_align",
+			priority = 50,
 		})
 	end
 end
