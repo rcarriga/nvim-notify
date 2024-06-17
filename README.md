@@ -232,6 +232,10 @@ Mostly same as `compact`, but lines are wrapped based on `max_width`, some paddi
 
 ![image](https://github.com/rcarriga/nvim-notify/assets/73286100/72237d45-6e3b-4c2a-8010-513a26871682)
 
+6. "wrapped-compact"
+
+Similar to `minimal`, but lines are wrapped based on `max_width`, some padding is added.
+
 Feel free to submit custom rendering functions to share with others!
 
 ### Animation Style
