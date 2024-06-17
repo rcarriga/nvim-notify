@@ -31,9 +31,9 @@ local function custom_wrap(lines, max_width)
 end
 
 ---@param bufnr number
----@param notif object
----@param highlights object
----@param config object plugin config_obj
+---@param notif notify.Record
+---@param highlights notify.Highlights
+---@param config notify.Config
 return function(bufnr, notif, highlights, config)
 	local namespace = require("notify.render.base").namespace()
 	local message = custom_wrap(notif.message, config.max_width() or 80)
