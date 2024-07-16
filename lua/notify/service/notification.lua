@@ -16,7 +16,9 @@
 local Notification = {}
 
 local level_maps = vim.tbl_extend("keep", {}, vim.log.levels)
-vim.tbl_add_reverse_lookup(level_maps)
+for k, v in pairs(vim.log.levels) do
+  level_maps[v] = k
+end
 
 function Notification:new(id, message, level, opts, config)
   if type(level) == "number" then

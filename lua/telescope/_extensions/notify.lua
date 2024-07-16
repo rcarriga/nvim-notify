@@ -103,6 +103,7 @@ local telescope_notifications = function(opts)
         define_preview = function(self, entry, status)
           local notification = entry.value
           local max_width = vim.api.nvim_win_get_config(status.preview_win).width
+          vim.api.nvim_win_set_option(status.preview_win, "wrap", true)
           notify.open(notification, { buffer = self.state.bufnr, max_width = max_width })
         end,
       }),
