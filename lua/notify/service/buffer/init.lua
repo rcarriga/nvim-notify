@@ -134,7 +134,11 @@ function NotificationBuf:render()
 end
 
 function NotificationBuf:timeout()
-  return self._notif.timeout
+  if self._notif.timeout ~= nil and (type(self._notif.timeout) == "function") then
+    return self._notif.timeout(self._notif)
+  else
+    return self._notif.timeout
+  end
 end
 
 function NotificationBuf:buffer()

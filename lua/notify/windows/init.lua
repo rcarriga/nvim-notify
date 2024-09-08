@@ -116,14 +116,16 @@ function WindowAnimator:on_refresh(win)
   if not notif_buf then
     return
   end
+
   if self.timers[win] then
-    self.timers[win]:set_repeat(notif_buf:timeout() or self.config.default_timeout())
+    self.timers[win]:set_repeat(notif_buf:timeout() or self.config.timeout(notif_buf._notif))
     self.timers[win]:again()
   end
 end
 
 function WindowAnimator:_start_timer(win)
-  local buf_time = self.notif_bufs[win]:timeout() == nil and self.config.default_timeout()
+  local buf_time = self.notif_bufs[win]:timeout() == nil
+      and self.config.timeout(self.notif_bufs[win]._notif)
     or self.notif_bufs[win]:timeout()
   if buf_time ~= false then
     if buf_time == true then

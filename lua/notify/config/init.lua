@@ -45,7 +45,7 @@ local default_config = {
 
 ---@class notify.Config
 ---@field level string|integer Minimum log level to display. See vim.log.levels.
----@field timeout number Default timeout for notification
+---@field timeout number|(fun(notification:notify.Notification):number) Default timeout for notification
 ---@field max_width number|function Max number of columns for messages
 ---@field max_height number|function Max number of lines for a message
 ---@field stages string|function[] Animation stages
@@ -144,8 +144,13 @@ function Config.setup(custom_config)
     return user_config.stages
   end
 
-  function config.default_timeout()
-    return user_config.timeout
+  ---@param notification notify.Notification
+  function config.timeout(notification)
+    if type(user_config.timeout) == "function" then
+      return user_config.timeout(notification)
+    else
+      return user_config.timeout
+    end
   end
 
   function config.on_open()

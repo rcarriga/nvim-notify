@@ -2,7 +2,7 @@
 ---@field id integer
 ---@field level string
 ---@field message string[]
----@field timeout number | nil
+---@field timeout number | (fun(notification:notify.Notification):number) | nil
 ---@field title string[]
 ---@field icon string
 ---@field time number
