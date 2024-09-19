@@ -41,8 +41,12 @@ return function(bufnr, notif, highlights, config)
   local title = notif.title[1] or "Notify"
 
   local terminal_width = vim.o.columns
-  local default_max_width = (terminal_width * 30) / 100
-  local max_width = config.max_width() or default_max_width
+  local default_max_width = math.floor((terminal_width * 30) / 100)
+  local max_width = config.max_width and config.max_width() or default_max_width
+
+  -- Ensure max_width is within bounds
+  max_width = math.max(10, math.min(max_width, terminal_width - 1))
+
   local message = custom_wrap(notif.message, max_width)
 
   local prefix = string.format(" %s %s", icon, title)
@@ -52,6 +56,7 @@ return function(bufnr, notif, highlights, config)
   vim_api.nvim_buf_set_lines(bufnr, 0, -1, false, message)
 
   local prefix_length = vim.str_utfindex(prefix)
+  prefix_length = math.min(prefix_length, max_width - 1)
 
   vim_api.nvim_buf_set_extmark(bufnr, namespace, 0, 0, {
     virt_text = {
