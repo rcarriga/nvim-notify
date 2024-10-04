@@ -273,12 +273,11 @@ function WindowAnimator:_get_dimensions(notif_buf)
 end
 
 function WindowAnimator:_apply_win_state(win, win_state)
-  local win_updated = false
+  local hl_updated = false
   if win_state.opacity then
-    win_updated = true
     local notif_buf = self.notif_bufs[win]
     if notif_buf:is_valid() then
-      notif_buf.highlights:set_opacity(win_state.opacity.position)
+      hl_updated = notif_buf.highlights:set_opacity(win_state.opacity.position)
       vim.fn.setwinvar(
         win,
         "&winhl",
@@ -288,6 +287,7 @@ function WindowAnimator:_apply_win_state(win, win_state)
   end
   local exists, conf = util.get_win_config(win)
   local new_conf = {}
+  local win_updated = false
   if not exists then
     self:_remove_win(win)
   else
@@ -317,7 +317,9 @@ function WindowAnimator:_apply_win_state(win, win_state)
       api.nvim_win_set_config(win, new_conf)
     end
   end
-  return win_updated
+  -- The 'flush' key is set to enforce redrawing during blocking event.
+  vim.api.nvim__redraw({ win = win, valid = false, flush = true })
+  return hl_updated or win_updated
 end
 
 ---@return WindowAnimator

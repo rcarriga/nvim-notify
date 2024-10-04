@@ -11,24 +11,6 @@ local util = require("notify.util")
 ---@field _config table
 local NotifyBufHighlights = {}
 
-local function manual_get_hl(name)
-  local synID = vim.fn.synIDtrans(vim.fn.hlID(name))
-  local result = {
-    foreground = tonumber(vim.fn.synIDattr(synID, "fg"):gsub("#", ""), 16),
-    background = tonumber(vim.fn.synIDattr(synID, "bg"):gsub("#", ""), 16),
-  }
-  return result
-end
-
-local function get_hl(name)
-  local definition = vim.api.nvim_get_hl_by_name(name, true)
-  if definition[true] then
-    -- https://github.com/neovim/neovim/issues/18024
-    return manual_get_hl(name)
-  end
-  return definition
-end
-
 function NotifyBufHighlights:new(level, buffer, config)
   local function linked_group(section)
     local orig = "Notify" .. level .. section
@@ -38,8 +20,11 @@ function NotifyBufHighlights:new(level, buffer, config)
     local new = orig .. buffer
 
     vim.api.nvim_set_hl(0, new, { link = orig })
+    local hl = vim.api.nvim_get_hl(0, { name = orig, create = false, link = false })
+    -- Removes the unwanted 'default' key, as we will copy the table for updating the highlight later.
+    hl.default = nil
 
-    return new, get_hl(new)
+    return new, hl
   end
 
   local title, title_def = linked_group("Title")
@@ -83,7 +68,7 @@ function NotifyBufHighlights:_redefine_treesitter()
       return new
     end
     vim.api.nvim_set_hl(0, new, { link = orig })
-    self.groups[new] = get_hl(new)
+    self.groups[new] = vim.api.nvim_get_hl(0, { name = new, link = false })
     return new
   end
 
@@ -150,31 +135,30 @@ end
 function NotifyBufHighlights:set_opacity(alpha)
   if
     not self._treesitter_redefined
-    and vim.api.nvim_buf_get_option(self.buffer, "filetype") ~= "notify"
+    and vim.api.nvim_get_option_value("filetype", { buf = self.buffer }) ~= "notify"
   then
     self:_redefine_treesitter()
   end
   self.opacity = alpha
   local background = self._config.background_colour()
+  local updated = false
   for group, fields in pairs(self.groups) do
-    local updated_fields = {}
-    vim.api.nvim_set_hl(0, group, updated_fields)
-    local hl_string = ""
-    if fields.foreground then
-      hl_string = "guifg=#"
-        .. string.format("%06x", util.blend(fields.foreground, background, alpha / 100))
+    local fg = fields.fg
+    if fg then
+      fg = util.blend(fg, background, alpha / 100)
     end
-    if fields.background then
-      hl_string = hl_string
-        .. " guibg=#"
-        .. string.format("%06x", util.blend(fields.background, background, alpha / 100))
+    local bg = fields.bg
+    if bg then
+      bg = util.blend(bg, background, alpha / 100)
     end
 
-    if hl_string ~= "" then
-      -- Can't use nvim_set_hl https://github.com/neovim/neovim/issues/18160
-      vim.cmd("hi " .. group .. " " .. hl_string)
+    if fg ~= fields.fg or bg ~= fields.bg then
+      local hl = vim.tbl_extend('force', fields, { fg = fg, bg = bg })
+      vim.api.nvim_set_hl(0, group, hl)
+      updated = true
     end
   end
+  return updated
 end
 
 function NotifyBufHighlights:get_opacity()
