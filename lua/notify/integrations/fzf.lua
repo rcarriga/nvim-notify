@@ -54,7 +54,6 @@ end
 function M.parse_entry(messages, entry_str)
   local id = tonumber(entry_str:match("^%d+"))
   local entry = messages[id]
-  assert(entry, "No message found for entry: " .. entry_str)
   return entry
 end
 
@@ -73,8 +72,10 @@ function M.previewer(messages)
     local buf = self:get_tmp_buffer()
     local entry = M.parse_entry(messages, entry_str)
 
-    local notification = entry.message
-    notify.open(notification, { buffer = buf, max_width = 0 })
+    if entry then
+      local notification = entry.message
+      notify.open(notification, { buffer = buf, max_width = 0 })
+    end
 
     self:set_preview_buf(buf)
     self.win:update_title(" Message ")
