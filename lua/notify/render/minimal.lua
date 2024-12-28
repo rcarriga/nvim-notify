@@ -6,7 +6,7 @@ return function(bufnr, notif, highlights)
   if notif.duplicates then
     message = {
       string.format("x%d %s", #notif.duplicates, notif.message[1]),
-      unpack(notif.message, 2)
+      unpack(notif.message, 2),
     }
   end
 

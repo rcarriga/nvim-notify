@@ -51,7 +51,7 @@ return function(bufnr, notif, highlights, config)
   if has_valid_manual_title then
     prefix = string.format("%s %s ", icon, title)
     if notif.duplicates then
-      prefix = string.format('%s x%d', prefix, #notif.duplicates)
+      prefix = string.format("%s x%d", prefix, #notif.duplicates)
     end
     prefix_length = #prefix + 2
     table.insert(message, 1, prefix)

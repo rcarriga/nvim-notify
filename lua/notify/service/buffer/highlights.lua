@@ -153,7 +153,7 @@ function NotifyBufHighlights:set_opacity(alpha)
     end
 
     if fg ~= fields.fg or bg ~= fields.bg then
-      local hl = vim.tbl_extend('force', fields, { fg = fg, bg = bg })
+      local hl = vim.tbl_extend("force", fields, { fg = fg, bg = bg })
       vim.api.nvim_set_hl(0, group, hl)
       updated = true
     end

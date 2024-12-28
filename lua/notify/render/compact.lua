@@ -6,7 +6,7 @@ return function(bufnr, notif, highlights)
   local title = notif.title[1]
 
   if type(title) == "string" and notif.duplicates then
-    title = string.format('%s x%d', title, #notif.duplicates)
+    title = string.format("%s x%d", title, #notif.duplicates)
   end
 
   local prefix
@@ -17,11 +17,10 @@ return function(bufnr, notif, highlights)
   end
   local message = {
     string.format("%s %s", prefix, notif.message[1]),
-    unpack(notif.message, 2)
+    unpack(notif.message, 2),
   }
 
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, message)
-
 
   local icon_length = string.len(icon)
   local prefix_length = string.len(prefix)
