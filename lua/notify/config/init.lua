@@ -71,8 +71,8 @@ local function validate_highlight(colour_or_group, needs_opacity)
     end
   end
   return function()
-    local group = vim.api.nvim_get_hl_by_name(colour_or_group, true)
-    if not group or not group.background then
+    local group = vim.api.nvim_get_hl(0, { name = colour_or_group, create = false, link = false })
+    if not group or not group.bg then
       if needs_opacity and not opacity_warned then
         opacity_warned = true
         vim.schedule(function()
@@ -88,14 +88,14 @@ Defaulting to #000000]], "warn", {
             title = "nvim-notify",
             on_open = function(win)
               local buf = vim.api.nvim_win_get_buf(win)
-              vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+              vim.api.nvim_set_option_value("filetype", "markdown", { buf = buf })
             end,
           })
         end)
       end
       return "#000000"
     end
-    return string.format("#%x", group.background)
+    return string.format("#%x", group.bg)
   end
 end
 
