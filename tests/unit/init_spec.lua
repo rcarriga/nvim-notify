@@ -181,6 +181,18 @@ describe("checking public interface", function()
     assert(vim.api.nvim_win_is_valid(win))
   end)
 
+  describe("util", function()
+    local util = require("notify.util")
+
+    describe("max_line_width()", function()
+      it("returns the maximal width of a table of lines", function()
+        assert.equals(5, util.max_line_width({ "12", "12345", "123" }))
+      end)
+
+      it("returns 0 for nil input", function()
+        assert.equals(0, util.max_line_width())
+      end)
+
   describe("notification width", function()
     a.it("handles multibyte characters correctly", function()
       local instance = notify.instance({

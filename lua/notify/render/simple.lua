@@ -1,10 +1,10 @@
 local api = vim.api
 local base = require("notify.render.base")
+local util = require("notify.util")
 
 return function(bufnr, notif, highlights, config)
-  local max_message_width = math.max(unpack(vim.tbl_map(function(line)
-    return vim.api.nvim_strwidth(line)
-  end, notif.message)))
+  local max_message_width = util.max_line_width(notif.message)
+
   local title = notif.title[1]
   local title_accum = vim.api.nvim_strwidth(title)
 
