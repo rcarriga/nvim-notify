@@ -55,12 +55,7 @@ function NotificationService:push(notif)
   self._pending:push(notif_buf)
   if not self._running then
     self:_run()
-  else
-    -- Forces a render during blocking events
-    -- https://github.com/rcarriga/nvim-notify/issues/5
-    pcall(self._animator.render, self._animator, self._pending, 1 / self._fps)
   end
-  vim.cmd("redraw")
   return buf
 end
 
@@ -86,6 +81,10 @@ function NotificationService:replace(id, notif)
       "&winhl",
       "Normal:" .. existing.highlights.body .. ",FloatBorder:" .. existing.highlights.border
     )
+
+    vim.api.nvim_win_set_width(win, existing:width())
+    vim.api.nvim_win_set_height(win, existing:height())
+
     self._animator:on_refresh(win)
   end
 end

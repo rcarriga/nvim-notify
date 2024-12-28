@@ -15,8 +15,9 @@ return function(bufnr, notif, highlights)
 
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, notif.message)
 
-  local icon_length = #icon
-  local prefix_length = #prefix
+
+  local icon_length = string.len(icon)
+  local prefix_length = string.len(prefix)
 
   vim.api.nvim_buf_set_extmark(bufnr, namespace, 0, 0, {
     hl_group = highlights.icon,
