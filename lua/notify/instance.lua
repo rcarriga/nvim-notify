@@ -209,6 +209,10 @@ return function(user_config, inherit, global_config)
     return service and service:pending() or {}
   end
 
+  function instance.clear_history()
+    notifications = {}
+  end
+
   setmetatable(instance, {
     __call = function(_, m, l, o)
       if vim.in_fast_event() then
