@@ -38,7 +38,7 @@ end
 return function(bufnr, notif, highlights, config)
   local namespace = require("notify.render.base").namespace()
   local icon = notif.icon
-  local icon_length = vim.str_utfindex(icon)
+  local icon_length = #icon
   local prefix = ""
   local prefix_length = 0
   local message = custom_wrap(notif.message, config.max_width() or 80)
@@ -50,7 +50,10 @@ return function(bufnr, notif, highlights, config)
 
   if has_valid_manual_title then
     prefix = string.format("%s %s ", icon, title)
-    prefix_length = vim.str_utfindex(prefix) + 2
+    if notif.duplicates then
+      prefix = string.format('%s x%d', prefix, #notif.duplicates)
+    end
+    prefix_length = #prefix + 2
     table.insert(message, 1, prefix)
   end
 
@@ -69,6 +72,7 @@ return function(bufnr, notif, highlights, config)
       priority = 50,
     })
   end
+
   vim.api.nvim_buf_set_extmark(bufnr, namespace, 0, prefix_length + 1, {
     hl_group = highlights.body,
     end_line = #message,

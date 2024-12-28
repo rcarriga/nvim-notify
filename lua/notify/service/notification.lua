@@ -13,6 +13,7 @@
 ---@field on_open fun(win: number, record: notify.Record) | nil
 ---@field on_close fun(win: number, record: notify.Record) | nil
 ---@field render fun(buf: integer, notification: notify.Notification, highlights: table<string, string>)
+---@field duplicates? integer[] shared list of duplicate notifications by id
 local Notification = {}
 
 local level_maps = vim.tbl_extend("keep", {}, vim.log.levels)
@@ -52,6 +53,7 @@ function Notification:new(id, message, level, opts, config)
     animate = opts.animate ~= false,
     render = opts.render,
     hide_from_history = opts.hide_from_history,
+    duplicates = opts.duplicates,
   }
   self.__index = self
   setmetatable(notif, self)
