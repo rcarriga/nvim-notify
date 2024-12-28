@@ -1,15 +1,15 @@
 local api = vim.api
 local base = require("notify.render.base")
+local util = require("notify.util")
 
 return function(bufnr, notif, highlights, config)
-  local max_message_width = math.max(math.max(unpack(vim.tbl_map(function(line)
-    return vim.fn.strchars(line)
-  end, notif.message))))
+  local max_message_width = util.max_line_width(notif.message)
+
   local title = notif.title[1]
   if notif.duplicates then
     title = string.format('%s (x%d)', title, #notif.duplicates)
   end
-  local title_accum = vim.str_utfindex(title)
+  local title_accum = vim.api.nvim_strwidth(title)
 
   local title_buffer = string.rep(
     " ",

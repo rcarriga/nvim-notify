@@ -45,20 +45,20 @@ local default_config = {
 }
 
 ---@class notify.Config
----@field level string|integer Minimum log level to display. See vim.log.levels.
----@field timeout number Default timeout for notification
----@field max_width number|function Max number of columns for messages
----@field max_height number|function Max number of lines for a message
----@field stages string|function[] Animation stages
----@field background_colour string For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group, an RGB hex value e.g. "#000000" or a function returning an RGB code for dynamic values
----@field icons table Icons for each level (upper case names)
----@field time_formats table Time formats for different kind of notifications
----@field on_open function Function called when a new window is opened, use for changing win settings/config
----@field on_close function Function called when a window is closed
----@field render function|string Function to render a notification buffer or a built-in renderer name
----@field minimum_width integer Minimum width for notification windows
----@field fps integer Frames per second for animation stages, higher value means smoother animations but more CPU usage
----@field top_down boolean whether or not to position the notifications at the top or not
+---@field level string|integer|nil Minimum log level to display. See vim.log.levels.
+---@field timeout number? Default timeout for notification
+---@field max_width number|function|nil Max number of columns for messages
+---@field max_height number|function|nil Max number of lines for a message
+---@field stages string|function[]|nil Animation stages
+---@field background_colour string? For stages that change opacity this is treated as the highlight behind the window. Set this to either a highlight group, an RGB hex value e.g. "#000000" or a function returning an RGB code for dynamic values
+---@field icons table? Icons for each level (upper case names)
+---@field time_formats table? Time formats for different kind of notifications
+---@field on_open function? Function called when a new window is opened, use for changing win settings/config
+---@field on_close function? Function called when a window is closed
+---@field render function|string|nil Function to render a notification buffer or a built-in renderer name
+---@field minimum_width integer? Minimum width for notification windows
+---@field fps integer? Frames per second for animation stages, higher value means smoother animations but more CPU usage
+---@field top_down boolean? whether or not to position the notifications at the top or not
 ---@field merge_duplicates boolean|integer whether to replace visible notification if new one is the same, can be an integer for min duplicate count
 
 local opacity_warned = false
@@ -73,8 +73,8 @@ local function validate_highlight(colour_or_group, needs_opacity)
     end
   end
   return function()
-    local group = vim.api.nvim_get_hl_by_name(colour_or_group, true)
-    if not group or not group.background then
+    local group = vim.api.nvim_get_hl(0, { name = colour_or_group, create = false, link = false })
+    if not group or not group.bg then
       if needs_opacity and not opacity_warned then
         opacity_warned = true
         vim.schedule(function()
@@ -90,14 +90,14 @@ Defaulting to #000000]], "warn", {
             title = "nvim-notify",
             on_open = function(win)
               local buf = vim.api.nvim_win_get_buf(win)
-              vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+              vim.api.nvim_set_option_value("filetype", "markdown", { buf = buf })
             end,
           })
         end)
       end
       return "#000000"
     end
-    return string.format("#%x", group.background)
+    return string.format("#%x", group.bg)
   end
 end
 
