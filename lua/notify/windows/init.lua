@@ -318,7 +318,7 @@ function WindowAnimator:_apply_win_state(win, win_state)
     end
   end
   -- The 'flush' key is set to enforce redrawing during blocking event.
-  vim.api.nvim__redraw({ win = win, valid = false, flush = true })
+  pcall(vim.api.nvim__redraw, { win = win, valid = false, flush = true })
   return hl_updated or win_updated
 end
 
