@@ -3,14 +3,14 @@ local base = require("notify.render.base")
 
 return function(bufnr, notif, highlights, config)
   local left_icon = notif.icon == "" and "" or notif.icon .. " "
-  local max_message_width = math.max(math.max(unpack(vim.tbl_map(function(line)
-    return vim.fn.strchars(line)
-  end, notif.message))))
+  local max_message_width = math.max(unpack(vim.tbl_map(function(line)
+    return vim.api.nvim_strwidth(line)
+  end, notif.message)))
   local right_title = notif.title[2]
   local left_title = notif.title[1]
-  local title_accum = vim.str_utfindex(left_icon)
-    + vim.str_utfindex(right_title)
-    + vim.str_utfindex(left_title)
+  local title_accum = vim.api.nvim_strwidth(left_icon)
+    + vim.api.nvim_strwidth(right_title)
+    + vim.api.nvim_strwidth(left_title)
 
   local left_buffer = string.rep(" ", math.max(0, max_message_width - title_accum))
 
@@ -34,7 +34,7 @@ return function(bufnr, notif, highlights, config)
       {
         string.rep(
           "━",
-          math.max(vim.str_utfindex(left_buffer) + title_accum + 2, config.minimum_width())
+          math.max(vim.api.nvim_strwidth(left_buffer) + title_accum + 2, config.minimum_width())
         ),
         highlights.border,
       },

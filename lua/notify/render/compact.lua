@@ -15,6 +15,7 @@ return function(bufnr, notif, highlights)
 
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, notif.message)
 
+
   local icon_length = string.len(icon)
   local prefix_length = string.len(prefix)
 
