@@ -81,6 +81,10 @@ function NotificationService:replace(id, notif)
       "&winhl",
       "Normal:" .. existing.highlights.body .. ",FloatBorder:" .. existing.highlights.border
     )
+
+    vim.api.nvim_win_set_width(win, existing:width())
+    vim.api.nvim_win_set_height(win, existing:height())
+
     self._animator:on_refresh(win)
   end
 end
