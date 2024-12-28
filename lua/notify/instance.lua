@@ -63,7 +63,9 @@ return function(user_config, inherit, global_config)
       message = message or existing.message
       level = level or existing.level
       for _, key in ipairs(notif_keys) do
-        opts[key] = opts[key] or existing[key]
+        if opts[key] == nil then
+          opts[key] = existing[key]
+        end
       end
     end
     opts.render = get_render(opts.render or instance_config.render())

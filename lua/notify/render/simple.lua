@@ -6,7 +6,7 @@ return function(bufnr, notif, highlights, config)
   local max_message_width = util.max_line_width(notif.message)
 
   local title = notif.title[1]
-  local title_accum = vim.str_utfindex(title)
+  local title_accum = vim.api.nvim_strwidth(title)
 
   local title_buffer = string.rep(
     " ",
