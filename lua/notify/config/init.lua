@@ -30,6 +30,7 @@ local default_config = {
   minimum_width = 50,
   fps = 30,
   top_down = true,
+  merge_duplicates = true,
   time_formats = {
     notification_history = "%FT%T",
     notification = "%T",
@@ -58,6 +59,7 @@ local default_config = {
 ---@field minimum_width integer? Minimum width for notification windows
 ---@field fps integer? Frames per second for animation stages, higher value means smoother animations but more CPU usage
 ---@field top_down boolean? whether or not to position the notifications at the top or not
+---@field merge_duplicates boolean|integer whether to replace visible notification if new one is the same, can be an integer for min duplicate count
 
 local opacity_warned = false
 
@@ -154,6 +156,10 @@ function Config.setup(custom_config)
 
   function config.top_down()
     return user_config.top_down
+  end
+
+  function config.merge_duplicates()
+    return user_config.merge_duplicates
   end
 
   function config.on_close()

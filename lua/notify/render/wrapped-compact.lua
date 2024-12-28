@@ -59,10 +59,16 @@ return function(bufnr, notif, highlights, config)
   if has_valid_manual_title then
     -- has title = icon + title as header row
     prefix = string.format(" %s %s", icon, title)
+    if notif.duplicates then
+      prefix = string.format('%s x%d', prefix, #notif.duplicates)
+    end
     table.insert(message, 1, prefix)
   else
     -- no title = prefix the icon
     prefix = string.format(" %s", icon)
+    if notif.duplicates then
+      prefix = string.format('%s x%d', prefix, #notif.duplicates)
+    end
     message[1] = string.format("%s %s", prefix, message[1])
   end
 

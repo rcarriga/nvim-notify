@@ -8,6 +8,9 @@ return function(bufnr, notif, highlights, config)
 
   local right_title = notif.title[2]
   local left_title = notif.title[1]
+  if notif.duplicates then
+    left_title = string.format('%s (x%d)', left_title, #notif.duplicates)
+  end
   local title_accum = vim.api.nvim_strwidth(left_icon)
     + vim.api.nvim_strwidth(right_title)
     + vim.api.nvim_strwidth(left_title)
