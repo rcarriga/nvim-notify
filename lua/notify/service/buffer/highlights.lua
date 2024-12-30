@@ -20,7 +20,7 @@ function NotifyBufHighlights:new(level, buffer, config)
     local new = orig .. buffer
 
     vim.api.nvim_set_hl(0, new, { link = orig })
-    local hl = vim.api.nvim_get_hl(0, { name = orig, create = false, link = false })
+    local hl = vim.api.nvim_get_hl(0, { name = orig, link = false })
     -- Removes the unwanted 'default' key, as we will copy the table for updating the highlight later.
     hl.default = nil
 
