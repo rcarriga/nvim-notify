@@ -53,7 +53,7 @@ return function(bufnr, notif, highlights, config)
     if notif.duplicates then
       prefix = string.format("%s x%d", prefix, #notif.duplicates)
     end
-    prefix_length = #prefix + 2
+    prefix_length = #prefix
     table.insert(message, 1, prefix)
   end
 
