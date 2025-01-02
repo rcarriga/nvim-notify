@@ -77,7 +77,7 @@ return function(bufnr, notif, highlights, config)
     priority = 10,
   })
 
-  vim_api.nvim_buf_set_extmark(bufnr, namespace, 2, prefix_length + 1, {
+  vim_api.nvim_buf_set_extmark(bufnr, namespace, 2, 0, {
     hl_group = highlights.body,
     end_line = #message,
     end_col = 0,
