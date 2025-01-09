@@ -78,8 +78,8 @@ function M.previewer(messages)
     end
 
     self:set_preview_buf(buf)
-    self.win:update_title(" Message ")
-    self.win:update_scrollbar()
+    self.win:update_preview_title(" Message ")
+    self.win:update_preview_scrollbar()
     self.win:set_winopts(self.win.preview_winid, { wrap = true })
   end
 
