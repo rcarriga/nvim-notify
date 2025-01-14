@@ -20,12 +20,11 @@ end
 ---@param max_width number
 ---@return string[]
 local function custom_wrap(lines, max_width)
-  local right_pad = "  "
   local wrapped_lines = {}
   for _, line in pairs(lines) do
-    local new_lines = split_length(line, max_width - #right_pad)
+    local new_lines = split_length(line, max_width)
     for _, nl in ipairs(new_lines) do
-      table.insert(wrapped_lines, nl:gsub("^%s+", "") .. right_pad)
+      table.insert(wrapped_lines, (nl:gsub("^%s+", "")))
     end
   end
   return wrapped_lines
@@ -41,7 +40,8 @@ return function(bufnr, notif, highlights, config)
   local icon_length = #icon
   local prefix = ""
   local prefix_length = 0
-  local message = custom_wrap(notif.message, config.max_width() or 80)
+  -- exclude left and right padding 2
+  local message = custom_wrap(notif.message, (config.max_width() or 80) - 2)
   local title = notif.title[1]
   local default_titles = { "Error", "Warning", "Notify" }
   local has_valid_manual_title = type(title) == "string"
@@ -49,7 +49,7 @@ return function(bufnr, notif, highlights, config)
     and not vim.tbl_contains(default_titles, title)
 
   if has_valid_manual_title then
-    prefix = string.format("%s %s ", icon, title)
+    prefix = string.format("%s %s", icon, title)
     if notif.duplicates then
       prefix = string.format("%s x%d", prefix, #notif.duplicates)
     end
@@ -57,35 +57,35 @@ return function(bufnr, notif, highlights, config)
     table.insert(message, 1, prefix)
   end
 
-  message[1] = " " .. message[1]
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, message)
 
   if has_valid_manual_title then
     vim.api.nvim_buf_set_extmark(bufnr, namespace, 0, 0, {
       hl_group = highlights.icon,
-      end_col = icon_length + 1,
+      end_col = icon_length,
       priority = 50,
     })
-    vim.api.nvim_buf_set_extmark(bufnr, namespace, 0, icon_length + 1, {
+    vim.api.nvim_buf_set_extmark(bufnr, namespace, 0, icon_length, {
       hl_group = highlights.title,
-      end_col = prefix_length + 1,
+      end_col = prefix_length,
       priority = 50,
     })
   end
 
-  vim.api.nvim_buf_set_extmark(bufnr, namespace, 0, prefix_length + 1, {
+  vim.api.nvim_buf_set_extmark(bufnr, namespace, 0, prefix_length, {
     hl_group = highlights.body,
-    end_line = #message,
+    end_row = #message - 1,
     priority = 50,
   })
 
   -- padding to the left/right
   for ln = 1, #message do
-    vim.api.nvim_buf_set_extmark(bufnr, namespace, ln, 0, {
+    vim.api.nvim_buf_set_extmark(bufnr, namespace, ln - 1, 0, {
       virt_text = { { " ", highlights.body } },
       virt_text_pos = "inline",
     })
-    vim.api.nvim_buf_set_extmark(bufnr, namespace, ln, 0, {
+    -- only used to make the line length +1 by NotificationBuf:render()
+    vim.api.nvim_buf_set_extmark(bufnr, namespace, ln - 1, 0, {
       virt_text = { { " ", highlights.body } },
       virt_text_pos = "right_align",
     })

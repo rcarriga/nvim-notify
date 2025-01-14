@@ -108,25 +108,31 @@ function NotificationBuf:render()
 
   api.nvim_buf_set_option(buf, "modifiable", false)
 
+  local widths = {} -- ln => line_width
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
   local width = self._config.minimum_width()
-  for _, line in pairs(lines) do
-    width = math.max(width, vim.api.nvim_strwidth(line))
+  for ln, line in ipairs(lines) do
+    local line_width = vim.api.nvim_strwidth(line)
+    widths[ln] = line_width
+    width = math.max(width, line_width)
   end
+  -- consider width of extmarks
   local success, extmarks =
-    pcall(api.nvim_buf_get_extmarks, buf, render_namespace, 0, #lines, { details = true })
+    pcall(api.nvim_buf_get_extmarks, buf, render_namespace, 0, -1, { details = true })
   if not success then
     extmarks = {}
   end
   local virt_texts = {}
   for _, mark in ipairs(extmarks) do
     local details = mark[4]
+    local row = mark[2]
+    local ln = row + 1
     for _, virt_text in ipairs(details.virt_text or {}) do
-      virt_texts[mark[2]] = (virt_texts[mark[2]] or "") .. virt_text[1]
+      virt_texts[ln] = (virt_texts[ln] or "") .. virt_text[1]
     end
   end
-  for _, text in pairs(virt_texts) do
-    width = math.max(width, vim.api.nvim_strwidth(text))
+  for ln, text in pairs(virt_texts) do
+    width = math.max(width, vim.api.nvim_strwidth(text) + widths[ln])
   end
 
   self._width = width
