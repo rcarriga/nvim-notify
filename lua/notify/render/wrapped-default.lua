@@ -43,9 +43,10 @@ return function(bufnr, notif, highlights, config)
   local terminal_width = vim.o.columns
   local default_max_width = math.floor((terminal_width * 30) / 100)
   local max_width = config.max_width and config.max_width() or default_max_width
+  local padding_width = 2
 
   -- Ensure max_width is within bounds
-  max_width = math.max(10, math.min(max_width, terminal_width - 1))
+  max_width = math.max(10, math.min(max_width, terminal_width - 1)) - padding_width
 
   local message = custom_wrap(notif.message, max_width)
 
@@ -71,7 +72,7 @@ return function(bufnr, notif, highlights, config)
 
   vim_api.nvim_buf_set_extmark(bufnr, namespace, 1, 0, {
     virt_text = {
-      { string.rep("━", max_width), highlights.border },
+      { string.rep("━", max_width + padding_width), highlights.border },
     },
     virt_text_win_col = 0,
     priority = 10,
