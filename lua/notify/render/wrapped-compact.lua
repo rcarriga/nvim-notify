@@ -24,7 +24,7 @@ local function custom_wrap(lines, max_width)
   for _, line in pairs(lines) do
     local new_lines = split_length(line, max_width)
     for _, nl in ipairs(new_lines) do
-      table.insert(wrapped_lines, (nl:gsub("^%s+", "")))
+      table.insert(wrapped_lines, nl)
     end
   end
   return wrapped_lines
