@@ -40,6 +40,7 @@ return function(bufnr, notif, highlights, config)
   local icon_length = #icon
   local prefix = ""
   local prefix_length = 0
+  notif.message[1] = string.format('[%s] %s', notif.title[2], notif.message[1])
   -- exclude left and right padding 2
   local message = custom_wrap(notif.message, (config.max_width() or 80) - 2)
   local title = notif.title[1]
@@ -71,6 +72,12 @@ return function(bufnr, notif, highlights, config)
       priority = 50,
     })
   end
+
+  vim.api.nvim_buf_set_extmark(bufnr, namespace, 0, 0, {
+    hl_group = highlights.border,
+    end_col = vim.api.nvim_strwidth(notif.title[2]) + 2,
+    priority = 50,
+  })
 
   vim.api.nvim_buf_set_extmark(bufnr, namespace, 0, prefix_length, {
     hl_group = highlights.body,
