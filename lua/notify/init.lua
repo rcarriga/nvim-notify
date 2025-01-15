@@ -186,6 +186,30 @@ function notify._print_history()
   end
 end
 
+function notify.get_history()
+  if not global_instance then
+    notify.setup()
+  end
+  local history = {}
+  for _, notif in ipairs(global_instance.history()) do
+    table.insert(history, {
+      {
+        vim.fn.strftime(notify._config().time_formats().notification_history, notif.time),
+        "NotifyLogTime",
+      },
+      { " ", "MsgArea" },
+      { notif.title[1], "NotifyLogTitle" },
+      { #notif.title[1] > 0 and " " or "", "MsgArea" },
+      { notif.icon, "Notify" .. notif.level .. "Title" },
+      { " ", "MsgArea" },
+      { notif.level, "Notify" .. notif.level .. "Title" },
+      { " ", "MsgArea" },
+      { table.concat(notif.message, "\n"), "MsgArea" },
+    })
+  end
+  return history
+end
+
 --- Configure an instance of nvim-notify.
 --- You can use this to manage a separate instance of nvim-notify with completely different configuration.
 --- The returned instance will have the same functions as the notify module.
