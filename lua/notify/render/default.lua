@@ -15,12 +15,14 @@ return function(bufnr, notif, highlights, config)
     + vim.api.nvim_strwidth(right_title)
     + vim.api.nvim_strwidth(left_title)
 
-  local left_buffer = string.rep(" ", math.max(0, max_message_width - title_accum))
+  -- total 3 paddings
+  local left_buffer = string.rep(" ", math.max(0, max_message_width - title_accum - 3))
 
   local namespace = base.namespace()
   api.nvim_buf_set_lines(bufnr, 0, 1, false, { "", "" })
 
-  local virt_text = left_icon == "" and {} or { { " " }, { left_icon, highlights.icon } }
+  -- 1 padding
+  local virt_text = left_icon == "" and { { " " } } or { { " " }, { left_icon, highlights.icon } }
   table.insert(virt_text, { left_title .. left_buffer, highlights.title })
   api.nvim_buf_set_extmark(bufnr, namespace, 0, 0, {
     virt_text = virt_text,
@@ -28,7 +30,7 @@ return function(bufnr, notif, highlights, config)
     priority = 10,
   })
   api.nvim_buf_set_extmark(bufnr, namespace, 0, 0, {
-    virt_text = { { " " }, { right_title, highlights.title }, { " " } },
+    virt_text = { { " " }, { right_title, highlights.title }, { " " } }, -- 2 padding
     virt_text_pos = "right_align",
     priority = 10,
   })
@@ -37,7 +39,7 @@ return function(bufnr, notif, highlights, config)
       {
         string.rep(
           "━",
-          math.max(vim.api.nvim_strwidth(left_buffer) + title_accum + 2, config.minimum_width())
+          math.max(vim.api.nvim_strwidth(left_buffer) + title_accum + 3, config.minimum_width())
         ),
         highlights.border,
       },
