@@ -73,13 +73,14 @@ return function(bufnr, notif, highlights, config)
     })
   end
 
+  local ts_length = vim.api.nvim_strwidth(notif.title[2]) + 2
   vim.api.nvim_buf_set_extmark(bufnr, namespace, has_valid_manual_title and 1 or 0, 0, {
     hl_group = highlights.icon,
-    end_col = vim.api.nvim_strwidth(notif.title[2]) + 2,
+    end_col = ts_length,
     priority = 50,
   })
 
-  vim.api.nvim_buf_set_extmark(bufnr, namespace, has_valid_manual_title and 1 or 0, 0, {
+  vim.api.nvim_buf_set_extmark(bufnr, namespace, has_valid_manual_title and 1 or 0, ts_length, {
     hl_group = highlights.body,
     end_row = #message - 1,
     priority = 50,
