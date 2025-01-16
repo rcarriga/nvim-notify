@@ -74,7 +74,7 @@ return function(bufnr, notif, highlights, config)
   end
 
   vim.api.nvim_buf_set_extmark(bufnr, namespace, has_valid_manual_title and 1 or 0, 0, {
-    hl_group = highlights.border,
+    hl_group = highlights.icon,
     end_col = vim.api.nvim_strwidth(notif.title[2]) + 2,
     priority = 50,
   })
