@@ -122,7 +122,7 @@ function NotifyBufHighlights:_redefine_treesitter()
             hl_group = custom_hl,
             -- TODO: Not sure how neovim's highlighter doesn't have issues with overriding highlights
             -- Three marks on same region always show the second for some reason AFAICT
-            priority = metadata.priority or i + 200,
+            priority = tonumber(metadata.priority) or i + 200,
             conceal = metadata.conceal,
           })
         end
