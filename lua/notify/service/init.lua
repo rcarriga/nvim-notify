@@ -79,8 +79,10 @@ function NotificationService:replace(id, notif)
     vim.fn.setwinvar(
       win,
       "&winhl",
-      "Normal:" .. existing.highlights.body .. ",FloatBorder:" .. existing.highlights.border
+      "NormalNC:NONE" .. ",Normal:" .. existing.highlights.body .. ",FloatBorder:" .. existing.highlights.border
     )
+    vim.api.nvim_win_set_option(win, 'cursorcolumn', false)
+    vim.api.nvim_win_set_option(win, 'cursorline', false)
 
     vim.api.nvim_win_set_width(win, existing:width())
     vim.api.nvim_win_set_height(win, existing:height())
