@@ -93,6 +93,8 @@ local telescope_notifications = function(opts)
               .. opened_buffer.highlights.body
               .. ",FloatBorder:"
               .. opened_buffer.highlights.border
+              .. ",Search"
+              .. "NotifyInvisible"
           )
           vim.fn.setwinvar(win, "&wrap", 0)
         end)
