@@ -13,11 +13,11 @@ function M.setup()
     hi default NotifyINFOIcon guifg=#A9FF68
     hi default NotifyDEBUGIcon guifg=#8B8B8B
     hi default NotifyTRACEIcon guifg=#D484FF
-    hi default NotifyERRORTitle  guifg=#F70067
+    hi default NotifyERRORTitle guifg=#F70067
     hi default NotifyWARNTitle guifg=#F79000
     hi default NotifyINFOTitle guifg=#A9FF68
-    hi default NotifyDEBUGTitle  guifg=#8B8B8B
-    hi default NotifyTRACETitle  guifg=#D484FF
+    hi default NotifyDEBUGTitle guifg=#8B8B8B
+    hi default NotifyTRACETitle guifg=#D484FF
     hi default link NotifyERRORBody Normal
     hi default link NotifyWARNBody Normal
     hi default link NotifyINFOBody Normal
@@ -26,6 +26,8 @@ function M.setup()
 
     hi default link NotifyLogTime Comment
     hi default link NotifyLogTitle Special
+
+    hi default NotifySearch guifg=none
   ]])
 end
 

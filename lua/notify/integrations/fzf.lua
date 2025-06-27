@@ -136,6 +136,8 @@ function M.open(opts)
             .. opened_buffer.highlights.body
             .. ",FloatBorder:"
             .. opened_buffer.highlights.border
+            .. ",Search:"
+            .. "NotifSearch"
         )
         vim.fn.setwinvar(win, "&wrap", 0)
       end,
