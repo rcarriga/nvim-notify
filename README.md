@@ -215,6 +215,8 @@ highlight link NotifyWARNBody Normal
 highlight link NotifyINFOBody Normal
 highlight link NotifyDEBUGBody Normal
 highlight link NotifyTRACEBody Normal
+hi default NotifySearch guifg=none
+
 ```
 
 ### Render Style
