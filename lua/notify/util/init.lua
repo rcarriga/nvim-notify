@@ -91,7 +91,7 @@ function M.open_win(notif_buf, enter, opts)
       .. ",FloatBorder:"
       .. notif_buf.highlights.border
       .. ",Search:"
-      .. "NotifyInvisible"
+      .. "NotifySearch"
   )
   vim.fn.setwinvar(win, "&wrap", 0)
   return win

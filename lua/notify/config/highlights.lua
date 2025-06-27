@@ -1,7 +1,7 @@
 local M = {}
 
 function M.setup()
-	vim.cmd([[
+  vim.cmd([[
     hi default link NotifyBackground Normal
     hi default NotifyERRORBorder guifg=#8A1F1F
     hi default NotifyWARNBorder guifg=#79491D
@@ -27,7 +27,7 @@ function M.setup()
     hi default link NotifyLogTime Comment
     hi default link NotifyLogTitle Special
 
-    hi default NotifyInvisible guifg=none
+    hi default NotifySearch guifg=none
   ]])
 end
 

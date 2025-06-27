@@ -72,7 +72,7 @@ function WindowAnimator:push_pending(queue)
           .. ",FloatBorder:"
           .. notif_buf.highlights.border
           .. ",Search:"
-          .. "NotifyInvisible"
+          .. "NotifySearch"
       )
       self.win_stages[win] = 2
       self.win_states[win] = {}
@@ -293,7 +293,7 @@ function WindowAnimator:_apply_win_state(win, win_state)
           .. ",FloatBorder:"
           .. notif_buf.highlights.border
           .. ",Search:"
-          .. "NotifyInvisible"
+          .. "NotifySearch"
       )
     end
   end
