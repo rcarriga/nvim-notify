@@ -66,7 +66,11 @@ function WindowAnimator:push_pending(queue)
       vim.fn.setwinvar(
         win,
         "&winhl",
-        "NormalNC:NONE" .. ",Normal:" .. notif_buf.highlights.body .. ",FloatBorder:" .. notif_buf.highlights.border
+        "NormalNC:NONE"
+          .. ",Normal:"
+          .. notif_buf.highlights.body
+          .. ",FloatBorder:"
+          .. notif_buf.highlights.border
       )
       self.win_stages[win] = 2
       self.win_states[win] = {}
@@ -281,7 +285,11 @@ function WindowAnimator:_apply_win_state(win, win_state)
       vim.fn.setwinvar(
         win,
         "&winhl",
-        "NormalNC:NONE" .. ",Normal:" .. notif_buf.highlights.body .. ",FloatBorder:" .. notif_buf.highlights.border
+        "NormalNC:NONE"
+          .. ",Normal:"
+          .. notif_buf.highlights.body
+          .. ",FloatBorder:"
+          .. notif_buf.highlights.border
       )
     end
   end
