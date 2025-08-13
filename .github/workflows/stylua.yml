@@ -1,0 +1,23 @@
+name: Stylua
+
+on:
+- push
+- pull_request
+- pull_request_target
+
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: "Check with StyLua"
+        uses: JohnnyMorganz/stylua-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          # CLI arguments
+          args: --check .
